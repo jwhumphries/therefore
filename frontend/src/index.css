@@ -1,11 +1,17 @@
 /* Google Fonts - Must be first (before any @layer rules) */
 @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
 
+/* Define CSS layers */
+@layer theme, base, components, utilities;
+
 /* Tailwind CSS v4 */
 @import "tailwindcss";
 
 /* HeroUI styles */
 @import "@heroui/styles";
+
+/* Brodie theme */
+@import "./themes/brodie.css" layer(theme);
 
 /* Typography plugin */
 @plugin "@tailwindcss/typography";

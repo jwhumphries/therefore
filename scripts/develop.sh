@@ -9,6 +9,9 @@ templ generate
 echo "==> Installing frontend dependencies..."
 cd frontend
 bun install
+
+echo "==> Building frontend (required for Go embed)..."
+bun run build
 cd ..
 
 echo "==> Starting development servers..."

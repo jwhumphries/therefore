@@ -1,0 +1,181 @@
+/* Brodie Theme for HeroUI v3 */
+/* A violet-tinted light theme with sharp corners and 2px borders */
+
+@layer base {
+  [data-theme="brodie"] {
+    color-scheme: light;
+
+    /* Primitive Colors */
+    --white: oklch(100% 0 0);
+    --black: oklch(0% 0 0);
+    --snow: oklch(0.9911 0 0);
+    --eclipse: oklch(15% 0.01 265);
+
+    /* Spacing & Layout */
+    --spacing: 0.25rem;
+    --border-width: 2px;
+    --field-border-width: 2px;
+    --disabled-opacity: 0.5;
+    --ring-offset-width: 2px;
+    --cursor-interactive: pointer;
+    --cursor-disabled: not-allowed;
+
+    /* Radius - Sharp corners */
+    --radius: 0rem;
+    --field-radius: 0rem;
+
+    /* Base Colors */
+    --background: oklch(99% 0.002 265);
+    --foreground: oklch(15% 0.01 265);
+
+    /* Surface: Cards, accordions, disclosure groups */
+    --surface: oklch(95% 0.005 265);
+    --surface-foreground: var(--foreground);
+
+    /* Overlay: Tooltips, popovers, modals, menus */
+    --overlay: var(--white);
+    --overlay-foreground: var(--foreground);
+
+    /* Muted text */
+    --muted: oklch(47% 0.06 267);
+    --scrollbar: oklch(87% 0.006 265);
+
+    /* Default: Neutral buttons, inactive elements */
+    --default: oklch(90% 0.010 265);
+    --default-foreground: var(--eclipse);
+
+    /* Accent: Primary actions (from DaisyUI primary) */
+    --accent: oklch(45% 0.17 275);
+    --accent-foreground: oklch(98% 0.01 275);
+
+    /* Form Fields */
+    --field-background: var(--white);
+    --field-foreground: var(--foreground);
+    --field-placeholder: var(--muted);
+    --field-border: oklch(90% 0.010 265);
+
+    /* Status Colors */
+    --success: oklch(52% 0.13 142);
+    --success-foreground: oklch(98% 0.01 142);
+
+    --warning: oklch(75% 0.16 70);
+    --warning-foreground: oklch(15% 0.03 70);
+
+    --danger: oklch(55% 0.18 30);
+    --danger-foreground: oklch(98% 0.01 30);
+
+    /* Custom: Info (not in default HeroUI) */
+    --info: oklch(68% 0.11 240);
+    --info-foreground: oklch(10% 0.02 240);
+
+    /* Component Colors */
+    --segment: var(--white);
+    --segment-foreground: var(--foreground);
+
+    /* Borders & Misc */
+    --border: oklch(90% 0.010 265);
+    --separator: oklch(92% 0.005 265);
+    --focus: var(--accent);
+    --link: var(--accent);
+
+    /* Shadows - Subtle for flat design */
+    --surface-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --overlay-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1);
+    --field-shadow: none;
+
+    /* Skeleton Animation */
+    --skeleton-animation: shimmer;
+  }
+
+  /* Brodie Dark variant */
+  [data-theme="brodie-dark"] {
+    color-scheme: dark;
+
+    /* Primitive Colors */
+    --white: oklch(100% 0 0);
+    --black: oklch(0% 0 0);
+    --snow: oklch(0.9911 0 0);
+    --eclipse: oklch(15% 0.01 265);
+
+    /* Spacing & Layout */
+    --spacing: 0.25rem;
+    --border-width: 2px;
+    --field-border-width: 2px;
+    --disabled-opacity: 0.5;
+    --ring-offset-width: 2px;
+    --cursor-interactive: pointer;
+    --cursor-disabled: not-allowed;
+
+    /* Radius - Sharp corners */
+    --radius: 0rem;
+    --field-radius: 0rem;
+
+    /* Base Colors - Inverted */
+    --background: oklch(15% 0.01 265);
+    --foreground: oklch(95% 0.005 265);
+
+    /* Surface */
+    --surface: oklch(20% 0.012 265);
+    --surface-foreground: var(--foreground);
+
+    /* Overlay */
+    --overlay: oklch(22% 0.014 265);
+    --overlay-foreground: var(--foreground);
+
+    /* Muted text */
+    --muted: oklch(60% 0.04 267);
+    --scrollbar: oklch(40% 0.02 265);
+
+    /* Default */
+    --default: oklch(28% 0.015 265);
+    --default-foreground: var(--snow);
+
+    /* Accent - Slightly brighter for dark mode */
+    --accent: oklch(55% 0.17 275);
+    --accent-foreground: oklch(98% 0.01 275);
+
+    /* Form Fields */
+    --field-background: oklch(20% 0.012 265);
+    --field-foreground: var(--foreground);
+    --field-placeholder: var(--muted);
+    --field-border: oklch(35% 0.02 265);
+
+    /* Status Colors - Adjusted for dark mode visibility */
+    --success: oklch(60% 0.13 142);
+    --success-foreground: oklch(15% 0.01 142);
+
+    --warning: oklch(78% 0.14 70);
+    --warning-foreground: oklch(15% 0.03 70);
+
+    --danger: oklch(60% 0.18 30);
+    --danger-foreground: oklch(98% 0.01 30);
+
+    /* Custom: Info */
+    --info: oklch(70% 0.11 240);
+    --info-foreground: oklch(15% 0.02 240);
+
+    /* Component Colors */
+    --segment: oklch(25% 0.015 265);
+    --segment-foreground: var(--foreground);
+
+    /* Borders & Misc */
+    --border: oklch(30% 0.015 265);
+    --separator: oklch(25% 0.012 265);
+    --focus: var(--accent);
+    --link: var(--accent);
+
+    /* Shadows - Minimal for dark mode */
+    --surface-shadow: 0 0 0 0 transparent;
+    --overlay-shadow: 0 0 1px 0 rgba(255, 255, 255, 0.1) inset;
+    --field-shadow: none;
+
+    /* Skeleton Animation */
+    --skeleton-animation: shimmer;
+  }
+}
+
+/* Register custom info color with Tailwind */
+@theme inline {
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+}
