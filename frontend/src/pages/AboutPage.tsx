@@ -1,7 +1,7 @@
 export function AboutPage() {
   return (
     <div className="max-w-3xl mx-auto">
-      <h1 className="text-4xl font-serif font-bold mb-8">About</h1>
+      <h1 className="text-4xl font-display font-bold mb-8">About</h1>
       <div className="prose prose-lg max-w-none">
         <p>
           <strong>Therefore</strong> is a blog exploring ideas at the

@@ -13,7 +13,8 @@ export function Layout({ children }: LayoutProps) {
         <nav className="container mx-auto px-4 py-4 flex justify-between items-center">
           <Link
             to="/"
-            className="text-2xl font-serif font-semibold hover:text-accent transition-colors"
+            className="text-2xl font-semibold hover:text-accent transition-colors"
+            style={{ fontFamily: 'var(--font-display)' }}
           >
             Therefore
           </Link>

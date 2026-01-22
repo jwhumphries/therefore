@@ -24,7 +24,7 @@ export function TagsPage() {
   if (!tags?.length) {
     return (
       <div className="text-center py-12">
-        <h1 className="text-4xl font-serif font-bold mb-4">Tags</h1>
+        <h1 className="text-4xl font-display font-bold mb-4">Tags</h1>
         <p className="text-default-500">No tags yet.</p>
       </div>
     );
@@ -32,7 +32,7 @@ export function TagsPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <h1 className="text-4xl font-serif font-bold mb-8">Tags</h1>
+      <h1 className="text-4xl font-display font-bold mb-8">Tags</h1>
       <div className="flex flex-wrap gap-3">
         {tags.map((tag) => (
           <Link

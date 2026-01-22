@@ -32,7 +32,7 @@ export function TagPage() {
           &larr; All Tags
         </Link>
       </nav>
-      <h1 className="text-4xl font-serif font-bold mb-2">
+      <h1 className="text-4xl font-display font-bold mb-2">
         Posts tagged &ldquo;{tag}&rdquo;
       </h1>
       <p className="text-default-500 mb-8">
@@ -46,7 +46,7 @@ export function TagPage() {
           {data.posts.map((post) => (
             <article key={post.slug} className="group">
               <Link to={`/posts/${post.slug}`} className="block">
-                <h2 className="text-2xl font-serif font-semibold mb-2 group-hover:text-primary transition-colors">
+                <h2 className="text-2xl font-display font-semibold mb-2 group-hover:text-primary transition-colors">
                   {post.title}
                 </h2>
                 <div className="flex items-center gap-3 text-sm text-default-500 mb-3">

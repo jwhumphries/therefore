@@ -26,7 +26,7 @@ export function HomePage() {
   if (isLoading) {
     return (
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-4xl font-serif font-bold mb-8">Latest Posts</h1>
+        <h1 className="text-4xl font-display font-bold mb-8">Latest Posts</h1>
         <div className="space-y-6">
           <PostCardSkeleton />
           <PostCardSkeleton />
@@ -54,14 +54,14 @@ export function HomePage() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <h1 className="text-4xl font-serif font-bold mb-8">Latest Posts</h1>
+      <h1 className="text-4xl font-display font-bold mb-8">Latest Posts</h1>
       <ScrollShadow className="max-h-[calc(100vh-16rem)]" hideScrollBar>
         <div className="space-y-6 pr-2">
           {data.posts.map((post) => (
             <Link key={post.slug} to={`/posts/${post.slug}`} className="block">
               <Card className="p-6 hover:bg-surface-hover transition-colors cursor-pointer">
                 <Card.Header className="p-0 pb-2">
-                  <Card.Title className="text-2xl font-serif font-semibold">
+                  <Card.Title className="text-2xl font-display font-semibold">
                     {post.title}
                   </Card.Title>
                 </Card.Header>

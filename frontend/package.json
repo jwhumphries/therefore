@@ -11,6 +11,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@fontsource-variable/fraunces": "5.2.9",
+    "@fontsource-variable/lora": "5.2.8",
     "@heroui/react": "beta",
     "@heroui/styles": "beta",
     "@tanstack/react-query": "^5.64.0",

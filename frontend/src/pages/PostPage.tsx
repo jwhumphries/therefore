@@ -30,7 +30,7 @@ export function PostPage() {
     const isNotFound = error.message === "Post not found";
     return (
       <div className="text-center py-12">
-        <h1 className="text-2xl font-serif font-bold mb-4">
+        <h1 className="text-2xl font-display font-bold mb-4">
           {isNotFound ? "Post Not Found" : "Error"}
         </h1>
         <p className="text-default-500 mb-6">
