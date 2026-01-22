@@ -1,0 +1,89 @@
+/* Tailwind CSS v4 - Must be first */
+@import "tailwindcss";
+
+/* HeroUI v3 styles - Must be after Tailwind */
+@import "@heroui/styles";
+
+/* Typography plugin */
+@plugin "@tailwindcss/typography";
+
+/* Lora font for philosophy aesthetic */
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
+
+:root {
+  --font-serif: 'Lora', Georgia, serif;
+}
+
+/* Prose styling with Lora font */
+.prose {
+  font-family: var(--font-serif);
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+}
+
+/* Sidenote styles */
+.sidenote-wrapper {
+  position: relative;
+}
+
+.sidenote-number {
+  counter-increment: sidenote-counter;
+}
+
+.sidenote-number::after {
+  content: counter(sidenote-counter);
+  font-size: 0.75rem;
+  vertical-align: super;
+}
+
+.sidenote {
+  display: none;
+  margin-left: 0.5rem;
+}
+
+.sidenote-toggle:checked + .sidenote {
+  display: inline;
+}
+
+@media (min-width: 1280px) {
+  .sidenote {
+    display: block;
+    position: absolute;
+    right: -280px;
+    width: 250px;
+    margin-top: -1.5rem;
+  }
+
+  .sidenote-toggle:checked + .sidenote {
+    display: block;
+  }
+
+  .sidenote-number {
+    cursor: default;
+  }
+}
+
+/* Timeline styles */
+.timeline-event {
+  transition: transform 0.2s ease;
+}
+
+.timeline-event:hover {
+  transform: translateX(4px);
+}
+
+/* Lightbox placeholder styles */
+[data-component="lightbox"] img {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+[data-component="lightbox"] img:hover {
+  transform: scale(1.02);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}

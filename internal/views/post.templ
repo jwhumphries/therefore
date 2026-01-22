@@ -1,0 +1,116 @@
+package views
+
+import (
+	"strconv"
+	"therefore/internal/content"
+)
+
+templ PostPage(post *content.Post) {
+	@Layout(post.Meta.Title) {
+		<article class="max-w-3xl mx-auto">
+			<header class="mb-8">
+				<h1 class="text-4xl font-serif font-bold mb-4">{ post.Meta.Title }</h1>
+				<div class="flex items-center gap-4 text-default-500">
+					<time datetime={ post.Meta.PublishDate.Format("2006-01-02") }>
+						{ post.Meta.PublishDate.Format("January 2, 2006") }
+					</time>
+					if len(post.Meta.Tags) > 0 {
+						<span>·</span>
+						<div class="flex gap-2">
+							for _, tag := range post.Meta.Tags {
+								<a href={ templ.SafeURL("/tags/" + tag) } class="text-primary hover:underline">
+									#{ tag }
+								</a>
+							}
+						</div>
+					}
+				</div>
+				if post.Meta.Summary != "" {
+					<p class="mt-4 text-lg text-default-600 font-serif italic">{ post.Meta.Summary }</p>
+				}
+			</header>
+			<div class="prose prose-lg max-w-none font-serif">
+				@templ.Raw(post.HTMLContent)
+			</div>
+		</article>
+	}
+}
+
+templ PostList(posts []*content.Post) {
+	@Layout("Posts") {
+		<div class="max-w-3xl mx-auto">
+			<h1 class="text-3xl font-serif font-bold mb-8">Recent Posts</h1>
+			<div class="space-y-8">
+				for _, post := range posts {
+					@PostCard(post)
+				}
+			</div>
+		</div>
+	}
+}
+
+templ PostCard(post *content.Post) {
+	<article class="border-b border-divider pb-8 last:border-b-0">
+		<a href={ templ.SafeURL("/posts/" + post.Meta.Slug) } class="block group">
+			<h2 class="text-2xl font-serif font-semibold mb-2 group-hover:text-primary transition-colors">
+				{ post.Meta.Title }
+			</h2>
+		</a>
+		<div class="flex items-center gap-4 text-sm text-default-500 mb-3">
+			<time datetime={ post.Meta.PublishDate.Format("2006-01-02") }>
+				{ post.Meta.PublishDate.Format("January 2, 2006") }
+			</time>
+			if len(post.Meta.Tags) > 0 {
+				<span>·</span>
+				<div class="flex gap-2">
+					for _, tag := range post.Meta.Tags {
+						<a href={ templ.SafeURL("/tags/" + tag) } class="hover:text-primary">
+							#{ tag }
+						</a>
+					}
+				</div>
+			}
+		</div>
+		if post.Meta.Summary != "" {
+			<p class="text-default-600 font-serif">{ post.Meta.Summary }</p>
+		}
+	</article>
+}
+
+templ TagsPage(tags []content.TagCount) {
+	@Layout("Tags") {
+		<div class="max-w-3xl mx-auto">
+			<h1 class="text-3xl font-serif font-bold mb-8">Tags</h1>
+			<div class="flex flex-wrap gap-3">
+				for _, tag := range tags {
+					<a
+						href={ templ.SafeURL("/tags/" + tag.Tag) }
+						class="px-4 py-2 bg-default-100 rounded-lg hover:bg-primary hover:text-primary-foreground transition-colors"
+					>
+						#{ tag.Tag }
+						<span class="ml-1 text-default-500">({ itoa(tag.Count) })</span>
+					</a>
+				}
+			</div>
+		</div>
+	}
+}
+
+templ TagPage(tag string, posts []*content.Post) {
+	@Layout("Posts tagged #" + tag) {
+		<div class="max-w-3xl mx-auto">
+			<h1 class="text-3xl font-serif font-bold mb-8">
+				Posts tagged <span class="text-primary">#{ tag }</span>
+			</h1>
+			<div class="space-y-8">
+				for _, post := range posts {
+					@PostCard(post)
+				}
+			</div>
+		</div>
+	}
+}
+
+func itoa(i int) string {
+	return strconv.Itoa(i)
+}

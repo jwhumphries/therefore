@@ -1,0 +1,111 @@
+version: '3'
+
+tasks:
+  # Development
+  dev:
+    desc: Start development environment with Docker
+    cmds:
+      - docker compose up --build
+
+  dev:local:
+    desc: Start development locally (requires Go, Bun, templ installed)
+    cmds:
+      - task: templ
+      - |
+        cd frontend && bun install && bun run dev &
+        air
+
+  # Dagger commands
+  build:
+    desc: Build release container
+    cmds:
+      - dagger call release --source . --git .git export --path therefore.tar
+      - docker load -i therefore.tar
+      - rm therefore.tar
+
+  lint:
+    desc: Run Go linting
+    cmds:
+      - dagger call lint --source .
+
+  lint-frontend:
+    desc: Run frontend ESLint
+    cmds:
+      - dagger call lint-frontend --source .
+
+  test:
+    desc: Run Go tests
+    cmds:
+      - dagger call test --source .
+
+  typecheck:
+    desc: Run TypeScript type checking
+    cmds:
+      - dagger call typecheck --source .
+
+  check:
+    desc: Run all checks (lint, test, typecheck, lint-frontend)
+    cmds:
+      - dagger call check --source .
+
+  # Templ commands
+  templ:
+    desc: Generate templ files
+    cmds:
+      - templ generate
+
+  templ-fmt:
+    desc: Format templ files
+    cmds:
+      - templ fmt .
+
+  # Formatting
+  fmt:
+    desc: Format Go code
+    cmds:
+      - go fmt ./...
+
+  fmt-frontend:
+    desc: Format frontend code with ESLint --fix
+    cmds:
+      - cd frontend && bun run lint --fix
+
+  fmt-all:
+    desc: Format all code
+    cmds:
+      - task: fmt
+      - task: templ-fmt
+      - task: fmt-frontend
+
+  # Frontend
+  frontend:build:
+    desc: Build frontend for production
+    cmds:
+      - cd frontend && bun install && bun run build
+
+  frontend:dev:
+    desc: Start frontend dev server
+    cmds:
+      - cd frontend && bun install && bun run dev
+
+  # Local development without Docker
+  install:
+    desc: Install all dependencies
+    cmds:
+      - go mod download
+      - cd frontend && bun install
+
+  run:
+    desc: Run the server locally
+    cmds:
+      - task: templ
+      - go run ./cmd/therefore
+
+  # Cleanup
+  clean:
+    desc: Clean build artifacts
+    cmds:
+      - rm -rf tmp/
+      - rm -rf frontend/node_modules/
+      - rm -rf internal/static/dist/
+      - rm -f therefore

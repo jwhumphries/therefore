@@ -1,0 +1,21 @@
+services:
+  dev:
+    build:
+      context: .
+      target: dev
+    volumes:
+      - .:/app
+      - go-mod-cache:/go/pkg/mod
+      - go-build-cache:/root/.cache/go-build
+      - node-modules:/app/frontend/node_modules
+    ports:
+      - "8080:8080"
+      - "3000:3000"
+    environment:
+      - THEREFORE_PORT=:8080
+      - THEREFORE_LOG_LEVEL=debug
+
+volumes:
+  go-mod-cache:
+  go-build-cache:
+  node-modules:
