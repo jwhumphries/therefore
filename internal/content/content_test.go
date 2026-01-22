@@ -2,6 +2,7 @@ package content
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
@@ -114,7 +115,7 @@ Content here.`), 0644)
 
 	// Test not found
 	_, err = store.GetPost(ctx, "nonexistent")
-	if err != ErrPostNotFound {
+	if !errors.Is(err, ErrPostNotFound) {
 		t.Errorf("GetPost(nonexistent) error = %v, want ErrPostNotFound", err)
 	}
 }
@@ -156,7 +157,7 @@ Draft content.`), 0644)
 
 	// Draft should not be found
 	_, err = store.GetPost(ctx, "draft")
-	if err != ErrPostNotFound {
+	if !errors.Is(err, ErrPostNotFound) {
 		t.Errorf("GetPost(draft) error = %v, want ErrPostNotFound", err)
 	}
 }
@@ -197,7 +198,7 @@ Future content.`), 0644)
 
 	// Future should not be found
 	_, err = store.GetPost(ctx, "future-post")
-	if err != ErrPostNotFound {
+	if !errors.Is(err, ErrPostNotFound) {
 		t.Errorf("GetPost(future-post) error = %v, want ErrPostNotFound", err)
 	}
 }

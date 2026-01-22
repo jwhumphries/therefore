@@ -31,9 +31,11 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is ./therefore.yaml)")
 	rootCmd.PersistentFlags().String("port", ":8080", "server port")
 	rootCmd.PersistentFlags().String("log-level", "info", "log level (debug, info, warn, error)")
+	rootCmd.PersistentFlags().Bool("dev", false, "enable development mode (use Vite dev server for assets)")
 
 	_ = viper.BindPFlag("port", rootCmd.PersistentFlags().Lookup("port"))
 	_ = viper.BindPFlag("log_level", rootCmd.PersistentFlags().Lookup("log-level"))
+	_ = viper.BindPFlag("dev", rootCmd.PersistentFlags().Lookup("dev"))
 }
 
 func initConfig() {
@@ -51,6 +53,7 @@ func initConfig() {
 	// Set defaults
 	viper.SetDefault("port", ":8080")
 	viper.SetDefault("log_level", "info")
+	viper.SetDefault("dev", false)
 
 	if err := viper.ReadInConfig(); err != nil {
 		var configFileNotFoundError viper.ConfigFileNotFoundError

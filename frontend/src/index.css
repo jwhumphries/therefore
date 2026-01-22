@@ -1,14 +1,11 @@
-/* Tailwind CSS v4 - Must be first */
-@import "tailwindcss";
+/* Google Fonts - Must be first (before any @layer rules) */
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
 
-/* HeroUI v3 styles - Must be after Tailwind */
-@import "@heroui/styles";
+/* Tailwind CSS v4 */
+@import "tailwindcss";
 
 /* Typography plugin */
 @plugin "@tailwindcss/typography";
-
-/* Lora font for philosophy aesthetic */
-@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
 
 :root {
   --font-serif: 'Lora', Georgia, serif;

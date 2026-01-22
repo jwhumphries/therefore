@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -75,7 +76,7 @@ func (s *EmbeddedStore) parsePost(fs afero.Fs, path string, renderer Renderer) (
 	if err != nil {
 		return nil, fmt.Errorf("opening file: %w", err)
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	content, err := io.ReadAll(f)
 	if err != nil {
@@ -111,7 +112,7 @@ func parseFrontmatter(content []byte) (PostMeta, string, error) {
 
 	// Check for frontmatter delimiter
 	firstLine, err := reader.ReadString('\n')
-	if err != nil && err != io.EOF {
+	if err != nil && !errors.Is(err, io.EOF) {
 		return meta, "", err
 	}
 
@@ -124,7 +125,7 @@ func parseFrontmatter(content []byte) (PostMeta, string, error) {
 	var frontmatter strings.Builder
 	for {
 		line, err := reader.ReadString('\n')
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			return meta, "", fmt.Errorf("unclosed frontmatter")
 		}
 		if err != nil {

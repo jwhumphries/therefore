@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -99,8 +100,8 @@ func TestPostHandler_PostPage(t *testing.T) {
 		if err == nil {
 			t.Fatal("PostPage() expected error for nonexistent post")
 		}
-		httpErr, ok := err.(*echo.HTTPError)
-		if !ok {
+		var httpErr *echo.HTTPError
+		if !errors.As(err, &httpErr) {
 			t.Fatalf("Expected HTTPError, got %T", err)
 		}
 		if httpErr.Code != http.StatusNotFound {
@@ -190,8 +191,8 @@ func TestAPIHandler_GetPost(t *testing.T) {
 		if err == nil {
 			t.Fatal("GetPost() expected error for nonexistent post")
 		}
-		httpErr, ok := err.(*echo.HTTPError)
-		if !ok {
+		var httpErr *echo.HTTPError
+		if !errors.As(err, &httpErr) {
 			t.Fatalf("Expected HTTPError, got %T", err)
 		}
 		if httpErr.Code != http.StatusNotFound {

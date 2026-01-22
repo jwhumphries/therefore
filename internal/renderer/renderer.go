@@ -5,9 +5,9 @@ type ShortcodeRenderer func(sc Shortcode) string
 
 // Renderer combines markdown conversion with shortcode processing.
 type Renderer struct {
-	goldmark   *GoldmarkRenderer
-	parser     *ShortcodeParser
-	renderers  map[string]ShortcodeRenderer
+	goldmark  *GoldmarkRenderer
+	parser    *ShortcodeParser
+	renderers map[string]ShortcodeRenderer
 }
 
 // New creates a new Renderer with the given shortcode renderers.

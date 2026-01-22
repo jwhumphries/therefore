@@ -22,6 +22,13 @@ import (
 
 func runServer(cmd *cobra.Command, args []string) error {
 	port := viper.GetString("port")
+	devMode := viper.GetBool("dev")
+
+	// Set dev mode for templates (uses Vite dev server URLs)
+	views.DevMode = devMode
+	if devMode {
+		slog.Info("Development mode enabled - using Vite dev server for assets")
+	}
 
 	// Initialize content store
 	store, err := initContentStore()

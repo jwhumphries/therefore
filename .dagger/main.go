@@ -11,40 +11,73 @@ import (
 
 type Therefore struct{}
 
-const embedPlaceholder = "<!-- placeholder -->"
+const embedPlaceholder = `<!DOCTYPE html><html><head><title>Build Required</title></head><body><h1>Run bun run build in frontend/ first</h1></body></html>`
+
+// withEmbedPlaceholder ensures the static embed directory has a file so Go builds succeed.
+// This avoids requiring a frontend build just to lint or test Go code.
+func (m *Therefore) withEmbedPlaceholder(source *dagger.Directory) *dagger.Directory {
+	return source.
+		WithNewFile("internal/static/dist/index.html", embedPlaceholder).
+		WithNewFile("content/posts/.gitkeep", "")
+}
+
+func (m *Therefore) gitVersion(ctx context.Context, git *dagger.Directory) (string, error) {
+	if git == nil {
+		return "dev", nil
+	}
+	out, err := dag.Container().
+		From("alpine/git:latest").
+		WithMountedDirectory("/src/.git", git).
+		WithWorkdir("/src").
+		WithExec([]string{"git", "describe", "--tags", "--always"}).
+		Stdout(ctx)
+	if err != nil {
+		return "dev", nil
+	}
+	return strings.TrimSpace(out), nil
+}
 
 // Version extracts the version from git tags
-func (m *Therefore) Version(ctx context.Context, git *dagger.Directory) (string, error) {
+func (m *Therefore) Version(
+	ctx context.Context,
+	// +optional
+	// +defaultPath="/.git"
+	git *dagger.Directory,
+) (string, error) {
+	return m.gitVersion(ctx, git)
+}
+
+// templContainer returns a container with templ installed
+func (m *Therefore) templContainer() *dagger.Container {
 	return dag.Container().
-		From("alpine/git:latest").
-		WithMountedDirectory("/git", git).
-		WithWorkdir("/git").
-		WithExec([]string{"git", "describe", "--tags", "--always", "--dirty"}).
-		Stdout(ctx)
+		From("golang:1.25-alpine").
+		WithExec([]string{"go", "install", "github.com/a-h/templ/cmd/templ@latest"})
 }
 
 // TemplGenerate runs templ generate on the source
 func (m *Therefore) TemplGenerate(source *dagger.Directory) *dagger.Directory {
-	return dag.Container().
-		From("ghcr.io/a-h/templ:latest").
+	return m.templContainer().
 		WithDirectory("/app", source).
 		WithWorkdir("/app").
 		WithExec([]string{"templ", "generate"}).
 		Directory("/app")
 }
 
-// TemplFmt formats templ files
-func (m *Therefore) TemplFmt(ctx context.Context, source *dagger.Directory) (string, error) {
-	return dag.Container().
-		From("ghcr.io/a-h/templ:latest").
+// TemplFmt formats templ files and returns the modified directory
+func (m *Therefore) TemplFmt(source *dagger.Directory) *dagger.Directory {
+	return m.templContainer().
 		WithDirectory("/app", source).
 		WithWorkdir("/app").
 		WithExec([]string{"templ", "fmt", "."}).
-		Stdout(ctx)
+		Directory("/app")
 }
 
 // Lint runs golangci-lint on the source
 func (m *Therefore) Lint(ctx context.Context, source *dagger.Directory) (string, error) {
+	return m.lintSource(ctx, source)
+}
+
+func (m *Therefore) lintSource(ctx context.Context, source *dagger.Directory) (string, error) {
 	templSource := m.TemplGenerate(source)
 	return dag.Container().
 		From("golangci/golangci-lint:v2.8.0-alpine").
@@ -62,6 +95,10 @@ func (m *Therefore) Lint(ctx context.Context, source *dagger.Directory) (string,
 
 // Test runs Go tests
 func (m *Therefore) Test(ctx context.Context, source *dagger.Directory) (string, error) {
+	return m.testSource(ctx, source)
+}
+
+func (m *Therefore) testSource(ctx context.Context, source *dagger.Directory) (string, error) {
 	templSource := m.TemplGenerate(source)
 	return dag.Container().
 		From("golang:1.25-alpine").
@@ -75,14 +112,14 @@ func (m *Therefore) Test(ctx context.Context, source *dagger.Directory) (string,
 		Stdout(ctx)
 }
 
-// Fmt runs go fmt on the source
-func (m *Therefore) Fmt(ctx context.Context, source *dagger.Directory) (string, error) {
+// Fmt formats Go code and returns the modified directory
+func (m *Therefore) Fmt(source *dagger.Directory) *dagger.Directory {
 	return dag.Container().
 		From("golang:1.25-alpine").
 		WithDirectory("/app", source).
 		WithWorkdir("/app").
 		WithExec([]string{"go", "fmt", "./..."}).
-		Stdout(ctx)
+		Directory("/app")
 }
 
 // Typecheck runs TypeScript type checking
@@ -107,18 +144,18 @@ func (m *Therefore) LintFrontend(ctx context.Context, source *dagger.Directory) 
 		Stdout(ctx)
 }
 
-// FmtFrontend runs ESLint with --fix on the frontend
-func (m *Therefore) FmtFrontend(ctx context.Context, source *dagger.Directory) (string, error) {
+// FmtFrontend formats frontend code and returns the modified directory
+func (m *Therefore) FmtFrontend(source *dagger.Directory) *dagger.Directory {
 	return dag.Container().
 		From("ghcr.io/jwhumphries/frontend:latest").
 		WithDirectory("/app", source).
 		WithWorkdir("/app/frontend").
 		WithExec([]string{"bun", "install"}).
 		WithExec([]string{"bun", "run", "lint", "--fix"}).
-		Stdout(ctx)
+		Directory("/app")
 }
 
-// BuildFrontend builds the frontend assets
+// BuildFrontend compiles the React/TypeScript frontend with Vite
 func (m *Therefore) BuildFrontend(source *dagger.Directory) *dagger.Directory {
 	return dag.Container().
 		From("ghcr.io/jwhumphries/frontend:latest").
@@ -151,24 +188,34 @@ func (m *Therefore) BuildBinary(source *dagger.Directory, version string) *dagge
 func (m *Therefore) Build(
 	ctx context.Context,
 	source *dagger.Directory,
+	// +optional
+	// +defaultPath="/.git"
 	git *dagger.Directory,
 	// +optional
-	// +default="dev"
 	version string,
 ) (*dagger.Container, error) {
 	// Get version from git if not provided
-	if version == "dev" {
-		var err error
-		version, err = m.Version(ctx, git)
+	if version == "" {
+		v, err := m.gitVersion(ctx, git)
 		if err != nil {
-			version = "dev"
+			return nil, fmt.Errorf("version detection failed: %w", err)
 		}
+		version = v
+	}
+
+	// Run lint and test
+	if _, err := m.lintSource(ctx, source); err != nil {
+		return nil, fmt.Errorf("lint failed: %w", err)
+	}
+
+	if _, err := m.testSource(ctx, source); err != nil {
+		return nil, fmt.Errorf("test failed: %w", err)
 	}
 
 	// Generate templ files
 	templSource := m.TemplGenerate(source)
 
-	// Build frontend
+	// Build frontend assets
 	frontendDist := m.BuildFrontend(templSource)
 
 	// Merge frontend dist into source
@@ -182,9 +229,10 @@ func (m *Therefore) Build(
 func (m *Therefore) Release(
 	ctx context.Context,
 	source *dagger.Directory,
+	// +optional
+	// +defaultPath="/.git"
 	git *dagger.Directory,
 	// +optional
-	// +default="dev"
 	version string,
 ) (*dagger.Container, error) {
 	binaryContainer, err := m.Build(ctx, source, git, version)
@@ -207,43 +255,26 @@ func (m *Therefore) Release(
 }
 
 // Check runs all checks (lint, test, typecheck, lint-frontend)
-func (m *Therefore) Check(ctx context.Context, source *dagger.Directory) (string, error) {
-	var results []string
-
+func (m *Therefore) Check(ctx context.Context, source *dagger.Directory) error {
 	// Run Go lint
-	lintResult, err := m.Lint(ctx, source)
-	if err != nil {
-		return "", fmt.Errorf("lint failed: %w", err)
+	if _, err := m.Lint(ctx, source); err != nil {
+		return fmt.Errorf("lint failed: %w", err)
 	}
-	results = append(results, "=== Go Lint ===\n"+lintResult)
-
-	// Run Go tests
-	testResult, err := m.Test(ctx, source)
-	if err != nil {
-		return "", fmt.Errorf("test failed: %w", err)
-	}
-	results = append(results, "=== Go Test ===\n"+testResult)
-
-	// Run TypeScript typecheck
-	typecheckResult, err := m.Typecheck(ctx, source)
-	if err != nil {
-		return "", fmt.Errorf("typecheck failed: %w", err)
-	}
-	results = append(results, "=== TypeScript Typecheck ===\n"+typecheckResult)
 
 	// Run frontend lint
-	frontendLintResult, err := m.LintFrontend(ctx, source)
-	if err != nil {
-		return "", fmt.Errorf("frontend lint failed: %w", err)
+	if _, err := m.LintFrontend(ctx, source); err != nil {
+		return fmt.Errorf("frontend lint failed: %w", err)
 	}
-	results = append(results, "=== Frontend Lint ===\n"+frontendLintResult)
 
-	return strings.Join(results, "\n\n"), nil
-}
+	// Run TypeScript typecheck
+	if _, err := m.Typecheck(ctx, source); err != nil {
+		return fmt.Errorf("typecheck failed: %w", err)
+	}
 
-// withEmbedPlaceholder adds placeholder files for go:embed directives
-func (m *Therefore) withEmbedPlaceholder(source *dagger.Directory) *dagger.Directory {
-	return source.
-		WithNewFile("internal/static/dist/index.html", embedPlaceholder).
-		WithNewFile("content/posts/.gitkeep", "")
+	// Run Go tests
+	if _, err := m.Test(ctx, source); err != nil {
+		return fmt.Errorf("test failed: %w", err)
+	}
+
+	return nil
 }

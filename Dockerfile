@@ -1,34 +1,25 @@
-# Development Dockerfile
-# Multi-stage build for development environment
-
-# =============================================================================
-# Stage 1: Go development base
-# =============================================================================
 FROM golang:1.25-alpine AS gobase
 
 RUN apk add --no-cache git
-
-# Install air for hot-reload
 RUN go install github.com/air-verse/air@latest
-
-# Install templ
 RUN go install github.com/a-h/templ/cmd/templ@latest
 
-WORKDIR /app
-
-# =============================================================================
-# Stage 2: Development environment
-# =============================================================================
-FROM gobase AS dev
-
-# Install Node.js and Bun for frontend development
-RUN apk add --no-cache nodejs npm
-RUN npm install -g bun
+FROM ghcr.io/jwhumphries/frontend:latest AS dev
 
 WORKDIR /app
 
-# Expose ports for Go server and Vite dev server
+COPY --from=gobase /usr/local/go /usr/local/go
+COPY --from=gobase /go/bin/air /usr/local/bin/air
+COPY --from=gobase /go/bin/templ /usr/local/bin/templ
+
+ENV PATH="/usr/local/go/bin:${PATH}"
+ENV GOPATH="/go"
+ENV GOCACHE=/go-build-cache
+ENV GOMODCACHE=/go/pkg/mod
+
+COPY scripts/develop.sh /develop.sh
+RUN chmod +x /develop.sh
+
 EXPOSE 8080 3000
 
-# Default command runs the development script
-CMD ["sh", "scripts/develop.sh"]
+CMD ["/develop.sh"]

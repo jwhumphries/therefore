@@ -8,6 +8,9 @@ package views
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
+// DevMode controls whether to use Vite dev server URLs
+var DevMode = false
+
 func Layout(title string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -36,13 +39,28 @@ func Layout(title string) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 9, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/layout.templ`, Line: 12, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " | Therefore</title><link rel=\"stylesheet\" href=\"/assets/index.css\"><script src=\"/assets/index.js\" defer></script></head><body class=\"bg-background text-foreground min-h-screen\"><header class=\"border-b border-divider\"><nav class=\"container mx-auto px-4 py-4 flex justify-between items-center\"><a href=\"/\" class=\"text-2xl font-serif font-semibold\">Therefore</a><div class=\"flex gap-6\"><a href=\"/\" class=\"hover:text-primary transition-colors\">Posts</a> <a href=\"/tags\" class=\"hover:text-primary transition-colors\">Tags</a> <a href=\"/about\" class=\"hover:text-primary transition-colors\">About</a></div></nav></header><main class=\"container mx-auto px-4 py-8\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " | Therefore</title>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if DevMode {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<script type=\"module\" src=\"http://localhost:3000/@vite/client\"></script> <script type=\"module\" src=\"http://localhost:3000/src/main.tsx\"></script>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<link rel=\"stylesheet\" href=\"/assets/main.css\"><script type=\"module\" src=\"/assets/main.js\"></script>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</head><body class=\"bg-background text-foreground min-h-screen\"><header class=\"border-b border-divider\"><nav class=\"container mx-auto px-4 py-4 flex justify-between items-center\"><a href=\"/\" class=\"text-2xl font-serif font-semibold\">Therefore</a><div class=\"flex gap-6\"><a href=\"/\" class=\"hover:text-primary transition-colors\">Posts</a> <a href=\"/tags\" class=\"hover:text-primary transition-colors\">Tags</a> <a href=\"/about\" class=\"hover:text-primary transition-colors\">About</a></div></nav></header><main class=\"container mx-auto px-4 py-8\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -50,7 +68,7 @@ func Layout(title string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</main><footer class=\"border-t border-divider mt-auto\"><div class=\"container mx-auto px-4 py-6 text-center text-sm text-default-500\"><p>&copy; 2024 Therefore. Philosophy & Theology.</p></div></footer></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</main><footer class=\"border-t border-divider mt-auto\"><div class=\"container mx-auto px-4 py-6 text-center text-sm text-default-500\"><p>&copy; 2024 Therefore. Philosophy & Theology.</p></div></footer></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
