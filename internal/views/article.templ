@@ -1,0 +1,65 @@
+package views
+
+import (
+	"fmt"
+	"therefore/internal/content"
+)
+
+// readingTimeStr formats reading time as a human-readable string.
+func readingTimeStr(wordCount int) string {
+	minutes := wordCount / 200
+	if minutes < 1 {
+		return "1 min read"
+	}
+	return fmt.Sprintf("%d min read", minutes)
+}
+
+// Article renders a full blog post with header, content, and author footer.
+templ Article(post *content.Post, bodyHTML string) {
+	<article class="prose prose-lg max-w-none">
+		<header class="mb-8 not-prose">
+			<h1 class="text-4xl font-serif font-bold mb-4">{ post.Meta.Title }</h1>
+			<div class="flex items-center gap-4 text-default-500">
+				<time datetime={ post.Meta.PublishDate.Format("2006-01-02") }>
+					{ post.Meta.PublishDate.Format("January 2, 2006") }
+				</time>
+				<span>&middot;</span>
+				<span>{ readingTimeStr(post.Meta.WordCount) }</span>
+			</div>
+			if len(post.Meta.Tags) > 0 {
+				<div class="flex gap-2 mt-4 flex-wrap">
+					for _, tag := range post.Meta.Tags {
+						<a
+							href={ templ.SafeURL("/tags/" + tag) }
+							class="text-sm px-3 py-1 bg-default-100 rounded-full hover:bg-default-200 transition-colors"
+						>
+							{ tag }
+						</a>
+					}
+				</div>
+			}
+		</header>
+		<div class="content">
+			@templ.Raw(bodyHTML)
+		</div>
+		if post.Meta.Author.Name != "" {
+			<footer class="mt-12 pt-8 border-t border-divider not-prose">
+				<div class="flex items-center gap-4">
+					if post.Meta.Author.Avatar != "" {
+						<img
+							src={ post.Meta.Author.Avatar }
+							alt={ post.Meta.Author.Name }
+							class="w-16 h-16 rounded-full object-cover"
+						/>
+					}
+					<div>
+						<div class="font-semibold">{ post.Meta.Author.Name }</div>
+						if post.Meta.Author.Bio != "" {
+							<p class="text-default-500 text-sm mt-1">{ post.Meta.Author.Bio }</p>
+						}
+					</div>
+				</div>
+			</footer>
+		}
+	</article>
+}

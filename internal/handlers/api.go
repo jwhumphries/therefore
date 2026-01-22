@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"therefore/internal/content"
+	"therefore/internal/views"
 
 	"github.com/labstack/echo/v5"
 )
@@ -20,6 +21,13 @@ func NewAPIHandler(store content.ContentStore) *APIHandler {
 	return &APIHandler{store: store}
 }
 
+// AuthorResponse is the JSON representation of an author.
+type AuthorResponse struct {
+	Name   string `json:"name,omitempty"`
+	Avatar string `json:"avatar,omitempty"`
+	Bio    string `json:"bio,omitempty"`
+}
+
 // PostResponse is the JSON representation of a post.
 type PostResponse struct {
 	Slug        string   `json:"slug"`
@@ -28,7 +36,9 @@ type PostResponse struct {
 	PublishDate string   `json:"publishDate"`
 	Tags        []string `json:"tags,omitempty"`
 	Series      string   `json:"series,omitempty"`
+	ReadingTime int      `json:"readingTime"` // minutes
 	HTMLContent string   `json:"htmlContent,omitempty"`
+	Author      *AuthorResponse `json:"author,omitempty"`
 }
 
 // ListPostsResponse is the JSON response for listing posts.
@@ -121,9 +131,21 @@ func postToResponse(post *content.Post, includeContent bool) PostResponse {
 		PublishDate: post.Meta.PublishDate.Format("2006-01-02"),
 		Tags:        post.Meta.Tags,
 		Series:      post.Meta.Series,
+		ReadingTime: post.Meta.ReadingTime(),
 	}
+
+	// Include author if present
+	if post.Meta.Author.Name != "" {
+		resp.Author = &AuthorResponse{
+			Name:   post.Meta.Author.Name,
+			Avatar: post.Meta.Author.Avatar,
+			Bio:    post.Meta.Author.Bio,
+		}
+	}
+
 	if includeContent {
-		resp.HTMLContent = post.HTMLContent
+		// Wrap the rendered markdown with the Article template
+		resp.HTMLContent = views.RenderToString(views.Article(post, post.HTMLContent))
 	}
 	return resp
 }

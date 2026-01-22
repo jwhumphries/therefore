@@ -4,6 +4,9 @@
 /* Tailwind CSS v4 */
 @import "tailwindcss";
 
+/* HeroUI styles */
+@import "@heroui/styles";
+
 /* Typography plugin */
 @plugin "@tailwindcss/typography";
 

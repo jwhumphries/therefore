@@ -4,7 +4,6 @@ import (
 	"io/fs"
 	"log/slog"
 	"net/http"
-	"strings"
 
 	embeddedcontent "therefore/content"
 	"therefore/internal/content"
@@ -45,18 +44,11 @@ func runServer(cmd *cobra.Command, args []string) error {
 	e.Use(middleware.Gzip())
 	e.Use(middleware.Secure())
 
-	// Initialize handlers
-	postHandler := handlers.NewPostHandler(store)
+	// Initialize API handler
 	apiHandler := handlers.NewAPIHandler(store)
 
 	// Health check
 	e.GET("/healthz", healthHandler)
-
-	// HTML routes
-	e.GET("/", postHandler.HomePage)
-	e.GET("/posts/:slug", postHandler.PostPage)
-	e.GET("/tags", postHandler.TagsPage)
-	e.GET("/tags/:tag", postHandler.TagPage)
 
 	// API routes
 	api := e.Group("/api")
@@ -64,19 +56,22 @@ func runServer(cmd *cobra.Command, args []string) error {
 	api.GET("/posts/:slug", apiHandler.GetPost)
 	api.GET("/tags", apiHandler.ListTags)
 
-	// Serve embedded frontend assets
+	// Serve embedded frontend SPA
 	distFS, err := fs.Sub(static.DistFS, "dist")
 	if err != nil {
 		return err
 	}
 
-	fileServer := http.FileServer(http.FS(distFS))
-	e.GET("/assets/*", func(c *echo.Context) error {
-		// Strip /assets prefix for file lookup
-		c.Request().URL.Path = strings.TrimPrefix(c.Request().URL.Path, "/assets")
-		fileServer.ServeHTTP(c.Response(), c.Request())
-		return nil
-	})
+	spaHandler, err := handlers.NewSPAHandler(distFS)
+	if err != nil {
+		return err
+	}
+
+	// Static assets route
+	e.GET("/assets/*", spaHandler.ServeAssets())
+
+	// SPA fallback - all other routes serve index.html for client-side routing
+	e.GET("/*", spaHandler.Handler())
 
 	slog.Info("Starting server", "port", port)
 	return e.Start(port)

@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 	"sync"
@@ -98,11 +99,33 @@ func (s *EmbeddedStore) parsePost(fs afero.Fs, path string, renderer Renderer) (
 		return nil, fmt.Errorf("rendering markdown: %w", err)
 	}
 
+	// Calculate word count from raw markdown
+	meta.WordCount = countWords(raw)
+
 	return &Post{
 		Meta:        meta,
 		RawContent:  raw,
 		HTMLContent: html,
 	}, nil
+}
+
+// countWords counts words in markdown text, excluding code blocks and shortcodes.
+func countWords(text string) int {
+	// Remove code blocks
+	codeBlockRegex := regexp.MustCompile("(?s)```.*?```")
+	text = codeBlockRegex.ReplaceAllString(text, "")
+
+	// Remove inline code
+	inlineCodeRegex := regexp.MustCompile("`[^`]+`")
+	text = inlineCodeRegex.ReplaceAllString(text, "")
+
+	// Remove shortcodes
+	shortcodeRegex := regexp.MustCompile(`\{\{[^}]+\}\}`)
+	text = shortcodeRegex.ReplaceAllString(text, "")
+
+	// Split on whitespace and count non-empty words
+	words := strings.Fields(text)
+	return len(words)
 }
 
 func parseFrontmatter(content []byte) (PostMeta, string, error) {

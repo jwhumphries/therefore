@@ -8,13 +8,10 @@ export default defineConfig({
     outDir: "../internal/static/dist",
     emptyOutDir: true,
     rollupOptions: {
-      input: {
-        main: "./src/main.tsx",
-      },
       output: {
-        entryFileNames: "assets/[name].js",
-        chunkFileNames: "assets/[name].js",
-        assetFileNames: "assets/[name].[ext]",
+        entryFileNames: "assets/[name]-[hash].js",
+        chunkFileNames: "assets/[name]-[hash].js",
+        assetFileNames: "assets/[name]-[hash].[ext]",
       },
     },
   },
@@ -22,8 +19,12 @@ export default defineConfig({
     host: true,
     port: 3000,
     proxy: {
-      // Proxy all requests to Go backend except for Vite's own assets
-      "^/(?!src|node_modules|@vite|@react-refresh|assets).*": {
+      // Proxy API requests to Go backend
+      "/api": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+      },
+      "/healthz": {
         target: "http://localhost:8080",
         changeOrigin: true,
       },
