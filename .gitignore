@@ -40,6 +40,7 @@ internal/static/dist/
 .env
 .env.local
 *.env
+CLAUDE.md
 
 # Dagger
 .dagger/internal/
