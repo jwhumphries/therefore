@@ -18,14 +18,13 @@ linters:
     - bodyclose
     - noctx
     - errorlint
-
-exclusions:
-  paths:
-    - .dagger
-    - vendor
-    - tmp
-  rules:
-    - path: _test\.go
-      linters:
-        - errcheck
-        - noctx
+  exclusions:
+    paths:
+      - .dagger
+      - vendor
+      - tmp
+    rules:
+      - path: _test\.go
+        linters:
+          - errcheck
+          - noctx
