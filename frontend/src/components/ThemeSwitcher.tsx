@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { Button } from "@heroui/react";
 
 type Theme = "brodie" | "brodie-dark";
@@ -6,7 +6,6 @@ type Theme = "brodie" | "brodie-dark";
 const THEME_STORAGE_KEY = "therefore-theme";
 
 function getStoredTheme(): Theme {
-  if (typeof window === "undefined") return "brodie";
   const stored = localStorage.getItem(THEME_STORAGE_KEY);
   if (stored === "brodie" || stored === "brodie-dark") {
     return stored;
@@ -18,9 +17,23 @@ function getStoredTheme(): Theme {
   return "brodie";
 }
 
+function getServerTheme(): Theme {
+  return "brodie";
+}
+
 function applyTheme(theme: Theme) {
   document.documentElement.setAttribute("data-theme", theme);
   localStorage.setItem(THEME_STORAGE_KEY, theme);
+}
+
+// Subscribe to storage changes for cross-tab sync
+function subscribeToTheme(callback: () => void) {
+  window.addEventListener("storage", callback);
+  return () => window.removeEventListener("storage", callback);
+}
+
+function useTheme() {
+  return useSyncExternalStore(subscribeToTheme, getStoredTheme, getServerTheme);
 }
 
 // Sun icon for light mode
@@ -68,39 +81,21 @@ function MoonIcon() {
 }
 
 export function ThemeSwitcher() {
-  const [theme, setTheme] = useState<Theme>("brodie");
-  const [mounted, setMounted] = useState(false);
+  const theme = useTheme();
 
-  // Initialize theme on mount
+  // Apply theme to DOM when it changes
   useEffect(() => {
-    const initialTheme = getStoredTheme();
-    setTheme(initialTheme);
-    applyTheme(initialTheme);
-    setMounted(true);
-  }, []);
+    applyTheme(theme);
+  }, [theme]);
 
   const toggleTheme = () => {
     const newTheme = theme === "brodie" ? "brodie-dark" : "brodie";
-    setTheme(newTheme);
     applyTheme(newTheme);
+    // Dispatch storage event to trigger useSyncExternalStore update
+    window.dispatchEvent(new StorageEvent("storage", { key: THEME_STORAGE_KEY }));
   };
 
   const isDark = theme === "brodie-dark";
-
-  // Prevent hydration mismatch - render placeholder with same dimensions
-  if (!mounted) {
-    return (
-      <Button
-        isIconOnly
-        aria-label="Toggle theme"
-        variant="ghost"
-        size="sm"
-        className="rounded-full"
-      >
-        <SunIcon />
-      </Button>
-    );
-  }
 
   return (
     <Button
