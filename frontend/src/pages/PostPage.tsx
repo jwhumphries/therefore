@@ -40,7 +40,7 @@ export function PostPage() {
             : "Failed to load the post. Please try again."}
         </p>
         <TransitionLink
-          to="/"
+          to="/posts"
           className="text-primary hover:underline"
         >
           &larr; Back to Home
@@ -57,7 +57,7 @@ export function PostPage() {
     <div className="max-w-3xl mx-auto">
       <nav className="mb-8">
         <TransitionLink
-          to="/"
+          to="/posts"
           className="text-default-500 hover:text-primary transition-colors"
         >
           &larr; Back to Posts

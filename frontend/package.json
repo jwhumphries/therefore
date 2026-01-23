@@ -13,9 +13,11 @@
   "dependencies": {
     "@fontsource-variable/fraunces": "5.2.9",
     "@fontsource-variable/lora": "5.2.8",
+    "@gsap/react": "^2.1.2",
     "@heroui/react": "beta",
     "@heroui/styles": "beta",
     "@tanstack/react-query": "^5.64.0",
+    "gsap": "^3.14.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.1.0",
