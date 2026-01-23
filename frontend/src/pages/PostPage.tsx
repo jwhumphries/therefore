@@ -1,8 +1,9 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { Spinner } from "@heroui/react";
 import { usePost } from "../hooks/api";
 import { hydrateComponents } from "../components/hydration";
+import { TransitionLink } from "../components/TransitionLink";
 
 export function PostPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -38,12 +39,12 @@ export function PostPage() {
             ? "The post you're looking for doesn't exist."
             : "Failed to load the post. Please try again."}
         </p>
-        <Link
+        <TransitionLink
           to="/"
           className="text-primary hover:underline"
         >
           &larr; Back to Home
-        </Link>
+        </TransitionLink>
       </div>
     );
   }
@@ -55,12 +56,12 @@ export function PostPage() {
   return (
     <div className="max-w-3xl mx-auto">
       <nav className="mb-8">
-        <Link
+        <TransitionLink
           to="/"
           className="text-default-500 hover:text-primary transition-colors"
         >
           &larr; Back to Posts
-        </Link>
+        </TransitionLink>
       </nav>
       <div
         className="post-content"

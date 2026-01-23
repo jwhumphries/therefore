@@ -116,3 +116,68 @@ button,
   transform: scale(1.02);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
 }
+
+/* View Transitions API styles */
+@supports (view-transition-name: none) {
+  /* Header stays in place during transitions */
+  ::view-transition-old(header),
+  ::view-transition-new(header) {
+    animation: none;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.35s;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Fade transition (for posts) */
+  [data-transition="fade"]::view-transition-old(root) {
+    animation-name: fade-out;
+  }
+
+  [data-transition="fade"]::view-transition-new(root) {
+    animation-name: fade-in;
+  }
+
+  /* Slide transition (for navigation pages) */
+  [data-transition="slide"]::view-transition-old(root) {
+    animation-name: slide-fade-out;
+  }
+
+  [data-transition="slide"]::view-transition-new(root) {
+    animation-name: slide-fade-in;
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  @keyframes slide-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-fade-out {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+  }
+}

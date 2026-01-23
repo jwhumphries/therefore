@@ -1,49 +1,42 @@
-import { Link, NavLink } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import type { ReactNode } from "react";
 import { ThemeSwitcher } from "./ThemeSwitcher";
+import { TransitionLink } from "./TransitionLink";
 
 interface LayoutProps {
   children: ReactNode;
 }
 
+function NavLink({ to, children }: { to: string; children: ReactNode }) {
+  const location = useLocation();
+  const isActive = to === "/" ? location.pathname === "/" : location.pathname.startsWith(to);
+
+  return (
+    <TransitionLink
+      to={to}
+      className={`hover:text-accent transition-colors ${isActive ? "text-accent font-medium" : ""}`}
+    >
+      {children}
+    </TransitionLink>
+  );
+}
+
 export function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
-      <header className="border-b border-border sticky top-0 bg-background/80 backdrop-blur-md z-50">
+      <header className="border-b border-border sticky top-0 bg-background/80 backdrop-blur-md z-50" style={{ viewTransitionName: 'header' }}>
         <nav className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <Link
+          <TransitionLink
             to="/"
             className="text-2xl font-semibold hover:text-accent transition-colors"
             style={{ fontFamily: 'var(--font-display)' }}
           >
             Therefore
-          </Link>
+          </TransitionLink>
           <div className="flex items-center gap-6">
-            <NavLink
-              to="/"
-              end
-              className={({ isActive }) =>
-                `hover:text-accent transition-colors ${isActive ? "text-accent font-medium" : ""}`
-              }
-            >
-              Posts
-            </NavLink>
-            <NavLink
-              to="/tags"
-              className={({ isActive }) =>
-                `hover:text-accent transition-colors ${isActive ? "text-accent font-medium" : ""}`
-              }
-            >
-              Tags
-            </NavLink>
-            <NavLink
-              to="/about"
-              className={({ isActive }) =>
-                `hover:text-accent transition-colors ${isActive ? "text-accent font-medium" : ""}`
-              }
-            >
-              About
-            </NavLink>
+            <NavLink to="/">Posts</NavLink>
+            <NavLink to="/tags">Tags</NavLink>
+            <NavLink to="/about">About</NavLink>
             <ThemeSwitcher />
           </div>
         </nav>

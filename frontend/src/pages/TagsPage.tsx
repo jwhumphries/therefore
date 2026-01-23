@@ -1,6 +1,6 @@
-import { Link } from "react-router-dom";
 import { Spinner } from "@heroui/react";
 import { useTags } from "../hooks/api";
+import { TransitionLink } from "../components/TransitionLink";
 
 export function TagsPage() {
   const { data: tags, isLoading, error } = useTags();
@@ -35,14 +35,14 @@ export function TagsPage() {
       <h1 className="text-4xl font-display font-bold mb-8">Tags</h1>
       <div className="flex flex-wrap gap-3">
         {tags.map((tag) => (
-          <Link
+          <TransitionLink
             key={tag.tag}
             to={`/tags/${tag.tag}`}
             className="px-4 py-2 bg-default-100 rounded-lg hover:bg-default-200 transition-colors"
           >
             <span className="font-medium">{tag.tag}</span>
             <span className="text-default-500 ml-2">({tag.count})</span>
-          </Link>
+          </TransitionLink>
         ))}
       </div>
     </div>

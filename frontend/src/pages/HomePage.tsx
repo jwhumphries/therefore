@@ -1,6 +1,7 @@
-import { Link } from "react-router-dom";
 import { Card, Skeleton, ScrollShadow } from "@heroui/react";
 import { usePosts } from "../hooks/api";
+import { TransitionLink } from "../components/TransitionLink";
+import { useViewTransitionNavigate } from "../hooks/useViewTransition";
 
 function PostCardSkeleton() {
   return (
@@ -22,6 +23,7 @@ function PostCardSkeleton() {
 
 export function HomePage() {
   const { data, isLoading, error } = usePosts();
+  const navigate = useViewTransitionNavigate();
 
   if (isLoading) {
     return (
@@ -58,8 +60,20 @@ export function HomePage() {
       <ScrollShadow className="max-h-[calc(100vh-16rem)]" hideScrollBar>
         <div className="space-y-6 pr-2">
           {data.posts.map((post) => (
-            <Link key={post.slug} to={`/posts/${post.slug}`} className="block">
-              <Card className="p-6 hover:bg-surface-hover transition-colors cursor-pointer">
+            <article
+              key={post.slug}
+              onClick={() => navigate(`/posts/${post.slug}`)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  navigate(`/posts/${post.slug}`);
+                }
+              }}
+              tabIndex={0}
+              role="link"
+              className="cursor-pointer"
+            >
+              <Card className="p-6 hover:bg-surface-hover transition-colors">
                 <Card.Header className="p-0 pb-2">
                   <Card.Title className="text-2xl font-display font-semibold">
                     {post.title}
@@ -86,19 +100,19 @@ export function HomePage() {
                 {post.tags && post.tags.length > 0 && (
                   <Card.Footer className="p-0 pt-3 flex-wrap gap-2">
                     {post.tags.map((tag) => (
-                      <Link
+                      <TransitionLink
                         key={tag}
                         to={`/tags/${tag}`}
                         className="text-xs px-2 py-1 bg-surface rounded-full hover:bg-surface-hover transition-colors"
                         onClick={(e) => e.stopPropagation()}
                       >
                         {tag}
-                      </Link>
+                      </TransitionLink>
                     ))}
                   </Card.Footer>
                 )}
               </Card>
-            </Link>
+            </article>
           ))}
         </div>
       </ScrollShadow>
