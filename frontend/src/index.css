@@ -117,6 +117,33 @@ button,
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
 }
 
+/* Tag link styles */
+.tag-link {
+  text-decoration: none;
+  font-weight: 500;
+  background-image: linear-gradient(
+    var(--accent) 0%,
+    var(--accent) 100%
+  );
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 2px;
+  transition: background-size 0.2s ease;
+}
+
+.tag-link:hover {
+  background-size: 100% 4px;
+}
+
+.tag-hash {
+  transition: color 0.2s ease, font-weight 0.2s ease;
+}
+
+.tag-link:hover .tag-hash {
+  color: var(--accent);
+  font-weight: 700;
+}
+
 /* View Transitions API styles */
 @supports (view-transition-name: none) {
   /* Header stays in place during transitions */

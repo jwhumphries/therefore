@@ -1,6 +1,6 @@
 import { Card, Skeleton, ScrollShadow } from "@heroui/react";
 import { usePosts } from "../hooks/api";
-import { TransitionLink } from "../components/TransitionLink";
+import { TagLink } from "../components/TagLink";
 import { useViewTransitionNavigate } from "../hooks/useViewTransition";
 
 function PostCardSkeleton() {
@@ -98,16 +98,14 @@ export function HomePage() {
                   )}
                 </Card.Content>
                 {post.tags && post.tags.length > 0 && (
-                  <Card.Footer className="p-0 pt-3 flex-wrap gap-2">
+                  <Card.Footer className="p-0 pt-3 flex-wrap gap-3">
                     {post.tags.map((tag) => (
-                      <TransitionLink
+                      <TagLink
                         key={tag}
-                        to={`/tags/${tag}`}
-                        className="text-xs px-2 py-1 bg-surface rounded-full hover:bg-surface-hover transition-colors"
+                        tag={tag}
+                        className="text-sm"
                         onClick={(e) => e.stopPropagation()}
-                      >
-                        {tag}
-                      </TransitionLink>
+                      />
                     ))}
                   </Card.Footer>
                 )}
