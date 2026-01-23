@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Button } from "@heroui/react";
 import { SplitText } from "../components/SplitText";
+import { SlideInButton } from "../components/SlideInButton";
 import { useViewTransitionNavigate } from "../hooks/useViewTransition";
 
 export function SplashPage() {
@@ -60,14 +60,7 @@ export function SplashPage() {
             animationComplete ? "opacity-100" : "opacity-0"
           }`}
         >
-          <Button
-            size="lg"
-            variant="outline"
-            className="font-display text-lg px-8"
-            onPress={handleEnter}
-          >
-            Enter
-          </Button>
+          <SlideInButton onClick={handleEnter}>Enter</SlideInButton>
         </div>
       </div>
     </div>

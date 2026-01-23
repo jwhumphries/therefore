@@ -48,6 +48,10 @@
     --accent: oklch(45% 0.17 275);
     --accent-foreground: oklch(98% 0.01 275);
 
+    /* Secondary: Warm complementary tone */
+    --secondary: oklch(62% 0.11 55);
+    --secondary-foreground: oklch(100% 0 0);
+
     /* Form Fields */
     --field-background: var(--white);
     --field-foreground: var(--foreground);
@@ -134,6 +138,10 @@
     --accent: oklch(55% 0.17 275);
     --accent-foreground: oklch(98% 0.01 275);
 
+    /* Secondary: Warm complementary tone */
+    --secondary: oklch(65% 0.11 55);
+    --secondary-foreground: oklch(100% 0 0);
+
     /* Form Fields */
     --field-background: oklch(20% 0.012 265);
     --field-foreground: var(--foreground);
@@ -174,8 +182,10 @@
   }
 }
 
-/* Register custom info color with Tailwind */
+/* Register custom colors with Tailwind */
 @theme inline {
   --color-info: var(--info);
   --color-info-foreground: var(--info-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
 }
