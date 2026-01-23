@@ -117,6 +117,54 @@ button,
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
 }
 
+/* Static gradient text */
+.gradient-text-static {
+  background: linear-gradient(
+    90deg,
+    #6d28d9,
+    #a855f7,
+    #c084fc,
+    #a855f7,
+    #6d28d9
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Animated gradient text */
+.gradient-text-animated {
+  background: linear-gradient(
+    90deg,
+    #6d28d9,
+    #a855f7,
+    #c084fc,
+    #a855f7,
+    #6d28d9
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 6s ease-in-out infinite;
+}
+
+/* Split text with solid purple color (for animation phase before gradient) */
+.split-text-solid {
+  color: #a855f7 !important;
+  -webkit-text-fill-color: #a855f7 !important;
+}
+
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% center;
+  }
+  50% {
+    background-position: 100% center;
+  }
+}
+
 /* Tag link styles */
 .tag-link {
   text-decoration: none;
