@@ -58,6 +58,10 @@ func (m *mockStore) GetTags(_ context.Context) ([]content.TagCount, error) {
 	return m.tags, nil
 }
 
+func (m *mockStore) GetPostAsset(_ context.Context, slug, filename string) ([]byte, error) {
+	return nil, errors.New("not implemented")
+}
+
 func TestAPIHandler_GetPost(t *testing.T) {
 	store := newMockStore()
 	store.posts["test-post"] = &content.Post{

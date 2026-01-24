@@ -123,6 +123,50 @@ func (h *APIHandler) ListTags(c *echo.Context) error {
 	return c.JSON(http.StatusOK, resp)
 }
 
+// GetPostAsset serves a static asset from a post's bundle directory.
+func (h *APIHandler) GetPostAsset(c *echo.Context) error {
+	slug := c.Param("slug")
+	filename := c.Param("filename")
+
+	data, err := h.store.GetPostAsset(c.Request().Context(), slug, filename)
+	if err != nil {
+		if errors.Is(err, content.ErrPostNotFound) {
+			return echo.NewHTTPError(http.StatusNotFound, "post not found")
+		}
+		return echo.NewHTTPError(http.StatusNotFound, "asset not found")
+	}
+
+	// Determine content type from extension
+	contentType := "application/octet-stream"
+	switch {
+	case hasExtension(filename, ".jpg", ".jpeg"):
+		contentType = "image/jpeg"
+	case hasExtension(filename, ".png"):
+		contentType = "image/png"
+	case hasExtension(filename, ".gif"):
+		contentType = "image/gif"
+	case hasExtension(filename, ".webp"):
+		contentType = "image/webp"
+	case hasExtension(filename, ".svg"):
+		contentType = "image/svg+xml"
+	case hasExtension(filename, ".pdf"):
+		contentType = "application/pdf"
+	}
+
+	c.Response().Header().Set("Content-Type", contentType)
+	c.Response().Header().Set("Cache-Control", "public, max-age=31536000") // 1 year
+	return c.Blob(http.StatusOK, contentType, data)
+}
+
+func hasExtension(filename string, exts ...string) bool {
+	for _, ext := range exts {
+		if len(filename) > len(ext) && filename[len(filename)-len(ext):] == ext {
+			return true
+		}
+	}
+	return false
+}
+
 func postToResponse(post *content.Post, includeContent bool) PostResponse {
 	resp := PostResponse{
 		Slug:        post.Meta.Slug,

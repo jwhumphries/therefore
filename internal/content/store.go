@@ -26,4 +26,7 @@ type ContentStore interface {
 
 	// GetTags returns all tags with their post counts.
 	GetTags(ctx context.Context) ([]TagCount, error)
+
+	// GetPostAsset retrieves an asset from a post's bundle directory.
+	GetPostAsset(ctx context.Context, slug, filename string) ([]byte, error)
 }

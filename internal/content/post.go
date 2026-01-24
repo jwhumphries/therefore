@@ -37,6 +37,7 @@ type Post struct {
 	Meta        PostMeta
 	RawContent  string // Original markdown without frontmatter
 	HTMLContent string // Rendered HTML
+	BundleDir   string // Directory path for page bundles (empty for standalone posts)
 }
 
 // ListOptions configures post list queries.

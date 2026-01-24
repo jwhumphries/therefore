@@ -27,6 +27,7 @@ type SiteConfig struct {
 // EmbeddedStore implements ContentStore using an afero filesystem.
 // All posts are loaded and rendered at initialization time.
 type EmbeddedStore struct {
+	fs       afero.Fs
 	config   SiteConfig
 	posts    map[string]*Post // keyed by slug
 	sorted   []*Post          // sorted by date, newest first
@@ -41,6 +42,7 @@ type EmbeddedStore struct {
 // All posts are parsed and rendered immediately.
 func NewEmbeddedStore(fs afero.Fs, renderer Renderer) (*EmbeddedStore, error) {
 	store := &EmbeddedStore{
+		fs:       fs,
 		posts:    make(map[string]*Post),
 		tagIndex: make(map[string][]*Post),
 	}
@@ -82,16 +84,40 @@ func (s *EmbeddedStore) loadConfig(fs afero.Fs) error {
 }
 
 func (s *EmbeddedStore) loadPosts(fs afero.Fs, renderer Renderer) error {
+	// Track directories we've processed as bundles to avoid double-processing
+	processedBundles := make(map[string]bool)
+
 	return afero.Walk(fs, ".", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 
+		// Skip non-markdown files
 		if info.IsDir() || !strings.HasSuffix(path, ".md") {
 			return nil
 		}
 
-		post, err := s.parsePost(fs, path, renderer)
+		// Determine if this is a page bundle (dir/index.md) or standalone post
+		var bundleDir string
+		dir := filepath.Dir(path)
+		filename := filepath.Base(path)
+
+		if filename == "index.md" && dir != "." {
+			// This is a page bundle
+			bundleDir = dir
+			if processedBundles[dir] {
+				return nil // Already processed
+			}
+			processedBundles[dir] = true
+		} else if dir != "." {
+			// This is a .md file inside a directory but not index.md
+			// Check if there's an index.md in the same dir (skip non-index files in bundles)
+			if exists, _ := afero.Exists(fs, filepath.Join(dir, "index.md")); exists {
+				return nil // Skip, the bundle's index.md will be processed
+			}
+		}
+
+		post, err := s.parsePost(fs, path, renderer, bundleDir)
 		if err != nil {
 			return fmt.Errorf("parsing %s: %w", path, err)
 		}
@@ -106,7 +132,7 @@ func (s *EmbeddedStore) loadPosts(fs afero.Fs, renderer Renderer) error {
 	})
 }
 
-func (s *EmbeddedStore) parsePost(fs afero.Fs, path string, renderer Renderer) (*Post, error) {
+func (s *EmbeddedStore) parsePost(fs afero.Fs, path string, renderer Renderer, bundleDir string) (*Post, error) {
 	f, err := fs.Open(path)
 	if err != nil {
 		return nil, fmt.Errorf("opening file: %w", err)
@@ -123,9 +149,19 @@ func (s *EmbeddedStore) parsePost(fs afero.Fs, path string, renderer Renderer) (
 		return nil, fmt.Errorf("parsing frontmatter: %w", err)
 	}
 
-	// Default slug to filename without extension
+	// Default slug to filename/dirname without extension
 	if meta.Slug == "" {
-		meta.Slug = strings.TrimSuffix(filepath.Base(path), ".md")
+		if bundleDir != "" {
+			// For bundles, use the directory name
+			meta.Slug = filepath.Base(bundleDir)
+		} else {
+			meta.Slug = strings.TrimSuffix(filepath.Base(path), ".md")
+		}
+	}
+
+	// Transform relative image paths for page bundles
+	if bundleDir != "" {
+		raw = transformBundleImagePaths(raw, meta.Slug)
 	}
 
 	html, err := renderer.Render(raw)
@@ -145,7 +181,29 @@ func (s *EmbeddedStore) parsePost(fs afero.Fs, path string, renderer Renderer) (
 		Meta:        meta,
 		RawContent:  raw,
 		HTMLContent: html,
+		BundleDir:   bundleDir,
 	}, nil
+}
+
+// transformBundleImagePaths converts relative image paths to absolute paths for page bundles.
+// e.g., ![alt](image.jpg) -> ![alt](/posts/my-slug/image.jpg)
+func transformBundleImagePaths(content, slug string) string {
+	// Match markdown images: ![alt](path) where path doesn't start with / or http
+	imgRegex := regexp.MustCompile(`!\[([^\]]*)\]\(([^/)][^)]*)\)`)
+	return imgRegex.ReplaceAllStringFunc(content, func(match string) string {
+		parts := imgRegex.FindStringSubmatch(match)
+		if len(parts) != 3 {
+			return match
+		}
+		alt, path := parts[1], parts[2]
+		// Skip if already absolute or external URL
+		if strings.HasPrefix(path, "http://") || strings.HasPrefix(path, "https://") {
+			return match
+		}
+		// Strip leading ./ if present
+		path = strings.TrimPrefix(path, "./")
+		return fmt.Sprintf("![%s](/posts/%s/%s)", alt, slug, path)
+	})
 }
 
 // countWords counts words in markdown text, excluding code blocks and shortcodes.
@@ -309,4 +367,37 @@ func (s *EmbeddedStore) GetTags(_ context.Context) ([]TagCount, error) {
 	defer s.mu.RUnlock()
 
 	return s.tags, nil
+}
+
+// GetPostAsset retrieves an asset file from a post's bundle directory.
+// Returns the file contents and an error if not found or not a bundle.
+func (s *EmbeddedStore) GetPostAsset(_ context.Context, slug, filename string) ([]byte, error) {
+	s.mu.RLock()
+	post, ok := s.posts[slug]
+	s.mu.RUnlock()
+
+	if !ok {
+		return nil, ErrPostNotFound
+	}
+
+	if post.BundleDir == "" {
+		return nil, fmt.Errorf("post %q is not a bundle", slug)
+	}
+
+	// Prevent directory traversal
+	if strings.Contains(filename, "..") || strings.HasPrefix(filename, "/") {
+		return nil, fmt.Errorf("invalid filename")
+	}
+
+	assetPath := filepath.Join(post.BundleDir, filename)
+	f, err := s.fs.Open(assetPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, fmt.Errorf("asset not found: %s", filename)
+		}
+		return nil, err
+	}
+	defer func() { _ = f.Close() }()
+
+	return io.ReadAll(f)
 }

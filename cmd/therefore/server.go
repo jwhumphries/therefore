@@ -56,6 +56,9 @@ func runServer(cmd *cobra.Command, args []string) error {
 	api.GET("/posts/:slug", apiHandler.GetPost)
 	api.GET("/tags", apiHandler.ListTags)
 
+	// Post bundle assets (images, etc.)
+	e.GET("/posts/:slug/:filename", apiHandler.GetPostAsset)
+
 	// Serve embedded frontend SPA
 	distFS, err := fs.Sub(static.DistFS, "dist")
 	if err != nil {

@@ -34,6 +34,11 @@ export default defineConfig({
         target: "http://localhost:8080",
         changeOrigin: true,
       },
+      // Proxy post bundle assets (e.g., /posts/my-post/image.jpg)
+      "^/posts/[^/]+/[^/]+\\.[^/]+$": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+      },
     },
   },
 });
