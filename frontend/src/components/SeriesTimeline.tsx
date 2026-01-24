@@ -1,10 +1,15 @@
 import { useSeriesPosts } from "../hooks/api";
 import { TransitionLink } from "./TransitionLink";
-import { Card } from "@heroui/react";
+import { Card, Chip } from "@heroui/react";
 import { motion } from "motion/react";
 
 interface SeriesTimelineProps {
   series: string;
+}
+
+function isNewPost(publishDate: string): boolean {
+  const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  return new Date(publishDate).getTime() > sevenDaysAgo;
 }
 
 export function SeriesTimeline({ series }: SeriesTimelineProps) {
@@ -31,10 +36,13 @@ export function SeriesTimeline({ series }: SeriesTimelineProps) {
 
           <TransitionLink to={`/posts/${post.slug}`} className="block group">
             <Card className="p-4 hover:bg-surface transition-colors">
-              <Card.Header className="p-0 pb-1">
-                <Card.Title className="text-lg font-display font-semibold group-hover:text-accent transition-colors">
+              <Card.Header className="p-0 pb-1 flex-row items-start justify-between gap-2">
+                <Card.Title className="text-lg font-display font-semibold group-hover:text-accent transition-colors min-w-0">
                   {post.title}
                 </Card.Title>
+                {isNewPost(post.publishDate) && (
+                  <Chip size="sm" color="accent" className="flex-shrink-0">New</Chip>
+                )}
               </Card.Header>
               <Card.Content className="p-0">
                 <div className="text-sm text-muted flex items-center gap-2">

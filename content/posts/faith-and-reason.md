@@ -1,7 +1,7 @@
 ---
 title: "Faith and Reason: Must We Choose?"
 slug: "faith-and-reason"
-publishDate: 2025-01-15T00:00:00Z
+publishDate: 2026-01-22T00:00:00Z
 draft: false
 tags:
   - philosophy

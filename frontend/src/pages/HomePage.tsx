@@ -1,7 +1,12 @@
-import { Card, Skeleton, ScrollShadow } from "@heroui/react";
+import { Card, Chip, Skeleton, ScrollShadow } from "@heroui/react";
 import { usePosts } from "../hooks/api";
 import { TagLink } from "../components/TagLink";
 import { useViewTransitionNavigate } from "../hooks/useViewTransition";
+
+function isNewPost(publishDate: string): boolean {
+  const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  return new Date(publishDate).getTime() > sevenDaysAgo;
+}
 
 function PostCardSkeleton() {
   return (
@@ -74,10 +79,13 @@ export function HomePage() {
               className="cursor-pointer"
             >
               <Card className="p-6 hover:bg-surface-hover transition-colors">
-                <Card.Header className="p-0 pb-2">
-                  <Card.Title className="text-2xl font-display font-semibold">
+                <Card.Header className="p-0 pb-2 flex-row items-start justify-between gap-3">
+                  <Card.Title className="text-2xl font-display font-semibold min-w-0">
                     {post.title}
                   </Card.Title>
+                  {isNewPost(post.publishDate) && (
+                    <Chip size="sm" color="accent" className="flex-shrink-0">New</Chip>
+                  )}
                 </Card.Header>
                 <Card.Content className="p-0">
                   <div className="flex items-center gap-3 text-sm text-muted mb-3">

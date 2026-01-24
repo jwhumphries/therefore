@@ -1,9 +1,28 @@
 import { useParams } from "react-router-dom";
-import { Card, Spinner } from "@heroui/react";
+import { Card, Chip, Skeleton } from "@heroui/react";
 import { usePosts } from "../hooks/api";
 import { TransitionLink } from "../components/TransitionLink";
 import { TagLink } from "../components/TagLink";
 import { useViewTransitionNavigate } from "../hooks/useViewTransition";
+
+function isNewPost(publishDate: string): boolean {
+  const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  return new Date(publishDate).getTime() > sevenDaysAgo;
+}
+
+function PostCardSkeleton() {
+  return (
+    <Card className="p-6">
+      <Skeleton className="h-7 w-3/4 mb-3" />
+      <div className="flex items-center gap-3 mb-3">
+        <Skeleton className="h-4 w-28" />
+        <Skeleton className="h-4 w-20" />
+      </div>
+      <Skeleton className="h-4 w-full mb-2" />
+      <Skeleton className="h-4 w-5/6 mb-4" />
+    </Card>
+  );
+}
 
 export function TagPage() {
   const { tag } = useParams<{ tag: string }>();
@@ -12,8 +31,21 @@ export function TagPage() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-[50vh]">
-        <Spinner size="lg" />
+      <div className="max-w-3xl mx-auto">
+        <nav className="mb-8">
+          <TransitionLink
+            to="/tags"
+            className="text-default-500 hover:text-primary transition-colors"
+          >
+            &larr; All Tags
+          </TransitionLink>
+        </nav>
+        <Skeleton className="h-10 w-64 mb-2" />
+        <Skeleton className="h-6 w-24 mb-8" />
+        <div className="space-y-6">
+          <PostCardSkeleton />
+          <PostCardSkeleton />
+        </div>
       </div>
     );
   }
@@ -62,10 +94,13 @@ export function TagPage() {
               className="cursor-pointer"
             >
               <Card className="p-6 hover:bg-surface-hover transition-colors">
-                <Card.Header className="p-0 pb-2">
-                  <Card.Title className="text-2xl font-display font-semibold">
+                <Card.Header className="p-0 pb-2 flex-row items-start justify-between gap-3">
+                  <Card.Title className="text-2xl font-display font-semibold min-w-0">
                     {post.title}
                   </Card.Title>
+                  {isNewPost(post.publishDate) && (
+                    <Chip size="sm" color="accent" className="flex-shrink-0">New</Chip>
+                  )}
                 </Card.Header>
                 <Card.Content className="p-0">
                   <div className="flex items-center gap-3 text-sm text-muted mb-3">
