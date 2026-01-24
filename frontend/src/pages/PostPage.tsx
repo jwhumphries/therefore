@@ -3,18 +3,32 @@ import { useEffect } from "react";
 import { Spinner } from "@heroui/react";
 import { usePost } from "../hooks/api";
 import { hydrateComponents } from "../components/hydration";
+import { initTagLinks } from "../components/hydration/taglink";
 import { TransitionLink } from "../components/TransitionLink";
+import { useViewTransitionNavigate } from "../hooks/useViewTransition";
 
 export function PostPage() {
   const { slug } = useParams<{ slug: string }>();
   const { data: post, isLoading, error } = usePost(slug ?? "");
+  const navigate = useViewTransitionNavigate();
 
-  // Hydrate shortcode components after render
+  // Listen for custom navigate events from hydrated components
+  useEffect(() => {
+    const handleNavigate = (e: CustomEvent<{ to: string; transition: string }>) => {
+      navigate(e.detail.to);
+    };
+
+    window.addEventListener("navigate", handleNavigate as EventListener);
+    return () => window.removeEventListener("navigate", handleNavigate as EventListener);
+  }, [navigate]);
+
+  // Hydrate shortcode components and tag links after render
   useEffect(() => {
     if (post) {
       const container = document.querySelector(".post-content");
       if (container) {
         hydrateComponents(container as HTMLElement);
+        initTagLinks(container as HTMLElement);
       }
     }
   }, [post]);

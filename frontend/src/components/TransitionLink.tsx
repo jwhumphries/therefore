@@ -1,4 +1,5 @@
 import type { ReactNode, MouseEvent } from "react";
+import { useLocation } from "react-router-dom";
 import { useViewTransitionNavigate } from "../hooks/useViewTransition";
 
 interface TransitionLinkProps {
@@ -17,6 +18,7 @@ export function TransitionLink({
   onClick,
 }: TransitionLinkProps) {
   const navigateWithTransition = useViewTransitionNavigate();
+  const location = useLocation();
 
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -25,6 +27,13 @@ export function TransitionLink({
       // If onClick called stopPropagation, don't navigate
       if (e.defaultPrevented) return;
     }
+
+    // If already on the target page, smooth scroll to top instead of navigating
+    if (location.pathname === to) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
     navigateWithTransition(to);
   };
 

@@ -1,21 +1,34 @@
 import { useLocation, Outlet } from "react-router-dom";
 import type { ReactNode } from "react";
+import { Button } from "@heroui/react";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 import { TransitionLink } from "./TransitionLink";
+import { useViewTransitionNavigate } from "../hooks/useViewTransition";
 
 function NavLink({ to, children }: { to: string; children: ReactNode }) {
   const location = useLocation();
+  const navigate = useViewTransitionNavigate();
   const isActive = to === "/posts"
     ? location.pathname === "/posts" || location.pathname.startsWith("/posts/")
     : location.pathname.startsWith(to);
 
+  const handlePress = () => {
+    if (location.pathname === to) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      navigate(to);
+    }
+  };
+
   return (
-    <TransitionLink
-      to={to}
-      className={`hover:text-accent transition-colors ${isActive ? "text-accent font-medium" : ""}`}
+    <Button
+      variant="ghost"
+      size="sm"
+      onPress={handlePress}
+      className={isActive ? "text-accent font-medium" : ""}
     >
       {children}
-    </TransitionLink>
+    </Button>
   );
 }
 
