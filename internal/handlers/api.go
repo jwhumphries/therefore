@@ -30,14 +30,14 @@ type AuthorResponse struct {
 
 // PostResponse is the JSON representation of a post.
 type PostResponse struct {
-	Slug        string   `json:"slug"`
-	Title       string   `json:"title"`
-	Summary     string   `json:"summary,omitempty"`
-	PublishDate string   `json:"publishDate"`
-	Tags        []string `json:"tags,omitempty"`
-	Series      string   `json:"series,omitempty"`
-	ReadingTime int      `json:"readingTime"` // minutes
-	HTMLContent string   `json:"htmlContent,omitempty"`
+	Slug        string          `json:"slug"`
+	Title       string          `json:"title"`
+	Summary     string          `json:"summary,omitempty"`
+	PublishDate string          `json:"publishDate"`
+	Tags        []string        `json:"tags,omitempty"`
+	Series      string          `json:"series,omitempty"`
+	ReadingTime int             `json:"readingTime"` // minutes
+	HTMLContent string          `json:"htmlContent,omitempty"`
 	Author      *AuthorResponse `json:"author,omitempty"`
 }
 
@@ -51,6 +51,12 @@ type ListPostsResponse struct {
 type TagResponse struct {
 	Tag   string `json:"tag"`
 	Count int    `json:"count"`
+}
+
+// SeriesResponse is the JSON representation of a series.
+type SeriesResponse struct {
+	Series string `json:"series"`
+	Count  int    `json:"count"`
 }
 
 // ListPosts returns a JSON list of posts.
@@ -117,6 +123,24 @@ func (h *APIHandler) ListTags(c *echo.Context) error {
 		resp = append(resp, TagResponse{
 			Tag:   tag.Tag,
 			Count: tag.Count,
+		})
+	}
+
+	return c.JSON(http.StatusOK, resp)
+}
+
+// ListSeries returns a JSON list of series with counts.
+func (h *APIHandler) ListSeries(c *echo.Context) error {
+	series, err := h.store.GetSeries(c.Request().Context())
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get series")
+	}
+
+	resp := make([]SeriesResponse, 0, len(series))
+	for _, s := range series {
+		resp = append(resp, SeriesResponse{
+			Series: s.Series,
+			Count:  s.Count,
 		})
 	}
 

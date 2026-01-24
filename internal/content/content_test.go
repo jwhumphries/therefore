@@ -398,3 +398,55 @@ Content.`), 0644)
 		t.Errorf("Slug = %q, want %q", post.Meta.Slug, "my-post-name")
 	}
 }
+
+func TestEmbeddedStore_GetSeries(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	past := time.Now().Add(-24 * time.Hour).Format(time.RFC3339)
+
+	_ = afero.WriteFile(fs, "post1.md", []byte(`---
+title: Post 1
+slug: post1
+publishDate: `+past+`
+series: Series A
+---
+Content.`), 0644)
+
+	_ = afero.WriteFile(fs, "post2.md", []byte(`---
+title: Post 2
+slug: post2
+publishDate: `+past+`
+series: Series A
+---
+Content.`), 0644)
+
+	_ = afero.WriteFile(fs, "post3.md", []byte(`---
+title: Post 3
+slug: post3
+publishDate: `+past+`
+series: Series B
+---
+Content.`), 0644)
+
+	store, err := NewEmbeddedStore(fs, &mockRenderer{})
+	if err != nil {
+		t.Fatalf("NewEmbeddedStore() error = %v", err)
+	}
+
+	ctx := context.Background()
+
+	series, err := store.GetSeries(ctx)
+	if err != nil {
+		t.Fatalf("GetSeries() error = %v", err)
+	}
+	if len(series) != 2 {
+		t.Fatalf("len(series) = %d, want 2", len(series))
+	}
+
+	// Series should be sorted by count (descending), then name
+	if series[0].Series != "Series A" || series[0].Count != 2 {
+		t.Errorf("series[0] = %+v, want {Series: Series A, Count: 2}", series[0])
+	}
+	if series[1].Series != "Series B" || series[1].Count != 1 {
+		t.Errorf("series[1] = %+v, want {Series: Series B, Count: 1}", series[1])
+	}
+}

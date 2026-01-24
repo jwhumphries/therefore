@@ -55,6 +55,7 @@ func runServer(cmd *cobra.Command, args []string) error {
 	api.GET("/posts", apiHandler.ListPosts)
 	api.GET("/posts/:slug", apiHandler.GetPost)
 	api.GET("/tags", apiHandler.ListTags)
+	api.GET("/series", apiHandler.ListSeries)
 
 	// Post bundle assets (images, etc.)
 	e.GET("/posts/:slug/:filename", apiHandler.GetPostAsset)

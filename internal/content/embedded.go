@@ -33,6 +33,7 @@ type EmbeddedStore struct {
 	sorted   []*Post          // sorted by date, newest first
 	tags     []TagCount
 	tagIndex map[string][]*Post
+	series   []SeriesCount
 
 	mu sync.RWMutex
 }
@@ -289,10 +290,16 @@ func (s *EmbeddedStore) buildIndexes() {
 
 	// Build tag index
 	tagCounts := make(map[string]int)
+	// Build series index
+	seriesCounts := make(map[string]int)
+
 	for _, post := range s.posts {
 		for _, tag := range post.Meta.Tags {
 			tagCounts[tag]++
 			s.tagIndex[tag] = append(s.tagIndex[tag], post)
+		}
+		if post.Meta.Series != "" {
+			seriesCounts[post.Meta.Series]++
 		}
 	}
 
@@ -314,6 +321,18 @@ func (s *EmbeddedStore) buildIndexes() {
 			return s.tags[i].Count > s.tags[j].Count
 		}
 		return s.tags[i].Tag < s.tags[j].Tag
+	})
+
+	// Build sorted series counts
+	s.series = make([]SeriesCount, 0, len(seriesCounts))
+	for series, count := range seriesCounts {
+		s.series = append(s.series, SeriesCount{Series: series, Count: count})
+	}
+	sort.Slice(s.series, func(i, j int) bool {
+		if s.series[i].Count != s.series[j].Count {
+			return s.series[i].Count > s.series[j].Count
+		}
+		return s.series[i].Series < s.series[j].Series
 	})
 }
 
@@ -373,6 +392,14 @@ func (s *EmbeddedStore) GetTags(_ context.Context) ([]TagCount, error) {
 	defer s.mu.RUnlock()
 
 	return s.tags, nil
+}
+
+// GetSeries returns all series with their post counts.
+func (s *EmbeddedStore) GetSeries(_ context.Context) ([]SeriesCount, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	return s.series, nil
 }
 
 // GetPostAsset retrieves an asset file from a post's bundle directory.

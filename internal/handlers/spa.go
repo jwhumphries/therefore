@@ -14,7 +14,7 @@ import (
 // It serves static files when they exist and falls back to index.html for
 // client-side routing.
 type SPAHandler struct {
-	distFS   fs.FS
+	distFS    fs.FS
 	indexHTML []byte
 }
 

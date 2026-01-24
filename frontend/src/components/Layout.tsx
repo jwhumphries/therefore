@@ -46,6 +46,7 @@ export function Layout() {
           </TransitionLink>
           <div className="flex items-center gap-6">
             <NavLink to="/posts">Posts</NavLink>
+            <NavLink to="/series">Series</NavLink>
             <NavLink to="/tags">Tags</NavLink>
             <NavLink to="/about">About</NavLink>
             <ThemeSwitcher />

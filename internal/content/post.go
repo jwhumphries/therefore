@@ -54,3 +54,9 @@ type TagCount struct {
 	Tag   string
 	Count int
 }
+
+// SeriesCount represents a series with its post count.
+type SeriesCount struct {
+	Series string
+	Count  int
+}

@@ -32,6 +32,11 @@ export interface TagResponse {
   count: number;
 }
 
+export interface SeriesResponse {
+  series: string;
+  count: number;
+}
+
 // API fetch functions
 async function fetchPosts(tag?: string): Promise<PostsResponse> {
   const url = tag ? `/api/posts?tag=${encodeURIComponent(tag)}` : "/api/posts";
@@ -61,6 +66,22 @@ async function fetchTags(): Promise<TagResponse[]> {
   return res.json();
 }
 
+async function fetchSeries(): Promise<SeriesResponse[]> {
+  const res = await fetch("/api/series");
+  if (!res.ok) {
+    throw new Error("Failed to fetch series");
+  }
+  return res.json();
+}
+
+async function fetchSeriesPosts(series: string): Promise<PostsResponse> {
+  const res = await fetch(`/api/posts?series=${encodeURIComponent(series)}`);
+  if (!res.ok) {
+    throw new Error("Failed to fetch series posts");
+  }
+  return res.json();
+}
+
 // React Query hooks
 export function usePosts(tag?: string) {
   return useQuery({
@@ -81,5 +102,20 @@ export function useTags() {
   return useQuery({
     queryKey: ["tags"],
     queryFn: fetchTags,
+  });
+}
+
+export function useSeries() {
+  return useQuery({
+    queryKey: ["series"],
+    queryFn: fetchSeries,
+  });
+}
+
+export function useSeriesPosts(series: string) {
+  return useQuery({
+    queryKey: ["posts", "series", series],
+    queryFn: () => fetchSeriesPosts(series),
+    enabled: !!series,
   });
 }

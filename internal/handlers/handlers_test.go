@@ -16,8 +16,9 @@ import (
 
 // mockStore implements content.ContentStore for testing.
 type mockStore struct {
-	posts map[string]*content.Post
-	tags  []content.TagCount
+	posts  map[string]*content.Post
+	tags   []content.TagCount
+	series []content.SeriesCount
 }
 
 func newMockStore() *mockStore {
@@ -37,6 +38,7 @@ func (m *mockStore) GetPost(_ context.Context, slug string) (*content.Post, erro
 func (m *mockStore) ListPosts(_ context.Context, opts content.ListOptions) ([]*content.Post, error) {
 	var posts []*content.Post
 	for _, post := range m.posts {
+		// Filter by Tag
 		if opts.Tag != "" {
 			hasTag := false
 			for _, t := range post.Meta.Tags {
@@ -49,6 +51,12 @@ func (m *mockStore) ListPosts(_ context.Context, opts content.ListOptions) ([]*c
 				continue
 			}
 		}
+		// Filter by Series
+		if opts.Series != "" {
+			if post.Meta.Series != opts.Series {
+				continue
+			}
+		}
 		posts = append(posts, post)
 	}
 	return posts, nil
@@ -56,6 +64,10 @@ func (m *mockStore) ListPosts(_ context.Context, opts content.ListOptions) ([]*c
 
 func (m *mockStore) GetTags(_ context.Context) ([]content.TagCount, error) {
 	return m.tags, nil
+}
+
+func (m *mockStore) GetSeries(_ context.Context) ([]content.SeriesCount, error) {
+	return m.series, nil
 }
 
 func (m *mockStore) GetPostAsset(_ context.Context, slug, filename string) ([]byte, error) {
@@ -216,5 +228,36 @@ func TestAPIHandler_ListTags(t *testing.T) {
 	}
 	if resp[0].Tag != "philosophy" || resp[0].Count != 5 {
 		t.Errorf("resp[0] = %+v, want {Tag: philosophy, Count: 5}", resp[0])
+	}
+}
+
+func TestAPIHandler_ListSeries(t *testing.T) {
+	store := newMockStore()
+	store.series = []content.SeriesCount{
+		{Series: "Series A", Count: 5},
+		{Series: "Series B", Count: 3},
+	}
+
+	handler := NewAPIHandler(store)
+	e := echo.New()
+
+	req := httptest.NewRequest(http.MethodGet, "/api/series", nil)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+
+	err := handler.ListSeries(c)
+	if err != nil {
+		t.Fatalf("ListSeries() error = %v", err)
+	}
+
+	var resp []SeriesResponse
+	if err := json.Unmarshal(rec.Body.Bytes(), &resp); err != nil {
+		t.Fatalf("Failed to unmarshal response: %v", err)
+	}
+	if len(resp) != 2 {
+		t.Errorf("len(resp) = %d, want 2", len(resp))
+	}
+	if resp[0].Series != "Series A" || resp[0].Count != 5 {
+		t.Errorf("resp[0] = %+v, want {Series: Series A, Count: 5}", resp[0])
 	}
 }
