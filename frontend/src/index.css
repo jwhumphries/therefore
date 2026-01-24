@@ -20,6 +20,7 @@
 :root {
   --font-display: 'Fraunces Variable', Georgia, serif;
   --font-body: 'Lora Variable', Georgia, serif;
+  --header-height: 4rem; /* ~64px - sticky header height for TOC positioning */
 }
 
 /* Base font for body text */
@@ -201,6 +202,43 @@ a.tag-link:hover {
 a.tag-link:hover .tag-hash {
   color: var(--accent);
   font-weight: 700;
+}
+
+/* ============================================================================
+   TABLE OF CONTENTS STYLING
+   Animated underline draws outward from center when section becomes active
+   ============================================================================ */
+
+.toc-nav a {
+  transition: color 0.15s ease-out;
+}
+
+.toc-nav a.active {
+  position: relative;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.toc-nav a.active::before {
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background-color: var(--accent);
+  transform-origin: 50% 50%; /* Center - draws outward */
+  animation: toc-underline-in 0.3s ease-out forwards;
+}
+
+@keyframes toc-underline-in {
+  from {
+    transform: scale3d(0, 1, 1);
+  }
+  to {
+    transform: scale3d(1, 1, 1);
+  }
 }
 
 /* View Transitions API styles */
