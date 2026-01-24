@@ -127,6 +127,12 @@ func (s *EmbeddedStore) loadPosts(fs afero.Fs, renderer Renderer) error {
 			return nil
 		}
 
+		// Check for slug collision
+		if existing, ok := s.posts[post.Meta.Slug]; ok {
+			return fmt.Errorf("duplicate slug %q: found in both %q and %q",
+				post.Meta.Slug, existing.Meta.Title, post.Meta.Title)
+		}
+
 		s.posts[post.Meta.Slug] = post
 		return nil
 	})

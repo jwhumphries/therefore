@@ -72,6 +72,7 @@ export function useScrollspy({
   const [activeId, setActiveId] = useState<string | null>(null);
   const sectionsRef = useRef<HTMLElement[]>([]);
   const horizonRef = useRef<number>(100);
+  const initializedRef = useRef(false);
 
   // Update horizon based on TOC position (like swup-docs)
   const updateHorizon = useCallback(() => {
@@ -98,11 +99,12 @@ export function useScrollspy({
     );
     sectionsRef.current = [...headingElements].reverse();
 
-    // Set initial active heading
-    if (extracted.length > 0 && !activeId) {
+    // Set initial active heading (only once)
+    if (extracted.length > 0 && !initializedRef.current) {
+      initializedRef.current = true;
       setActiveId(extracted[0].id);
     }
-  }, [containerRef, activeId]);
+  }, [containerRef]);
 
   // Schedule heading extraction after render
   useEffect(() => {

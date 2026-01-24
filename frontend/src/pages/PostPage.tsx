@@ -2,12 +2,12 @@ import { useParams } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import { Spinner } from "@heroui/react";
 import { usePost } from "../hooks/api";
-import { hydrateComponents } from "../components/hydration";
+import { hydrateComponents, cleanupComponents } from "../components/hydration";
 import { initTagLinks } from "../components/hydration/taglink";
 import { TransitionLink } from "../components/TransitionLink";
 import { useViewTransitionNavigate } from "../hooks/useViewTransition";
 import { TableOfContents } from "../components/TableOfContents";
-import { ScrollProgressBars } from "../components/ScrollProgressBars";
+// import { ScrollProgressBars } from "../components/ScrollProgressBars";
 
 export function PostPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -27,13 +27,24 @@ export function PostPage() {
 
   // Hydrate shortcode components and tag links after render
   useEffect(() => {
+    let tagLinkCleanup: (() => void) | null = null;
+
     if (post) {
       const container = document.querySelector(".post-content");
       if (container) {
+        // Clean up previous hydration before re-hydrating
+        cleanupComponents();
         hydrateComponents(container as HTMLElement);
-        initTagLinks(container as HTMLElement);
+        tagLinkCleanup = initTagLinks(container as HTMLElement);
       }
     }
+    // Cleanup on unmount
+    return () => {
+      cleanupComponents();
+      if (tagLinkCleanup) {
+        tagLinkCleanup();
+      }
+    };
   }, [post]);
 
   if (isLoading) {
@@ -72,12 +83,8 @@ export function PostPage() {
 
   return (
     <div className="max-w-[90rem] mx-auto xl:grid xl:grid-cols-[1fr_minmax(0,48rem)_1fr] xl:gap-8">
-      {/* Scroll progress bars - sticky in left column, aligned to far left */}
-      <aside className="hidden xl:flex justify-start">
-        <div className="sticky top-[calc(var(--header-height,4rem)+1rem)] h-[calc(100vh-var(--header-height,4rem)-2rem)] w-16">
-          <ScrollProgressBars contentRef={contentRef} />
-        </div>
-      </aside>
+      {/* Left spacer - empty on desktop, collapses on mobile */}
+      <div className="hidden xl:block" />
 
       {/* Main content - centered column */}
       <div className="max-w-3xl mx-auto xl:mx-0">
