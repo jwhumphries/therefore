@@ -7,7 +7,7 @@ tags:
   - philosophy
   - metaphysics
   - theology
-series: "foundations"
+series: "Foundations"
 summary: "The third essay in our foundations series ventures into metaphysics—the study of what exists and the fundamental nature of reality."
 ---
 

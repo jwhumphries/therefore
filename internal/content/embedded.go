@@ -278,6 +278,38 @@ func parseFrontmatter(content []byte) (PostMeta, string, error) {
 	return meta, strings.TrimSpace(string(remaining)), nil
 }
 
+// getTopTags returns the top N tags by count from a tag count map.
+func getTopTags(tagCounts map[string]int, n int) []string {
+	if len(tagCounts) == 0 {
+		return nil
+	}
+
+	// Build slice for sorting
+	type tagCount struct {
+		tag   string
+		count int
+	}
+	tags := make([]tagCount, 0, len(tagCounts))
+	for tag, count := range tagCounts {
+		tags = append(tags, tagCount{tag: tag, count: count})
+	}
+
+	// Sort by count descending, then by tag name
+	sort.Slice(tags, func(i, j int) bool {
+		if tags[i].count != tags[j].count {
+			return tags[i].count > tags[j].count
+		}
+		return tags[i].tag < tags[j].tag
+	})
+
+	// Take top N
+	result := make([]string, 0, n)
+	for i := 0; i < n && i < len(tags); i++ {
+		result = append(result, tags[i].tag)
+	}
+	return result
+}
+
 func (s *EmbeddedStore) buildIndexes() {
 	// Build sorted list
 	s.sorted = make([]*Post, 0, len(s.posts))
@@ -292,6 +324,8 @@ func (s *EmbeddedStore) buildIndexes() {
 	tagCounts := make(map[string]int)
 	// Build series index
 	seriesCounts := make(map[string]int)
+	// Track tags per series for top tags calculation
+	seriesTagCounts := make(map[string]map[string]int)
 
 	for _, post := range s.posts {
 		for _, tag := range post.Meta.Tags {
@@ -300,6 +334,13 @@ func (s *EmbeddedStore) buildIndexes() {
 		}
 		if post.Meta.Series != "" {
 			seriesCounts[post.Meta.Series]++
+			// Track tags for this series
+			if seriesTagCounts[post.Meta.Series] == nil {
+				seriesTagCounts[post.Meta.Series] = make(map[string]int)
+			}
+			for _, tag := range post.Meta.Tags {
+				seriesTagCounts[post.Meta.Series][tag]++
+			}
 		}
 	}
 
@@ -323,10 +364,12 @@ func (s *EmbeddedStore) buildIndexes() {
 		return s.tags[i].Tag < s.tags[j].Tag
 	})
 
-	// Build sorted series counts
+	// Build sorted series counts with top tags
 	s.series = make([]SeriesCount, 0, len(seriesCounts))
 	for series, count := range seriesCounts {
-		s.series = append(s.series, SeriesCount{Series: series, Count: count})
+		// Get top 3 tags for this series
+		topTags := getTopTags(seriesTagCounts[series], 3)
+		s.series = append(s.series, SeriesCount{Series: series, Count: count, TopTags: topTags})
 	}
 	sort.Slice(s.series, func(i, j int) bool {
 		if s.series[i].Count != s.series[j].Count {

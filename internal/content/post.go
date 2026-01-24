@@ -57,6 +57,7 @@ type TagCount struct {
 
 // SeriesCount represents a series with its post count.
 type SeriesCount struct {
-	Series string
-	Count  int
+	Series  string
+	Count   int
+	TopTags []string // Top 3 most common tags across posts in this series
 }

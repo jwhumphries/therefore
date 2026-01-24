@@ -35,6 +35,7 @@ export interface TagResponse {
 export interface SeriesResponse {
   series: string;
   count: number;
+  topTags?: string[];
 }
 
 // API fetch functions

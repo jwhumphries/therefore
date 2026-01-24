@@ -7,7 +7,7 @@ tags:
   - philosophy
   - epistemology
   - metaphysics
-series: "foundations"
+series: "Foundations"
 summary: "The second installment in our foundations series tackles epistemology: the study of knowledge itself. How do we distinguish genuine knowledge from mere opinion?"
 ---
 

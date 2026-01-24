@@ -268,8 +268,8 @@ func TestAPIHandler_ListTags(t *testing.T) {
 func TestAPIHandler_ListSeries(t *testing.T) {
 	store := newMockStore()
 	store.series = []content.SeriesCount{
-		{Series: "Series A", Count: 5},
-		{Series: "Series B", Count: 3},
+		{Series: "Series A", Count: 5, TopTags: []string{"philosophy", "ethics"}},
+		{Series: "Series B", Count: 3, TopTags: []string{"theology"}},
 	}
 
 	handler := NewAPIHandler(store)
@@ -293,5 +293,8 @@ func TestAPIHandler_ListSeries(t *testing.T) {
 	}
 	if resp[0].Series != "Series A" || resp[0].Count != 5 {
 		t.Errorf("resp[0] = %+v, want {Series: Series A, Count: 5}", resp[0])
+	}
+	if len(resp[0].TopTags) != 2 || resp[0].TopTags[0] != "philosophy" {
+		t.Errorf("resp[0].TopTags = %v, want [philosophy, ethics]", resp[0].TopTags)
 	}
 }

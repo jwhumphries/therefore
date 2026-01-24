@@ -408,6 +408,7 @@ title: Post 1
 slug: post1
 publishDate: `+past+`
 series: Series A
+tags: [philosophy, ethics]
 ---
 Content.`), 0644)
 
@@ -416,6 +417,7 @@ title: Post 2
 slug: post2
 publishDate: `+past+`
 series: Series A
+tags: [philosophy, metaphysics]
 ---
 Content.`), 0644)
 
@@ -424,6 +426,7 @@ title: Post 3
 slug: post3
 publishDate: `+past+`
 series: Series B
+tags: [theology]
 ---
 Content.`), 0644)
 
@@ -448,5 +451,20 @@ Content.`), 0644)
 	}
 	if series[1].Series != "Series B" || series[1].Count != 1 {
 		t.Errorf("series[1] = %+v, want {Series: Series B, Count: 1}", series[1])
+	}
+
+	// TopTags should be computed correctly
+	// Series A has: philosophy (2), ethics (1), metaphysics (1)
+	// Top 3 should be: philosophy, ethics, metaphysics (sorted alphabetically for ties)
+	if len(series[0].TopTags) != 3 {
+		t.Errorf("series[0].TopTags length = %d, want 3", len(series[0].TopTags))
+	}
+	if series[0].TopTags[0] != "philosophy" {
+		t.Errorf("series[0].TopTags[0] = %q, want philosophy", series[0].TopTags[0])
+	}
+
+	// Series B has: theology (1)
+	if len(series[1].TopTags) != 1 || series[1].TopTags[0] != "theology" {
+		t.Errorf("series[1].TopTags = %v, want [theology]", series[1].TopTags)
 	}
 }
