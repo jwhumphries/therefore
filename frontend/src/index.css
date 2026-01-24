@@ -65,6 +65,11 @@ button,
   color: var(--foreground);
 }
 
+.prose strong,
+.prose b {
+  color: var(--foreground);
+}
+
 .prose a {
   color: var(--accent);
 }
