@@ -147,6 +147,7 @@ func TestAPIHandler_ListPosts(t *testing.T) {
 			Slug:        "post1",
 			PublishDate: time.Now(),
 			Tags:        []string{"philosophy"},
+			Series:      "Epistemology",
 		},
 	}
 	store.posts["post2"] = &content.Post{
@@ -155,6 +156,15 @@ func TestAPIHandler_ListPosts(t *testing.T) {
 			Slug:        "post2",
 			PublishDate: time.Now(),
 			Tags:        []string{"theology"},
+		},
+	}
+	store.posts["post3"] = &content.Post{
+		Meta: content.PostMeta{
+			Title:       "Post 3",
+			Slug:        "post3",
+			PublishDate: time.Now(),
+			Tags:        []string{"philosophy"},
+			Series:      "Epistemology",
 		},
 	}
 
@@ -175,8 +185,8 @@ func TestAPIHandler_ListPosts(t *testing.T) {
 		if err := json.Unmarshal(rec.Body.Bytes(), &resp); err != nil {
 			t.Fatalf("Failed to unmarshal response: %v", err)
 		}
-		if resp.Total != 2 {
-			t.Errorf("Total = %d, want 2", resp.Total)
+		if resp.Total != 3 {
+			t.Errorf("Total = %d, want 3", resp.Total)
 		}
 	})
 
@@ -194,8 +204,32 @@ func TestAPIHandler_ListPosts(t *testing.T) {
 		if err := json.Unmarshal(rec.Body.Bytes(), &resp); err != nil {
 			t.Fatalf("Failed to unmarshal response: %v", err)
 		}
-		if resp.Total != 1 {
-			t.Errorf("Total = %d, want 1", resp.Total)
+		if resp.Total != 2 {
+			t.Errorf("Total = %d, want 2", resp.Total)
+		}
+	})
+
+	t.Run("filter by series", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/api/posts?series=Epistemology", nil)
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
+
+		err := handler.ListPosts(c)
+		if err != nil {
+			t.Fatalf("ListPosts() error = %v", err)
+		}
+
+		var resp ListPostsResponse
+		if err := json.Unmarshal(rec.Body.Bytes(), &resp); err != nil {
+			t.Fatalf("Failed to unmarshal response: %v", err)
+		}
+		if resp.Total != 2 {
+			t.Errorf("Total = %d, want 2", resp.Total)
+		}
+		for _, post := range resp.Posts {
+			if post.Series != "Epistemology" {
+				t.Errorf("Post %q has series %q, want Epistemology", post.Slug, post.Series)
+			}
 		}
 	})
 }
