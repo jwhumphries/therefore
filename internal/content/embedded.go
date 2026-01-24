@@ -19,9 +19,15 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// SiteConfig contains site-wide configuration loaded from config.yaml.
+type SiteConfig struct {
+	Author Author `yaml:"author"`
+}
+
 // EmbeddedStore implements ContentStore using an afero filesystem.
 // All posts are loaded and rendered at initialization time.
 type EmbeddedStore struct {
+	config   SiteConfig
 	posts    map[string]*Post // keyed by slug
 	sorted   []*Post          // sorted by date, newest first
 	tags     []TagCount
@@ -39,12 +45,40 @@ func NewEmbeddedStore(fs afero.Fs, renderer Renderer) (*EmbeddedStore, error) {
 		tagIndex: make(map[string][]*Post),
 	}
 
+	// Load site config if present
+	if err := store.loadConfig(fs); err != nil {
+		return nil, fmt.Errorf("loading config: %w", err)
+	}
+
 	if err := store.loadPosts(fs, renderer); err != nil {
 		return nil, fmt.Errorf("loading posts: %w", err)
 	}
 
 	store.buildIndexes()
 	return store, nil
+}
+
+func (s *EmbeddedStore) loadConfig(fs afero.Fs) error {
+	f, err := fs.Open("config.yaml")
+	if err != nil {
+		if os.IsNotExist(err) {
+			// Config is optional
+			return nil
+		}
+		return err
+	}
+	defer func() { _ = f.Close() }()
+
+	content, err := io.ReadAll(f)
+	if err != nil {
+		return fmt.Errorf("reading config: %w", err)
+	}
+
+	if err := yaml.Unmarshal(content, &s.config); err != nil {
+		return fmt.Errorf("parsing config: %w", err)
+	}
+
+	return nil
 }
 
 func (s *EmbeddedStore) loadPosts(fs afero.Fs, renderer Renderer) error {
@@ -101,6 +135,11 @@ func (s *EmbeddedStore) parsePost(fs afero.Fs, path string, renderer Renderer) (
 
 	// Calculate word count from raw markdown
 	meta.WordCount = countWords(raw)
+
+	// Apply default author if not specified
+	if meta.Author.Name == "" {
+		meta.Author = s.config.Author
+	}
 
 	return &Post{
 		Meta:        meta,
