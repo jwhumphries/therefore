@@ -44,6 +44,7 @@ button,
 /* Prose styling - body text with Lora, headings with Fraunces */
 .prose {
   font-family: var(--font-body);
+  color: var(--foreground);
 }
 
 .prose h1,
@@ -54,48 +55,56 @@ button,
 .prose h6 {
   font-family: var(--font-display);
   font-weight: 600;
+  color: var(--foreground);
+}
+
+.prose p,
+.prose li,
+.prose blockquote {
+  color: var(--foreground);
+}
+
+.prose a {
+  color: var(--accent);
+}
+
+/* Article container - reset sidenote counter */
+article.prose {
+  counter-reset: sidenote-counter;
 }
 
 /* Sidenote styles */
 .sidenote-wrapper {
   position: relative;
+  display: inline;
 }
 
-.sidenote-number {
+.sidenote-trigger {
   counter-increment: sidenote-counter;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0 0.1em;
 }
 
-.sidenote-number::after {
+.sidenote-trigger::after {
   content: counter(sidenote-counter);
   font-size: 0.75rem;
   vertical-align: super;
 }
 
-.sidenote {
-  display: none;
-  margin-left: 0.5rem;
+.sidenote-trigger:hover {
+  text-decoration: underline;
 }
 
-.sidenote-toggle:checked + .sidenote {
-  display: inline;
+.sidenote-popover {
+  font-style: italic;
 }
 
-@media (min-width: 1280px) {
-  .sidenote {
-    display: block;
-    position: absolute;
-    right: -280px;
-    width: 250px;
-    margin-top: -1.5rem;
-  }
-
-  .sidenote-toggle:checked + .sidenote {
-    display: block;
-  }
-
-  .sidenote-number {
-    cursor: default;
-  }
+/* Invert italics within sidenotes - emphasized text becomes normal */
+.sidenote-popover em,
+.sidenote-popover i {
+  font-style: normal;
 }
 
 /* Timeline styles */
@@ -166,7 +175,8 @@ button,
 }
 
 /* Tag link styles */
-.tag-link {
+a.tag-link {
+  color: var(--foreground);
   text-decoration: none;
   font-weight: 500;
   background-image: linear-gradient(
@@ -179,7 +189,8 @@ button,
   transition: background-size 0.2s ease;
 }
 
-.tag-link:hover {
+a.tag-link:hover {
+  color: var(--foreground);
   background-size: 100% 4px;
 }
 
@@ -187,7 +198,7 @@ button,
   transition: color 0.2s ease, font-weight 0.2s ease;
 }
 
-.tag-link:hover .tag-hash {
+a.tag-link:hover .tag-hash {
   color: var(--accent);
   font-weight: 700;
 }

@@ -27,13 +27,13 @@ templ Article(post *content.Post, bodyHTML string) {
 				<span>{ readingTimeStr(post.Meta.WordCount) }</span>
 			</div>
 			if len(post.Meta.Tags) > 0 {
-				<div class="flex gap-2 mt-4 flex-wrap">
+				<div class="flex gap-3 mt-4 flex-wrap">
 					for _, tag := range post.Meta.Tags {
 						<a
 							href={ templ.SafeURL("/tags/" + tag) }
-							class="text-sm px-3 py-1 bg-default-100 rounded-full hover:bg-default-200 transition-colors"
+							class="tag-link text-sm"
 						>
-							{ tag }
+							<span class="tag-hash">#</span>{ tag }
 						</a>
 					}
 				</div>
@@ -43,19 +43,20 @@ templ Article(post *content.Post, bodyHTML string) {
 			@templ.Raw(bodyHTML)
 		</div>
 		if post.Meta.Author.Name != "" {
-			<footer class="mt-12 pt-8 border-t border-divider not-prose">
-				<div class="flex items-center gap-4">
+			<footer class="mt-16 py-6 border-t border-divider not-prose">
+				<div class="flex items-center gap-6">
 					if post.Meta.Author.Avatar != "" {
-						<img
-							src={ post.Meta.Author.Avatar }
-							alt={ post.Meta.Author.Name }
-							class="w-16 h-16 rounded-full object-cover"
-						/>
+						<span data-component="avatar">
+							<img
+								src={ post.Meta.Author.Avatar }
+								alt={ post.Meta.Author.Name }
+							/>
+						</span>
 					}
 					<div>
-						<div class="font-semibold">{ post.Meta.Author.Name }</div>
+						<div class="font-semibold text-lg">{ post.Meta.Author.Name }</div>
 						if post.Meta.Author.Bio != "" {
-							<p class="text-default-500 text-sm mt-1">{ post.Meta.Author.Bio }</p>
+							<p class="text-muted text-sm mt-2">{ post.Meta.Author.Bio }</p>
 						}
 					</div>
 				</div>

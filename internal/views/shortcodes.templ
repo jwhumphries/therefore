@@ -39,14 +39,10 @@ templ Quote(author, source, content string) {
 	</blockquote>
 }
 
-// Sidenote renders a margin note that can be expanded on mobile.
+// Sidenote renders a margin note as a popover.
 templ Sidenote(id, content string) {
-	<span class="sidenote-wrapper" data-component="sidenote">
-		<label for={ id } class="sidenote-number cursor-pointer text-primary"></label>
-		<input type="checkbox" id={ id } class="sidenote-toggle hidden"/>
-		<span class="sidenote text-sm text-default-500 italic">
-			@templ.Raw(content)
-		</span>
+	<span class="sidenote-wrapper" data-component="sidenote" data-sidenote-content={ content }>
+		<button type="button" class="sidenote-trigger cursor-pointer text-accent font-medium"></button>
 	</span>
 }
 

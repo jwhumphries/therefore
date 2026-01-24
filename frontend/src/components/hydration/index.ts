@@ -1,6 +1,7 @@
 import { initLightbox } from "./lightbox";
 import { initTimeline } from "./timeline";
 import { initSidenote } from "./sidenote";
+import { initAvatar } from "./avatar";
 
 type ComponentInit = (el: HTMLElement) => void;
 
@@ -8,6 +9,7 @@ const registry: Record<string, ComponentInit> = {
   lightbox: initLightbox,
   timeline: initTimeline,
   sidenote: initSidenote,
+  avatar: initAvatar,
 };
 
 /**
