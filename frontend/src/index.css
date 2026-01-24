@@ -241,6 +241,19 @@ a.tag-link:hover .tag-hash {
   }
 }
 
+/* ============================================================================
+   SCROLL PROGRESS BARS
+   Adjust visibility for dark mode using theme selector
+   ============================================================================ */
+
+.scroll-progress-bar {
+  background-color: oklch(from var(--accent) l c h / 0.4);
+}
+
+[data-theme="brodie-dark"] .scroll-progress-bar {
+  background-color: oklch(from var(--secondary) l c h / 0.85);
+}
+
 /* View Transitions API styles */
 @supports (view-transition-name: none) {
   /* Header stays in place during transitions */

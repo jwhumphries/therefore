@@ -7,6 +7,7 @@ import { initTagLinks } from "../components/hydration/taglink";
 import { TransitionLink } from "../components/TransitionLink";
 import { useViewTransitionNavigate } from "../hooks/useViewTransition";
 import { TableOfContents } from "../components/TableOfContents";
+import { ScrollProgressBars } from "../components/ScrollProgressBars";
 
 export function PostPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -71,8 +72,12 @@ export function PostPage() {
 
   return (
     <div className="max-w-[90rem] mx-auto xl:grid xl:grid-cols-[1fr_minmax(0,48rem)_1fr] xl:gap-8">
-      {/* Left spacer - empty on desktop, collapses on mobile */}
-      <div className="hidden xl:block" />
+      {/* Scroll progress bars - sticky in left column, aligned to far left */}
+      <aside className="hidden xl:flex justify-start">
+        <div className="sticky top-[calc(var(--header-height,4rem)+1rem)] h-[calc(100vh-var(--header-height,4rem)-2rem)] w-16">
+          <ScrollProgressBars contentRef={contentRef} />
+        </div>
+      </aside>
 
       {/* Main content - centered column */}
       <div className="max-w-3xl mx-auto xl:mx-0">
