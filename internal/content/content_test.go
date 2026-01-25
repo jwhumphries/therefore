@@ -228,33 +228,42 @@ Content.`), 0644)
 	ctx := context.Background()
 
 	// Test sorting (newest first)
-	posts, err := store.ListPosts(ctx, ListOptions{})
+	posts, total, err := store.ListPosts(ctx, ListOptions{})
 	if err != nil {
 		t.Fatalf("ListPosts() error = %v", err)
 	}
 	if len(posts) != 3 {
 		t.Fatalf("len(posts) = %d, want 3", len(posts))
 	}
+	if total != 3 {
+		t.Errorf("total = %d, want 3", total)
+	}
 	if posts[0].Meta.Slug != "third" {
 		t.Errorf("posts[0].Slug = %q, want %q", posts[0].Meta.Slug, "third")
 	}
 
 	// Test limit
-	posts, err = store.ListPosts(ctx, ListOptions{Limit: 2})
+	posts, total, err = store.ListPosts(ctx, ListOptions{Limit: 2})
 	if err != nil {
 		t.Fatalf("ListPosts(limit=2) error = %v", err)
 	}
 	if len(posts) != 2 {
 		t.Errorf("len(posts) = %d, want 2", len(posts))
 	}
+	if total != 3 {
+		t.Errorf("total = %d, want 3 (total before pagination)", total)
+	}
 
 	// Test offset
-	posts, err = store.ListPosts(ctx, ListOptions{Offset: 1})
+	posts, total, err = store.ListPosts(ctx, ListOptions{Offset: 1})
 	if err != nil {
 		t.Fatalf("ListPosts(offset=1) error = %v", err)
 	}
 	if len(posts) != 2 {
 		t.Errorf("len(posts) = %d, want 2", len(posts))
+	}
+	if total != 3 {
+		t.Errorf("total = %d, want 3 (total before pagination)", total)
 	}
 }
 
@@ -298,30 +307,39 @@ Content.`), 0644)
 	ctx := context.Background()
 
 	// Filter by philosophy tag
-	posts, err := store.ListPosts(ctx, ListOptions{Tag: "philosophy"})
+	posts, total, err := store.ListPosts(ctx, ListOptions{Tag: "philosophy"})
 	if err != nil {
 		t.Fatalf("ListPosts(tag=philosophy) error = %v", err)
 	}
 	if len(posts) != 2 {
 		t.Errorf("len(posts) = %d, want 2", len(posts))
 	}
+	if total != 2 {
+		t.Errorf("total = %d, want 2", total)
+	}
 
 	// Filter by theology tag
-	posts, err = store.ListPosts(ctx, ListOptions{Tag: "theology"})
+	posts, total, err = store.ListPosts(ctx, ListOptions{Tag: "theology"})
 	if err != nil {
 		t.Fatalf("ListPosts(tag=theology) error = %v", err)
 	}
 	if len(posts) != 2 {
 		t.Errorf("len(posts) = %d, want 2", len(posts))
 	}
+	if total != 2 {
+		t.Errorf("total = %d, want 2", total)
+	}
 
 	// Filter by nonexistent tag
-	posts, err = store.ListPosts(ctx, ListOptions{Tag: "nonexistent"})
+	posts, total, err = store.ListPosts(ctx, ListOptions{Tag: "nonexistent"})
 	if err != nil {
 		t.Fatalf("ListPosts(tag=nonexistent) error = %v", err)
 	}
 	if len(posts) != 0 {
 		t.Errorf("len(posts) = %d, want 0", len(posts))
+	}
+	if total != 0 {
+		t.Errorf("total = %d, want 0", total)
 	}
 }
 

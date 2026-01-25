@@ -259,6 +259,107 @@ a.tag-link:hover .tag-hash {
   background-color: oklch(from var(--secondary) l c h / 0.85);
 }
 
+/* ============================================================================
+   PAGINATION PAGE TRANSITIONS
+   Posts slide out left, new posts slide in from right
+   ============================================================================ */
+
+.posts-container {
+  position: relative;
+}
+
+/* Horizontal slide animations for pagination */
+.posts-exit-left {
+  animation: posts-slide-out-left 250ms ease-in forwards;
+}
+
+.posts-enter-right {
+  animation: posts-slide-in-right 300ms ease-out forwards;
+}
+
+.posts-exit-right {
+  animation: posts-slide-out-right 250ms ease-in forwards;
+}
+
+.posts-enter-left {
+  animation: posts-slide-in-left 300ms ease-out forwards;
+}
+
+/* Vertical shuffle animations for sort changes */
+.posts-exit-down {
+  animation: posts-shuffle-out 200ms ease-in forwards;
+}
+
+.posts-enter-up {
+  animation: posts-shuffle-in 250ms ease-out forwards;
+}
+
+@keyframes posts-slide-out-left {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+}
+
+@keyframes posts-slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes posts-slide-out-right {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(60px);
+  }
+}
+
+@keyframes posts-slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes posts-shuffle-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+}
+
+@keyframes posts-shuffle-in {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 /* View Transitions API styles */
 @supports (view-transition-name: none) {
   /* Header stays in place during transitions */

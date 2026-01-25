@@ -22,8 +22,8 @@ const CONFIG: AnimationConfig = {
   boldingDuration: 150,
   fadingDuration: 200,
   unboldingDuration: 150,
-  baseOpacity: 0.35,
-  minFadeOpacity: 0.1,
+  baseOpacity: 0.25, // More faint characters
+  minFadeOpacity: 0.08,
 };
 
 // Color palette - purples from gradient + gold from secondary
@@ -356,10 +356,10 @@ export function AncientScriptBackground({ className = "" }: AncientScriptBackgro
       ctx.textBaseline = "middle";
 
       // Heavy blur first (background) - also reduce opacity
-      renderCharacterBatch(ctx, zone2, 4, dpr, CONFIG.fontSize, 0.5);
+      renderCharacterBatch(ctx, zone2, 6, dpr, CONFIG.fontSize, 0.4);
 
       // Light blur (transition) - slightly reduce opacity
-      renderCharacterBatch(ctx, zone1, 2, dpr, CONFIG.fontSize, 0.75);
+      renderCharacterBatch(ctx, zone1, 3, dpr, CONFIG.fontSize, 0.65);
 
       // Sharp (river center) - full opacity
       renderCharacterBatch(ctx, zone0, 0, dpr, CONFIG.fontSize, 1.0);

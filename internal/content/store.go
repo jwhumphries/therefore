@@ -22,7 +22,8 @@ type ContentStore interface {
 
 	// ListPosts returns posts matching the given options.
 	// Posts are returned sorted by publish date, newest first.
-	ListPosts(ctx context.Context, opts ListOptions) ([]*Post, error)
+	// Returns the posts, total count (before pagination), and any error.
+	ListPosts(ctx context.Context, opts ListOptions) ([]*Post, int, error)
 
 	// GetTags returns all tags with their post counts.
 	GetTags(ctx context.Context) ([]TagCount, error)

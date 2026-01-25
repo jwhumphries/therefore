@@ -40,6 +40,23 @@ type Post struct {
 	BundleDir   string // Directory path for page bundles (empty for standalone posts)
 }
 
+// SortField represents the field to sort posts by.
+type SortField string
+
+const (
+	SortByDate        SortField = "date"
+	SortByTitle       SortField = "title"
+	SortByReadingTime SortField = "readingTime"
+)
+
+// SortOrder represents the sort direction.
+type SortOrder string
+
+const (
+	SortAsc  SortOrder = "asc"
+	SortDesc SortOrder = "desc"
+)
+
 // ListOptions configures post list queries.
 type ListOptions struct {
 	Tag          string
@@ -47,6 +64,8 @@ type ListOptions struct {
 	IncludeDraft bool
 	Limit        int
 	Offset       int
+	SortBy       SortField
+	SortOrder    SortOrder
 }
 
 // TagCount represents a tag with its post count.

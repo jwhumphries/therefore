@@ -35,7 +35,7 @@ func (m *mockStore) GetPost(_ context.Context, slug string) (*content.Post, erro
 	return post, nil
 }
 
-func (m *mockStore) ListPosts(_ context.Context, opts content.ListOptions) ([]*content.Post, error) {
+func (m *mockStore) ListPosts(_ context.Context, opts content.ListOptions) ([]*content.Post, int, error) {
 	var posts []*content.Post
 	for _, post := range m.posts {
 		// Filter by Tag
@@ -59,7 +59,7 @@ func (m *mockStore) ListPosts(_ context.Context, opts content.ListOptions) ([]*c
 		}
 		posts = append(posts, post)
 	}
-	return posts, nil
+	return posts, len(posts), nil
 }
 
 func (m *mockStore) GetTags(_ context.Context) ([]content.TagCount, error) {

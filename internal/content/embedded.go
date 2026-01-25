@@ -392,7 +392,8 @@ func (s *EmbeddedStore) GetPost(_ context.Context, slug string) (*Post, error) {
 }
 
 // ListPosts returns posts matching the given options.
-func (s *EmbeddedStore) ListPosts(_ context.Context, opts ListOptions) ([]*Post, error) {
+// Returns posts, total count (before pagination), and any error.
+func (s *EmbeddedStore) ListPosts(_ context.Context, opts ListOptions) ([]*Post, int, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -414,10 +415,43 @@ func (s *EmbeddedStore) ListPosts(_ context.Context, opts ListOptions) ([]*Post,
 		filtered = append(filtered, post)
 	}
 
+	// Apply sorting (default is date descending, which is already the default order)
+	if opts.SortBy != "" || opts.SortOrder != "" {
+		sortBy := opts.SortBy
+		if sortBy == "" {
+			sortBy = SortByDate
+		}
+		sortOrder := opts.SortOrder
+		if sortOrder == "" {
+			sortOrder = SortDesc
+		}
+
+		sort.SliceStable(filtered, func(i, j int) bool {
+			var less bool
+			switch sortBy {
+			case SortByTitle:
+				less = strings.ToLower(filtered[i].Meta.Title) < strings.ToLower(filtered[j].Meta.Title)
+			case SortByReadingTime:
+				less = filtered[i].Meta.ReadingTime() < filtered[j].Meta.ReadingTime()
+			case SortByDate:
+				fallthrough
+			default:
+				less = filtered[i].Meta.PublishDate.Before(filtered[j].Meta.PublishDate)
+			}
+			if sortOrder == SortDesc {
+				return !less
+			}
+			return less
+		})
+	}
+
+	// Capture total count before pagination
+	total := len(filtered)
+
 	// Apply offset and limit
 	if opts.Offset > 0 {
 		if opts.Offset >= len(filtered) {
-			return nil, nil
+			return nil, total, nil
 		}
 		filtered = filtered[opts.Offset:]
 	}
@@ -426,7 +460,7 @@ func (s *EmbeddedStore) ListPosts(_ context.Context, opts ListOptions) ([]*Post,
 		filtered = filtered[:opts.Limit]
 	}
 
-	return filtered, nil
+	return filtered, total, nil
 }
 
 // GetTags returns all tags with their post counts.

@@ -80,15 +80,33 @@ func (h *APIHandler) ListPosts(c *echo.Context) error {
 			opts.Offset = offset
 		}
 	}
+	if sortBy := c.QueryParam("sortBy"); sortBy != "" {
+		switch sortBy {
+		case "date":
+			opts.SortBy = content.SortByDate
+		case "title":
+			opts.SortBy = content.SortByTitle
+		case "readingTime":
+			opts.SortBy = content.SortByReadingTime
+		}
+	}
+	if sortOrder := c.QueryParam("sortOrder"); sortOrder != "" {
+		switch sortOrder {
+		case "asc":
+			opts.SortOrder = content.SortAsc
+		case "desc":
+			opts.SortOrder = content.SortDesc
+		}
+	}
 
-	posts, err := h.store.ListPosts(c.Request().Context(), opts)
+	posts, total, err := h.store.ListPosts(c.Request().Context(), opts)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to list posts")
 	}
 
 	resp := ListPostsResponse{
 		Posts: make([]PostResponse, 0, len(posts)),
-		Total: len(posts),
+		Total: total,
 	}
 
 	for _, post := range posts {
