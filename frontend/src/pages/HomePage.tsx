@@ -1,7 +1,9 @@
 import { Card, Chip, Skeleton, ScrollShadow } from "@heroui/react";
-import { usePosts } from "../hooks/api";
+import { usePaginatedPosts } from "../hooks/api";
 import { TagLink } from "../components/TagLink";
 import { useViewTransitionNavigate } from "../hooks/useViewTransition";
+
+const LATEST_POSTS_LIMIT = 10;
 
 function isNewPost(publishDate: string): boolean {
   const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
@@ -27,7 +29,7 @@ function PostCardSkeleton() {
 }
 
 export function HomePage() {
-  const { data, isLoading, error } = usePosts();
+  const { data, isLoading, error } = usePaginatedPosts({ limit: LATEST_POSTS_LIMIT });
   const navigate = useViewTransitionNavigate();
 
   if (isLoading) {
