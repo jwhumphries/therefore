@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { SplitText } from "../components/SplitText";
 import { SlideInButton } from "../components/SlideInButton";
+import { AncientScriptBackground } from "../components/background";
 import { useViewTransitionNavigate } from "../hooks/useViewTransition";
 
 export function SplashPage() {
@@ -16,8 +17,9 @@ export function SplashPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground">
-      <div className="text-center">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground relative overflow-hidden">
+      <AncientScriptBackground className="absolute inset-0 z-0" />
+      <div className="text-center relative z-10">
         <div className="relative inline-block">
           {/* Phase 1: SplitText animates characters in with solid color */}
           {/* Phase 2: After completion, crossfade to animated gradient */}
