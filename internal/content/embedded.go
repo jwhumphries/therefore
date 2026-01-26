@@ -373,6 +373,7 @@ func (s *EmbeddedStore) buildIndexes() {
 	// Build sorted series counts with top tags
 	s.series = make([]SeriesCount, 0, len(seriesCounts))
 	sevenDaysAgo := time.Now().AddDate(0, 0, -7)
+	thirtyDaysAgo := time.Now().AddDate(0, 0, -30)
 	for series, count := range seriesCounts {
 		// Get top 3 tags for this series
 		topTags := getTopTags(seriesTagCounts[series], 3)
@@ -385,10 +386,19 @@ func (s *EmbeddedStore) buildIndexes() {
 			HasRecentPosts: hasRecentPosts,
 		})
 	}
+	// Sort series: active (posts within 30 days) first, then by count descending, then alphabetically
 	sort.Slice(s.series, func(i, j int) bool {
+		iActive := seriesLatestDate[s.series[i].Series].After(thirtyDaysAgo)
+		jActive := seriesLatestDate[s.series[j].Series].After(thirtyDaysAgo)
+		// Active series come first
+		if iActive != jActive {
+			return iActive
+		}
+		// Within same activity group, sort by count descending
 		if s.series[i].Count != s.series[j].Count {
 			return s.series[i].Count > s.series[j].Count
 		}
+		// Alphabetical as tiebreaker
 		return s.series[i].Series < s.series[j].Series
 	})
 }
