@@ -79,6 +79,31 @@ article.prose {
   counter-reset: sidenote-counter;
 }
 
+/* ============================================================================
+   DROP CAP / INITIAL LETTER
+   Medieval-style illuminated initial with gold gradient and small caps run-in
+   ============================================================================ */
+
+/* Target the first paragraph of article content */
+article.prose .content > p:first-of-type::first-letter {
+  float: left;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 3.5em;
+  line-height: 0.8;
+  padding-right: 0.1em;
+  margin-top: 0.05em;
+  margin-bottom: -0.1em;
+  color: var(--secondary);
+}
+
+/* Small caps for the first line - graceful transition into body text */
+article.prose .content > p:first-of-type::first-line {
+  font-variant: small-caps;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
 /* Sidenote styles */
 .sidenote-wrapper {
   position: relative;
