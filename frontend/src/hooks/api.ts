@@ -15,6 +15,7 @@ export interface PostListItem {
   tags?: string[];
   series?: string;
   readingTime: number;
+  searchContent?: string;
 }
 
 export interface PostDetail extends PostListItem {

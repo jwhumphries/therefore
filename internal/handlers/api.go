@@ -3,7 +3,9 @@ package handlers
 import (
 	"errors"
 	"net/http"
+	"regexp"
 	"strconv"
+	"strings"
 
 	"therefore/internal/content"
 	"therefore/internal/views"
@@ -30,15 +32,16 @@ type AuthorResponse struct {
 
 // PostResponse is the JSON representation of a post.
 type PostResponse struct {
-	Slug        string          `json:"slug"`
-	Title       string          `json:"title"`
-	Summary     string          `json:"summary,omitempty"`
-	PublishDate string          `json:"publishDate"`
-	Tags        []string        `json:"tags,omitempty"`
-	Series      string          `json:"series,omitempty"`
-	ReadingTime int             `json:"readingTime"` // minutes
-	HTMLContent string          `json:"htmlContent,omitempty"`
-	Author      *AuthorResponse `json:"author,omitempty"`
+	Slug          string          `json:"slug"`
+	Title         string          `json:"title"`
+	Summary       string          `json:"summary,omitempty"`
+	PublishDate   string          `json:"publishDate"`
+	Tags          []string        `json:"tags,omitempty"`
+	Series        string          `json:"series,omitempty"`
+	ReadingTime   int             `json:"readingTime"` // minutes
+	SearchContent string          `json:"searchContent,omitempty"`
+	HTMLContent   string          `json:"htmlContent,omitempty"`
+	Author        *AuthorResponse `json:"author,omitempty"`
 }
 
 // ListPostsResponse is the JSON response for listing posts.
@@ -111,7 +114,7 @@ func (h *APIHandler) ListPosts(c *echo.Context) error {
 	}
 
 	for _, post := range posts {
-		resp.Posts = append(resp.Posts, postToResponse(post, false))
+		resp.Posts = append(resp.Posts, postToResponse(post, false, true))
 	}
 
 	return c.JSON(http.StatusOK, resp)
@@ -128,7 +131,7 @@ func (h *APIHandler) GetPost(c *echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get post")
 	}
 
-	return c.JSON(http.StatusOK, postToResponse(post, true))
+	return c.JSON(http.StatusOK, postToResponse(post, true, false))
 }
 
 // ListTags returns a JSON list of tags with counts.
@@ -213,7 +216,40 @@ func hasExtension(filename string, exts ...string) bool {
 	return false
 }
 
-func postToResponse(post *content.Post, includeContent bool) PostResponse {
+// extractSearchContent extracts plain text from HTML content for search indexing.
+// It strips HTML tags, collapses whitespace, and truncates to maxLen characters.
+func extractSearchContent(htmlContent string, maxLen int) string {
+	// Remove HTML tags
+	tagRegex := regexp.MustCompile(`<[^>]*>`)
+	text := tagRegex.ReplaceAllString(htmlContent, " ")
+
+	// Decode common HTML entities
+	text = strings.ReplaceAll(text, "&amp;", "&")
+	text = strings.ReplaceAll(text, "&lt;", "<")
+	text = strings.ReplaceAll(text, "&gt;", ">")
+	text = strings.ReplaceAll(text, "&quot;", "\"")
+	text = strings.ReplaceAll(text, "&#39;", "'")
+	text = strings.ReplaceAll(text, "&nbsp;", " ")
+
+	// Collapse whitespace
+	wsRegex := regexp.MustCompile(`\s+`)
+	text = wsRegex.ReplaceAllString(text, " ")
+	text = strings.TrimSpace(text)
+
+	// Truncate to maxLen, trying to break at word boundary
+	if len(text) > maxLen {
+		text = text[:maxLen]
+		// Find last space to break at word boundary
+		if lastSpace := strings.LastIndex(text, " "); lastSpace > maxLen-50 {
+			text = text[:lastSpace]
+		}
+		text += "..."
+	}
+
+	return text
+}
+
+func postToResponse(post *content.Post, includeContent bool, includeSearchContent bool) PostResponse {
 	resp := PostResponse{
 		Slug:        post.Meta.Slug,
 		Title:       post.Meta.Title,
@@ -231,6 +267,11 @@ func postToResponse(post *content.Post, includeContent bool) PostResponse {
 			Avatar: post.Meta.Author.Avatar,
 			Bio:    post.Meta.Author.Bio,
 		}
+	}
+
+	if includeSearchContent {
+		// Extract plain text from HTML for search indexing (800 chars max)
+		resp.SearchContent = extractSearchContent(post.HTMLContent, 800)
 	}
 
 	if includeContent {
