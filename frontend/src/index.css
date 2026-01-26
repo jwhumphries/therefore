@@ -360,6 +360,33 @@ a.tag-link:hover .tag-hash {
   }
 }
 
+/* ============================================================================
+   READING RAIL SIDEBAR
+   Timeline of Thought - sticky sidebar showing active series
+   ============================================================================ */
+
+.reading-rail-node {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reading-rail-node:hover {
+  transform: scale(1.2);
+}
+
+/* Pulse animation for active series nodes */
+@keyframes rail-node-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 oklch(from var(--accent) l c h / 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 4px oklch(from var(--accent) l c h / 0);
+  }
+}
+
+.reading-rail-node-active {
+  animation: rail-node-pulse 2s ease-in-out infinite;
+}
+
 /* View Transitions API styles */
 @supports (view-transition-name: none) {
   /* Header stays in place during transitions */

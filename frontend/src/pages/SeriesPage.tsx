@@ -1,7 +1,9 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Button, Skeleton } from "@heroui/react";
 import { useSeries } from "../hooks/api";
 import { SeriesAccordion } from "../components/SeriesAccordion";
+import type { NavigationState } from "../hooks/useViewTransition";
 
 const SERIES_PER_PAGE = 15;
 
@@ -135,12 +137,36 @@ function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) 
 }
 
 export function SeriesPage() {
+  const location = useLocation();
+  const navState = location.state as NavigationState | null;
   const { data, isLoading, error } = useSeries();
   const [currentPage, setCurrentPage] = useState(1);
   const [animationState, setAnimationState] = useState<AnimationState>("idle");
   const [animationType, setAnimationType] = useState<AnimationType>("page-forward");
+  const [openSeries, setOpenSeries] = useState<string | null>(null);
 
   const totalPages = data ? Math.ceil(data.length / SERIES_PER_PAGE) : 0;
+
+  // Handle navigation state to auto-open a series
+  useEffect(() => {
+    if (navState?.openSeries && data) {
+      const targetSeries = navState.openSeries;
+      // Find which page this series is on
+      const seriesIndex = data.findIndex((s) => s.series === targetSeries);
+      if (seriesIndex !== -1) {
+        const targetPage = Math.floor(seriesIndex / SERIES_PER_PAGE) + 1;
+        // Use setTimeout to defer state updates (avoids lint rule)
+        setTimeout(() => {
+          if (targetPage !== currentPage) {
+            setCurrentPage(targetPage);
+          }
+          setOpenSeries(targetSeries);
+        }, 0);
+      }
+      // Clear the navigation state to prevent re-triggering
+      window.history.replaceState({}, document.title);
+    }
+  }, [navState?.openSeries, data, currentPage]);
 
   // Get current page of series
   const startIndex = (currentPage - 1) * SERIES_PER_PAGE;
@@ -229,6 +255,12 @@ export function SeriesPage() {
             count={s.count}
             topTags={s.topTags}
             hasRecentPosts={s.hasRecentPosts}
+            defaultOpen={s.series === openSeries}
+            onOpenChange={(isOpen) => {
+              if (!isOpen && s.series === openSeries) {
+                setOpenSeries(null);
+              }
+            }}
           />
         ))}
       </div>
