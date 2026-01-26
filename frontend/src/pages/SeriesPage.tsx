@@ -62,6 +62,7 @@ export function SeriesPage() {
             series={s.series}
             count={s.count}
             topTags={s.topTags}
+            hasRecentPosts={s.hasRecentPosts}
           />
         ))}
       </div>

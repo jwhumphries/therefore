@@ -36,6 +36,7 @@ export interface SeriesResponse {
   series: string;
   count: number;
   topTags?: string[];
+  hasRecentPosts: boolean;
 }
 
 // Pagination and sorting options

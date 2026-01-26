@@ -326,6 +326,8 @@ func (s *EmbeddedStore) buildIndexes() {
 	seriesCounts := make(map[string]int)
 	// Track tags per series for top tags calculation
 	seriesTagCounts := make(map[string]map[string]int)
+	// Track most recent post date per series
+	seriesLatestDate := make(map[string]time.Time)
 
 	for _, post := range s.posts {
 		for _, tag := range post.Meta.Tags {
@@ -340,6 +342,10 @@ func (s *EmbeddedStore) buildIndexes() {
 			}
 			for _, tag := range post.Meta.Tags {
 				seriesTagCounts[post.Meta.Series][tag]++
+			}
+			// Track most recent post in this series
+			if post.Meta.PublishDate.After(seriesLatestDate[post.Meta.Series]) {
+				seriesLatestDate[post.Meta.Series] = post.Meta.PublishDate
 			}
 		}
 	}
@@ -366,10 +372,18 @@ func (s *EmbeddedStore) buildIndexes() {
 
 	// Build sorted series counts with top tags
 	s.series = make([]SeriesCount, 0, len(seriesCounts))
+	sevenDaysAgo := time.Now().AddDate(0, 0, -7)
 	for series, count := range seriesCounts {
 		// Get top 3 tags for this series
 		topTags := getTopTags(seriesTagCounts[series], 3)
-		s.series = append(s.series, SeriesCount{Series: series, Count: count, TopTags: topTags})
+		// Check if the series has any posts from the last 7 days
+		hasRecentPosts := seriesLatestDate[series].After(sevenDaysAgo)
+		s.series = append(s.series, SeriesCount{
+			Series:         series,
+			Count:          count,
+			TopTags:        topTags,
+			HasRecentPosts: hasRecentPosts,
+		})
 	}
 	sort.Slice(s.series, func(i, j int) bool {
 		if s.series[i].Count != s.series[j].Count {

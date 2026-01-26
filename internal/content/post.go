@@ -76,7 +76,8 @@ type TagCount struct {
 
 // SeriesCount represents a series with its post count.
 type SeriesCount struct {
-	Series  string
-	Count   int
-	TopTags []string // Top 3 most common tags across posts in this series
+	Series         string
+	Count          int
+	TopTags        []string // Top 3 most common tags across posts in this series
+	HasRecentPosts bool     // True if any post in the series was published within the last 7 days
 }

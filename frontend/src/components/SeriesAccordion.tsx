@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { Chip } from "@heroui/react";
 import { SeriesTimeline } from "./SeriesTimeline";
 import { TagLink } from "./TagLink";
 
@@ -7,9 +8,10 @@ interface SeriesAccordionProps {
   series: string;
   count: number;
   topTags?: string[];
+  hasRecentPosts?: boolean;
 }
 
-export function SeriesAccordion({ series, count, topTags }: SeriesAccordionProps) {
+export function SeriesAccordion({ series, count, topTags, hasRecentPosts }: SeriesAccordionProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -30,7 +32,12 @@ export function SeriesAccordion({ series, count, topTags }: SeriesAccordionProps
         aria-expanded={isOpen}
       >
         <div className="flex flex-col gap-1">
-          <span className="text-2xl font-display font-semibold">{series}</span>
+          <div className="flex items-center gap-3">
+            <span className="text-2xl font-display font-semibold">{series}</span>
+            {hasRecentPosts && (
+              <Chip size="sm" color="accent">Recently Updated</Chip>
+            )}
+          </div>
           {topTags && topTags.length > 0 && (
             <div className="flex items-center gap-2 mt-1">
               {topTags.map((tag) => (

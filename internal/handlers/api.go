@@ -55,9 +55,10 @@ type TagResponse struct {
 
 // SeriesResponse is the JSON representation of a series.
 type SeriesResponse struct {
-	Series  string   `json:"series"`
-	Count   int      `json:"count"`
-	TopTags []string `json:"topTags,omitempty"`
+	Series         string   `json:"series"`
+	Count          int      `json:"count"`
+	TopTags        []string `json:"topTags,omitempty"`
+	HasRecentPosts bool     `json:"hasRecentPosts"`
 }
 
 // ListPosts returns a JSON list of posts.
@@ -158,9 +159,10 @@ func (h *APIHandler) ListSeries(c *echo.Context) error {
 	resp := make([]SeriesResponse, 0, len(series))
 	for _, s := range series {
 		resp = append(resp, SeriesResponse{
-			Series:  s.Series,
-			Count:   s.Count,
-			TopTags: s.TopTags,
+			Series:         s.Series,
+			Count:          s.Count,
+			TopTags:        s.TopTags,
+			HasRecentPosts: s.HasRecentPosts,
 		})
 	}
 
