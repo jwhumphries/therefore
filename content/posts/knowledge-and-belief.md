@@ -23,6 +23,8 @@ citations:
 
 You believe many things. You believe the sun will rise tomorrow. You believe your memories are generally reliable. You believe other people have minds like yours. But do you *know* these things? And what's the difference?
 
+{{term word="Epistemology" origin="Greek: ἐπιστήμη (epistēmē), knowledge"}}The branch of philosophy concerned with the nature, sources, and limits of knowledge. It asks: *What can we know? How do we know it? What justifies our beliefs?*{{/term}}
+
 ## The Classical Definition
 
 Since Plato, philosophers have generally defined knowledge as "justified true belief."{{cite alias="plato-theaetetus"}} {{sidenote id="jtb"}}This definition appears in Plato's *Theaetetus*, though Plato himself raises objections to it. The dialogue ends in aporia—philosophical puzzlement—without a definitive answer.{{/sidenote}} To know something, on this account, you need three things:

@@ -18,6 +18,7 @@ func ShortcodeRenderers() map[string]renderer.ShortcodeRenderer {
 		"quote":    renderQuote,
 		"sidenote": renderSidenote,
 		"cite":     renderCite,
+		"term":     renderTerm,
 		"timeline": renderTimeline,
 	}
 }
@@ -52,6 +53,13 @@ func renderSidenote(sc renderer.Shortcode, _ *renderer.RenderContext) string {
 	var buf bytes.Buffer
 	content := renderInlineMarkdown(sc.Content)
 	_ = Sidenote(sc.Attrs["id"], content).Render(context.Background(), &buf)
+	return buf.String()
+}
+
+func renderTerm(sc renderer.Shortcode, _ *renderer.RenderContext) string {
+	var buf bytes.Buffer
+	content := renderInlineMarkdown(sc.Content)
+	_ = Term(sc.Attrs["word"], sc.Attrs["origin"], content).Render(context.Background(), &buf)
 	return buf.String()
 }
 

@@ -96,6 +96,21 @@ templ CitationsAccordion(citations []CitationEntry) {
 	}
 }
 
+// Term renders a compact definition box for technical/philosophical terms.
+templ Term(word, origin, content string) {
+	<aside class="term-box my-4 py-2 pl-4 border-l-2 border-secondary not-prose">
+		<div class="term-header">
+			<span class="font-display font-semibold text-sm tracking-wide uppercase">{ word }</span>
+			if origin != "" {
+				<span class="text-muted text-xs italic"> — { origin }</span>
+			}
+		</div>
+		<p class="text-sm text-default-600 mt-1 leading-relaxed">
+			@templ.Raw(content)
+		</p>
+	</aside>
+}
+
 // Timeline renders a chronological list of events.
 templ Timeline(start, end string, events []TimelineEvent) {
 	<ul class="timeline" data-component="timeline" data-start={ start } data-end={ end }>

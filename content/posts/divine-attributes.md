@@ -13,6 +13,8 @@ summary: "Classical theism ascribes certain attributes to God: omnipotence, omni
 
 When theologians and philosophers speak of God, they typically ascribe certain properties or attributes. But these terms are more complex than they first appear.
 
+{{term word="Classical Theism" origin="Latin: theismus"}}The traditional philosophical view of God as a maximally perfect being: omnipotent, omniscient, omnibenevolent, simple, immutable, and eternal.{{/term}}
+
 ## Omnipotence
 
 God is all-powerful. But what does this mean? Can God create a stone so heavy He cannot lift it? Can God make 2+2=5? Can God do evil?
