@@ -179,6 +179,14 @@ func formatVerseNumbers(content string) string {
 	return result
 }
 
+// applyScriptureDropCap wraps the first actual letter (skipping any leading
+// <sup> verse number tags) in a drop cap span.
+func applyScriptureDropCap(content string) string {
+	// Skip past any leading <sup ...>...</sup> tags and whitespace
+	dropCap := regexp.MustCompile(`^((?:<sup[^>]*>[^<]*</sup>|\s)*)(\pL)`)
+	return dropCap.ReplaceAllString(content, `$1<span class="scripture-drop-cap">$2</span>`)
+}
+
 // Parallel renders a side-by-side comparison of two viewpoints or texts.
 templ Parallel(leftLabel, rightLabel, leftContent, rightContent string) {
 	<aside class="parallel-box not-prose">

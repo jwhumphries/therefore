@@ -93,6 +93,7 @@ func renderScripture(sc renderer.Shortcode, _ *renderer.RenderContext) string {
 	// so goldmark doesn't strip the raw HTML
 	content := renderInlineMarkdown(strings.TrimSpace(sc.Content))
 	content = formatVerseNumbers(content)
+	content = applyScriptureDropCap(content)
 	poetry := sc.Attrs["format"] == "poetry"
 
 	var buf bytes.Buffer
