@@ -9,17 +9,24 @@ type Author struct {
 	Bio    string `yaml:"bio"`
 }
 
+// Citation represents a reusable citation defined in frontmatter.
+type Citation struct {
+	Text string `yaml:"text"` // Display text (e.g., "Aquinas, Summa Theologica (1265)")
+	URL  string `yaml:"url"`  // Link to source
+}
+
 // PostMeta contains metadata parsed from YAML frontmatter.
 type PostMeta struct {
-	Title       string    `yaml:"title"`
-	Slug        string    `yaml:"slug"`
-	Summary     string    `yaml:"summary"`
-	Series      string    `yaml:"series,omitempty"`
-	PublishDate time.Time `yaml:"publishDate"`
-	Draft       bool      `yaml:"draft,omitempty"`
-	Tags        []string  `yaml:"tags,omitempty"`
-	Author      Author    `yaml:"author,omitempty"`
-	WordCount   int       `yaml:"-"` // Computed from content, not parsed from YAML
+	Title       string              `yaml:"title"`
+	Slug        string              `yaml:"slug"`
+	Summary     string              `yaml:"summary"`
+	Series      string              `yaml:"series,omitempty"`
+	PublishDate time.Time           `yaml:"publishDate"`
+	Draft       bool                `yaml:"draft,omitempty"`
+	Tags        []string            `yaml:"tags,omitempty"`
+	Author      Author              `yaml:"author,omitempty"`
+	Citations   map[string]Citation `yaml:"citations,omitempty"` // Alias -> Citation mapping
+	WordCount   int                 `yaml:"-"`                   // Computed from content, not parsed from YAML
 }
 
 // ReadingTime returns the estimated reading time in minutes.

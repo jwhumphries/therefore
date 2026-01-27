@@ -1,6 +1,11 @@
 import { initLightbox } from "./lightbox";
 import { initTimeline } from "./timeline";
 import { initSidenote } from "./sidenote";
+import {
+  initCitation,
+  buildCitationsAccordion,
+  resetCitationRegistry,
+} from "./citation";
 import { initAvatar } from "./avatar";
 
 type CleanupFn = () => void;
@@ -10,6 +15,7 @@ const registry: Record<string, ComponentInit> = {
   lightbox: initLightbox,
   timeline: initTimeline,
   sidenote: initSidenote,
+  citation: initCitation,
   avatar: initAvatar,
 };
 
@@ -41,6 +47,12 @@ export function hydrateComponents(container: HTMLElement): void {
       console.warn(`Unknown component: ${componentName}`);
     }
   });
+
+  // Build citations accordion after all citations are hydrated
+  const accordionCleanup = buildCitationsAccordion(container);
+  if (accordionCleanup) {
+    cleanupFunctions.push(accordionCleanup);
+  }
 }
 
 /**
@@ -50,4 +62,5 @@ export function hydrateComponents(container: HTMLElement): void {
 export function cleanupComponents(): void {
   cleanupFunctions.forEach((cleanup) => cleanup());
   cleanupFunctions = [];
+  resetCitationRegistry();
 }

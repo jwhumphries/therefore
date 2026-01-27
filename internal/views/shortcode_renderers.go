@@ -17,6 +17,7 @@ func ShortcodeRenderers() map[string]renderer.ShortcodeRenderer {
 		"figure":   renderFigure,
 		"quote":    renderQuote,
 		"sidenote": renderSidenote,
+		"cite":     renderCite,
 		"timeline": renderTimeline,
 	}
 }
@@ -58,5 +59,12 @@ func renderTimeline(sc renderer.Shortcode) string {
 	var buf bytes.Buffer
 	events := ParseTimelineEvents(sc.Content)
 	_ = Timeline(sc.Attrs["start"], sc.Attrs["end"], events).Render(context.Background(), &buf)
+	return buf.String()
+}
+
+func renderCite(sc renderer.Shortcode) string {
+	// Citation numbers are determined by CSS counter-increment.
+	var buf bytes.Buffer
+	_ = CitationRef(sc.Attrs["text"], sc.Attrs["url"]).Render(context.Background(), &buf)
 	return buf.String()
 }

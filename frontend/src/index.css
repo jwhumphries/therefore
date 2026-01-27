@@ -76,7 +76,14 @@ button,
 
 /* Article container - reset sidenote counter */
 article.prose {
-  counter-reset: sidenote-counter;
+  counter-reset: sidenote-counter citation-counter;
+}
+
+/* Sidenote symbols - cycle through academic margin note symbols */
+@counter-style sidenote-symbols {
+  system: cyclic;
+  symbols: '*' '†' '‡' '§' '‖' '¶';
+  suffix: '';
 }
 
 /* ============================================================================
@@ -116,15 +123,18 @@ article.prose .content > p:first-of-type::first-line {
   border: none;
   padding: 0;
   margin: 0 0.1em;
+  cursor: pointer;
 }
 
 .sidenote-trigger::after {
-  content: counter(sidenote-counter);
-  font-size: 0.75rem;
+  content: counter(sidenote-counter, sidenote-symbols);
+  font-size: 0.85em;
   vertical-align: super;
+  color: var(--accent);
+  font-weight: 500;
 }
 
-.sidenote-trigger:hover {
+.sidenote-trigger:hover::after {
   text-decoration: underline;
 }
 
@@ -136,6 +146,58 @@ article.prose .content > p:first-of-type::first-line {
 .sidenote-popover em,
 .sidenote-popover i {
   font-style: normal;
+}
+
+/* ============================================================================
+   CITATION STYLES
+   Numbered inline references [1], [2], etc. with popovers linking to source
+   ============================================================================ */
+
+.citation-wrapper {
+  position: relative;
+  display: inline;
+}
+
+.citation-trigger {
+  counter-increment: citation-counter;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0 0.05em;
+  cursor: pointer;
+}
+
+.citation-trigger::after {
+  content: '[' counter(citation-counter) ']';
+  font-size: 0.75em;
+  vertical-align: super;
+  color: var(--accent);
+  font-weight: 600;
+  font-family: var(--font-display);
+}
+
+.citation-trigger:hover::after {
+  text-decoration: underline;
+}
+
+/* Citations accordion at bottom of post */
+.citations-accordion summary {
+  list-style: none; /* Remove default marker */
+}
+
+.citations-accordion[open] .citations-chevron {
+  transform: rotate(90deg);
+}
+
+.citations-list {
+  padding-left: 0;
+  list-style: none;
+}
+
+.citations-list li {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
 }
 
 /* ============================================================================

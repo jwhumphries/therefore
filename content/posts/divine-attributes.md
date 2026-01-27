@@ -32,16 +32,16 @@ These questions have generated extensive debate:
 
 - **Open Theism**: God knows everything knowable, but future free choices aren't knowable
 - **Molinism**: God knows "middle knowledge"—what any free creature would do in any circumstance
-- **Classical View**: God exists outside time and sees all moments eternally present
+- **Classical View**: God exists outside time and sees all moments eternally present{{sidenote id="boethius"}}This view was classically articulated by Boethius in *The Consolation of Philosophy*, where he argues that God's knowledge is not *foreknowledge* but rather an eternal present vision.{{/sidenote}}
 
 ## Omnibenevolence
 
 God is perfectly good. But whose standard of goodness? Is something good because God commands it, or does God command it because it's good?
 
-This is the Euthyphro dilemma, and it has profound implications for ethics. If God's commands make things good, morality seems arbitrary. If God commands what's independently good, there's a standard above God.
+This is the Euthyphro dilemma, and it has profound implications for ethics.{{cite text="Plato, Euthyphro (c. 399-395 BC)" url="https://plato.stanford.edu/entries/plato-ethics-shorter/#Euth"}} If God's commands make things good, morality seems arbitrary. If God commands what's independently good, there's a standard above God.
 
 ## Simplicity and Immutability
 
-Classical theism also holds that God is simple (without parts) and immutable (unchanging). These attributes generate further puzzles. How can a simple being have multiple attributes? How can an immutable being respond to prayer?
+Classical theism also holds that God is simple (without parts) and immutable (unchanging).{{cite text="Aquinas, T. (1265-1274). Summa Theologica, Prima Pars, Q3" url="https://www.newadvent.org/summa/1003.htm"}} These attributes generate further puzzles. How can a simple being have multiple attributes? How can an immutable being respond to prayer?
 
 These are not merely academic questions. Our understanding of divine attributes shapes our entire theology—our understanding of creation, providence, salvation, and eschatology.
