@@ -48,20 +48,45 @@ templ Sidenote(id, content string) {
 
 // Timeline renders a chronological list of events.
 templ Timeline(start, end string, events []TimelineEvent) {
-	<div class="timeline my-8" data-component="timeline" data-start={ start } data-end={ end }>
-		<div class="relative pl-8 border-l-2 border-default-300">
-			for _, event := range events {
-				<div class="timeline-event mb-6 relative">
-					<div class="absolute -left-[25px] w-4 h-4 rounded-full bg-primary border-4 border-background"></div>
-					<time class="text-sm font-medium text-primary">{ event.Date }</time>
-					<h4 class="font-semibold mt-1">{ event.Title }</h4>
-					if event.Description != "" {
-						<p class="text-default-600 mt-1">{ event.Description }</p>
-					}
-				</div>
-			}
-		</div>
-	</div>
+	<ul class="timeline" data-component="timeline" data-start={ start } data-end={ end }>
+		for i, event := range events {
+			<li>
+				if i > 0 {
+					<hr class="timeline-hr-start"/>
+				} else {
+					<hr class="invisible timeline-hr-start"/>
+				}
+				if i%2 == 0 {
+					<div class="timeline-start timeline-date text-center">{ event.Date }</div>
+					<div class="timeline-middle">
+						<div class="timeline-circle"></div>
+					</div>
+					<div class="timeline-end timeline-box text-center">
+						<h4 class="font-semibold font-display text-center">{ event.Title }</h4>
+						if event.Description != "" {
+							<p class="text-sm text-default-600 mt-1 text-center">{ event.Description }</p>
+						}
+					</div>
+				} else {
+					<div class="timeline-start timeline-box text-center">
+						<h4 class="font-semibold font-display text-center">{ event.Title }</h4>
+						if event.Description != "" {
+							<p class="text-sm text-default-600 mt-1 text-center">{ event.Description }</p>
+						}
+					</div>
+					<div class="timeline-middle">
+						<div class="timeline-circle"></div>
+					</div>
+					<div class="timeline-end timeline-date text-center">{ event.Date }</div>
+				}
+				if i < len(events)-1 {
+					<hr class="timeline-hr-end"/>
+				} else {
+					<hr class="invisible timeline-hr-end"/>
+				}
+			</li>
+		}
+	</ul>
 }
 
 // TimelineEvent represents a single event in a timeline.
