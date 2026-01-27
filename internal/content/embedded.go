@@ -15,6 +15,8 @@ import (
 	"sync"
 	"time"
 
+	"therefore/internal/renderer"
+
 	"github.com/spf13/afero"
 	"gopkg.in/yaml.v3"
 )
@@ -139,7 +141,7 @@ func (s *EmbeddedStore) loadPosts(fs afero.Fs, renderer Renderer) error {
 	})
 }
 
-func (s *EmbeddedStore) parsePost(fs afero.Fs, path string, renderer Renderer, bundleDir string) (*Post, error) {
+func (s *EmbeddedStore) parsePost(fs afero.Fs, path string, r Renderer, bundleDir string) (*Post, error) {
 	f, err := fs.Open(path)
 	if err != nil {
 		return nil, fmt.Errorf("opening file: %w", err)
@@ -171,7 +173,25 @@ func (s *EmbeddedStore) parsePost(fs afero.Fs, path string, renderer Renderer, b
 		raw = transformBundleImagePaths(raw, meta.Slug)
 	}
 
-	html, err := renderer.Render(raw)
+	// Build render context with citations from frontmatter
+	var renderCtx *renderer.RenderContext
+	if len(meta.Citations) > 0 {
+		citations := make(map[string]struct {
+			Text string
+			URL  string
+		}, len(meta.Citations))
+		for alias, c := range meta.Citations {
+			citations[alias] = struct {
+				Text string
+				URL  string
+			}{Text: c.Text, URL: c.URL}
+		}
+		renderCtx = &renderer.RenderContext{
+			Citations: citations,
+		}
+	}
+
+	html, err := r.Render(raw, renderCtx)
 	if err != nil {
 		return nil, fmt.Errorf("rendering markdown: %w", err)
 	}

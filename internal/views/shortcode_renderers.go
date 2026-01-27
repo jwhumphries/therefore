@@ -35,36 +35,46 @@ func renderInlineMarkdown(content string) string {
 	return result
 }
 
-func renderFigure(sc renderer.Shortcode) string {
+func renderFigure(sc renderer.Shortcode, _ *renderer.RenderContext) string {
 	var buf bytes.Buffer
 	_ = Figure(sc.Attrs["src"], sc.Attrs["caption"], sc.Attrs["alt"]).Render(context.Background(), &buf)
 	return buf.String()
 }
 
-func renderQuote(sc renderer.Shortcode) string {
+func renderQuote(sc renderer.Shortcode, _ *renderer.RenderContext) string {
 	var buf bytes.Buffer
 	content := renderInlineMarkdown(sc.Content)
 	_ = Quote(sc.Attrs["author"], sc.Attrs["source"], content).Render(context.Background(), &buf)
 	return buf.String()
 }
 
-func renderSidenote(sc renderer.Shortcode) string {
+func renderSidenote(sc renderer.Shortcode, _ *renderer.RenderContext) string {
 	var buf bytes.Buffer
 	content := renderInlineMarkdown(sc.Content)
 	_ = Sidenote(sc.Attrs["id"], content).Render(context.Background(), &buf)
 	return buf.String()
 }
 
-func renderTimeline(sc renderer.Shortcode) string {
+func renderTimeline(sc renderer.Shortcode, _ *renderer.RenderContext) string {
 	var buf bytes.Buffer
 	events := ParseTimelineEvents(sc.Content)
 	_ = Timeline(sc.Attrs["start"], sc.Attrs["end"], events).Render(context.Background(), &buf)
 	return buf.String()
 }
 
-func renderCite(sc renderer.Shortcode) string {
-	// Citation numbers are determined by CSS counter-increment.
+func renderCite(sc renderer.Shortcode, ctx *renderer.RenderContext) string {
+	text := sc.Attrs["text"]
+	url := sc.Attrs["url"]
+
+	// Check if using an alias from frontmatter citations
+	if alias := sc.Attrs["alias"]; alias != "" && ctx != nil && ctx.Citations != nil {
+		if citation, ok := ctx.Citations[alias]; ok {
+			text = citation.Text
+			url = citation.URL
+		}
+	}
+
 	var buf bytes.Buffer
-	_ = CitationRef(sc.Attrs["text"], sc.Attrs["url"]).Render(context.Background(), &buf)
+	_ = CitationRef(text, url).Render(context.Background(), &buf)
 	return buf.String()
 }

@@ -3,6 +3,8 @@ package content
 import (
 	"context"
 	"errors"
+
+	"therefore/internal/renderer"
 )
 
 var (
@@ -12,7 +14,7 @@ var (
 
 // Renderer converts raw markdown content to HTML.
 type Renderer interface {
-	Render(raw string) (string, error)
+	Render(raw string, ctx *renderer.RenderContext) (string, error)
 }
 
 // ContentStore provides access to blog posts.

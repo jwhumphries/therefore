@@ -6,13 +6,15 @@ import (
 	"testing"
 	"time"
 
+	"therefore/internal/renderer"
+
 	"github.com/spf13/afero"
 )
 
 // mockRenderer implements Renderer for testing.
 type mockRenderer struct{}
 
-func (m *mockRenderer) Render(raw string) (string, error) {
+func (m *mockRenderer) Render(raw string, _ *renderer.RenderContext) (string, error) {
 	return "<p>" + raw + "</p>", nil
 }
 
