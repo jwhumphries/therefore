@@ -1,6 +1,7 @@
 package views
 
 import (
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -98,7 +99,7 @@ templ CitationsAccordion(citations []CitationEntry) {
 
 // Term renders a compact definition box for technical/philosophical terms.
 templ Term(word, origin, content string) {
-	<aside class="term-box my-4 py-2 pl-4 border-l-2 border-secondary not-prose">
+	<aside class="term-box my-4 py-2 pl-4 not-prose">
 		<div class="term-header">
 			<span class="font-display font-semibold text-sm tracking-wide uppercase">{ word }</span>
 			if origin != "" {
@@ -109,6 +110,73 @@ templ Term(word, origin, content string) {
 			@templ.Raw(content)
 		</p>
 	</aside>
+}
+
+// Scripture renders a Bible passage with bookended borders.
+templ Scripture(ref, version, content string, poetry bool) {
+	<blockquote class={ "scripture-block not-prose", templ.KV("scripture-poetry", poetry) }>
+		<div class={ "scripture-text", templ.KV("scripture-text--poetry", poetry) }>
+			@templ.Raw(content)
+		</div>
+		<footer class="scripture-ref">
+			<span>— </span>
+			<cite>{ ref }</cite>
+			if version != "" {
+				<span> ({ version })</span>
+			}
+			if ref != "" {
+				<a
+					class="scripture-gateway-link"
+					href={ templ.SafeURL(bibleGatewayURL(ref, version)) }
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					View on Bible Gateway ↗
+				</a>
+			}
+		</footer>
+	</blockquote>
+}
+
+// bibleGatewayURL constructs a Bible Gateway link from a reference and version.
+func bibleGatewayURL(ref, version string) string {
+	// URL-encode the reference for the search parameter
+	encoded := strings.ReplaceAll(ref, " ", "+")
+	encoded = strings.ReplaceAll(encoded, ":", "%3A")
+	url := "https://www.biblegateway.com/passage/?search=" + encoded
+	if version != "" {
+		url += "&version=" + version
+	}
+	return url
+}
+
+// formatVerseNumbers converts bare numbers to superscript verse numbers in scripture content.
+// Numbers at the start of content or preceded by whitespace become verse markers.
+// Escape with backslash: \7 renders as literal "7".
+func formatVerseNumbers(content string) string {
+	// First, protect escaped numbers: \123 -> placeholder
+	escaped := regexp.MustCompile(`\\(\d+)`)
+	placeholders := map[string]string{}
+	i := 0
+	result := escaped.ReplaceAllStringFunc(content, func(match string) string {
+		num := match[1:] // strip leading backslash
+		placeholder := "%%ESCAPED_NUM_" + strconv.Itoa(i) + "%%"
+		placeholders[placeholder] = num
+		i++
+		return placeholder
+	})
+
+	// Convert verse numbers: standalone numbers followed by a space
+	// Match at start of string, after newline, or after whitespace
+	verseNum := regexp.MustCompile(`(^|\n|\s)(\d{1,3})\s`)
+	result = verseNum.ReplaceAllString(result, `$1<sup class="verse-num">$2</sup>`)
+
+	// Restore escaped numbers
+	for placeholder, num := range placeholders {
+		result = strings.ReplaceAll(result, placeholder, num)
+	}
+
+	return result
 }
 
 // Parallel renders a side-by-side comparison of two viewpoints or texts.

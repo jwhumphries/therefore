@@ -20,7 +20,8 @@ func ShortcodeRenderers() map[string]renderer.ShortcodeRenderer {
 		"cite":     renderCite,
 		"term":     renderTerm,
 		"parallel": renderParallel,
-		"timeline": renderTimeline,
+		"timeline":  renderTimeline,
+		"scripture": renderScripture,
 	}
 }
 
@@ -84,6 +85,18 @@ func renderTimeline(sc renderer.Shortcode, _ *renderer.RenderContext) string {
 	var buf bytes.Buffer
 	events := ParseTimelineEvents(sc.Content)
 	_ = Timeline(sc.Attrs["start"], sc.Attrs["end"], events).Render(context.Background(), &buf)
+	return buf.String()
+}
+
+func renderScripture(sc renderer.Shortcode, _ *renderer.RenderContext) string {
+	// Process inline markdown first, then inject verse number <sup> tags
+	// so goldmark doesn't strip the raw HTML
+	content := renderInlineMarkdown(strings.TrimSpace(sc.Content))
+	content = formatVerseNumbers(content)
+	poetry := sc.Attrs["format"] == "poetry"
+
+	var buf bytes.Buffer
+	_ = Scripture(sc.Attrs["ref"], sc.Attrs["version"], content, poetry).Render(context.Background(), &buf)
 	return buf.String()
 }
 
