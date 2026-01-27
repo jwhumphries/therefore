@@ -201,6 +201,49 @@ article.prose .content > p:first-of-type::first-line {
 }
 
 /* ============================================================================
+   PARALLEL SHORTCODE
+   Side-by-side comparison of two viewpoints or texts
+   ============================================================================ */
+
+.parallel-box {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.parallel-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .parallel-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+}
+
+.parallel-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.parallel-content {
+  font-size: 0.875rem;
+  color: var(--default-600);
+  line-height: 1.625;
+}
+
+/* ============================================================================
    TIMELINE SHORTCODE
    Horizontal timeline with alternating content above/below the line
    ============================================================================ */

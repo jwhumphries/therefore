@@ -26,6 +26,12 @@ Most philosophers distinguish between:
 
 The second view is more defensible. Logical impossibilities aren't "things" God fails to do—they're incoherent word combinations. "A married bachelor" isn't a thing God can't create; it's not a thing at all.
 
+{{parallel left="Absolute Omnipotence" right="Logical Omnipotence"}}
+God can do literally anything, including logical contradictions. There is no constraint on divine power whatsoever.
+---
+God can do anything *logically possible*. Logical impossibilities are not real limitations but incoherent non-things.
+{{/parallel}}
+
 ## Omniscience
 
 God knows everything. But does God know what it's like to sin? Does God know the future free choices of creatures? Does God know what would have happened if things had gone differently?

@@ -19,6 +19,7 @@ func ShortcodeRenderers() map[string]renderer.ShortcodeRenderer {
 		"sidenote": renderSidenote,
 		"cite":     renderCite,
 		"term":     renderTerm,
+		"parallel": renderParallel,
 		"timeline": renderTimeline,
 	}
 }
@@ -53,6 +54,22 @@ func renderSidenote(sc renderer.Shortcode, _ *renderer.RenderContext) string {
 	var buf bytes.Buffer
 	content := renderInlineMarkdown(sc.Content)
 	_ = Sidenote(sc.Attrs["id"], content).Render(context.Background(), &buf)
+	return buf.String()
+}
+
+func renderParallel(sc renderer.Shortcode, _ *renderer.RenderContext) string {
+	// Split content on "---" delimiter
+	parts := strings.SplitN(sc.Content, "---", 2)
+	var left, right string
+	if len(parts) >= 1 {
+		left = renderInlineMarkdown(strings.TrimSpace(parts[0]))
+	}
+	if len(parts) >= 2 {
+		right = renderInlineMarkdown(strings.TrimSpace(parts[1]))
+	}
+
+	var buf bytes.Buffer
+	_ = Parallel(sc.Attrs["left"], sc.Attrs["right"], left, right).Render(context.Background(), &buf)
 	return buf.String()
 }
 

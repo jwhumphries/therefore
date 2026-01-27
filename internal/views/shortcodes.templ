@@ -111,6 +111,26 @@ templ Term(word, origin, content string) {
 	</aside>
 }
 
+// Parallel renders a side-by-side comparison of two viewpoints or texts.
+templ Parallel(leftLabel, rightLabel, leftContent, rightContent string) {
+	<aside class="parallel-box not-prose">
+		<div class="parallel-grid">
+			<div>
+				<div class="parallel-label">{ leftLabel }</div>
+				<p class="parallel-content">
+					@templ.Raw(leftContent)
+				</p>
+			</div>
+			<div>
+				<div class="parallel-label">{ rightLabel }</div>
+				<p class="parallel-content">
+					@templ.Raw(rightContent)
+				</p>
+			</div>
+		</div>
+	</aside>
+}
+
 // Timeline renders a chronological list of events.
 templ Timeline(start, end string, events []TimelineEvent) {
 	<ul class="timeline" data-component="timeline" data-start={ start } data-end={ end }>
