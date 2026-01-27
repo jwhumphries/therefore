@@ -283,6 +283,132 @@ article.prose .content > p:first-of-type::first-line {
 }
 
 /* ============================================================================
+   SCRIPTURE COMPARE SHORTCODE
+   Two-column scripture comparison with pinned + cycling alternate translations
+   ============================================================================ */
+
+.scripture-compare {
+  margin: 2rem 0;
+}
+
+.scripture-compare__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+/* Mobile: stack columns, each gets bookended borders */
+.scripture-compare__col {
+  padding: 1.5rem 1.5rem 1rem;
+  border-left: 2px solid var(--border);
+  border-right: 2px solid var(--border);
+}
+
+.scripture-compare__col--alt {
+  border-top: 1px solid var(--border);
+}
+
+/* Desktop: two columns, three visible vertical lines */
+@media (min-width: 640px) {
+  .scripture-compare__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .scripture-compare__col--alt {
+    border-top: none;
+    border-left: none; /* pinned's right border serves as center divider */
+  }
+}
+
+/* Version labels */
+.scripture-compare__version-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+
+/* Alternate header: label + cycle controls */
+.scripture-compare__alt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.scripture-compare__alt-header .scripture-compare__version-label {
+  margin-bottom: 0;
+}
+
+/* Cycle controls */
+.scripture-compare__cycle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.scripture-compare__position {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.scripture-compare__cycle-btn {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.15rem 0.5rem;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.scripture-compare__cycle-btn:hover {
+  color: var(--foreground);
+  border-color: var(--foreground);
+}
+
+/* Panel switching — grid overlay so all panels share the same cell */
+.scripture-compare__panels {
+  display: grid;
+}
+
+.scripture-compare__panel {
+  grid-area: 1 / 1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease-in-out;
+}
+
+.scripture-compare__panel--active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Footer */
+.scripture-compare__ref {
+  margin-top: 0.75rem;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  color: var(--default-500);
+}
+
+.scripture-compare__ref cite {
+  font-style: normal;
+  font-weight: 600;
+}
+
+.scripture-compare__ref .scripture-gateway-link {
+  text-align: center;
+}
+
+/* ============================================================================
    PARALLEL SHORTCODE
    Side-by-side comparison of two viewpoints or texts
    ============================================================================ */

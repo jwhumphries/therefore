@@ -7,6 +7,7 @@ import {
   resetCitationRegistry,
 } from "./citation";
 import { initAvatar } from "./avatar";
+import { initScriptureCompare } from "./scriptureCompare";
 
 type CleanupFn = () => void;
 type ComponentInit = (el: HTMLElement) => CleanupFn | void;
@@ -17,6 +18,7 @@ const registry: Record<string, ComponentInit> = {
   sidenote: initSidenote,
   citation: initCitation,
   avatar: initAvatar,
+  "scripture-compare": initScriptureCompare,
 };
 
 // Store cleanup functions for all hydrated components

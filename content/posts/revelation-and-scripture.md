@@ -49,6 +49,38 @@ Interpretation is not straightforward. We must consider:
 
 The Reformation principle of *sola scriptura* doesn't mean we interpret Scripture in isolation. It means Scripture is the final authority—but it's read within a community, informed by tradition, guided by the Spirit.
 
+## Comparing Translations
+
+How a passage is translated can shape our theology. Consider the prologue to John's Gospel—the Word (*Logos*) that was "with God" and "was God." Different translations handle this differently:
+
+{{scripture-compare ref="John 1:1-3" pinned="ESV" alts="NIV,KJV,NASB"}}
+1 In the beginning was the Word, and the Word was with God, and the Word was God. 2 He was in the beginning with God. 3 All things were made through him, and without him was not any thing made that was made.
+---
+1 In the beginning was the Word, and the Word was with God, and the Word was God. 2 He was with God in the beginning. 3 Through him all things were made; without him nothing was made that has been made.
+---
+1 In the beginning was the Word, and the Word was with God, and the Word was God. 2 The same was in the beginning with God. 3 All things were made by him; and without him was not any thing made that was made.
+---
+1 In the beginning was the Word, and the Word was with God, and the Word was God. 2 He was in the beginning with God. 3 All things came into being through Him, and apart from Him not even one thing came into being that has come into being.
+{{/scripture-compare}}
+
+The poetry of the psalms also reveals translation differences in rhythm and cadence:
+
+{{scripture-compare ref="Psalm 23:1-3" pinned="ESV" alts="KJV" format="poetry"}}
+1 The Lord is my shepherd; I shall not want.
+2 He makes me lie down in green pastures.
+He leads me beside still waters.
+3 He restores my soul.
+He leads me in paths of righteousness
+for his name's sake.
+---
+1 The Lord is my shepherd; I shall not want.
+2 He maketh me to lie down in green pastures:
+he leadeth me beside the still waters.
+3 He restoreth my soul:
+he leadeth me in the paths of righteousness
+for his name's sake.
+{{/scripture-compare}}
+
 ## The Power of Scripture
 
 Regardless of one's theory of inspiration, the psalms capture how believers have experienced Scripture itself:

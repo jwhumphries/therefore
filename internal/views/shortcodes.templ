@@ -150,6 +150,66 @@ func bibleGatewayURL(ref, version string) string {
 	return url
 }
 
+// ScriptureCompare renders a two-column scripture comparison with a pinned reference
+// translation on the left and one or more cycling alternate translations on the right.
+templ ScriptureCompare(ref, pinnedVersion string, altVersions []string, pinnedContent string, altContents []string, poetry bool) {
+	<div
+		class={ "scripture-compare not-prose", templ.KV("scripture-poetry", poetry) }
+		data-component="scripture-compare"
+		data-alt-versions={ strings.Join(altVersions, ",") }
+		data-alt-count={ strconv.Itoa(len(altContents)) }
+		data-ref={ ref }
+	>
+		<div class="scripture-compare__grid">
+			<div class="scripture-compare__col scripture-compare__col--pinned">
+				<div class="scripture-compare__version-label">{ pinnedVersion }</div>
+				<div class={ "scripture-text", templ.KV("scripture-text--poetry", poetry) }>
+					@templ.Raw(pinnedContent)
+				</div>
+			</div>
+			<div class="scripture-compare__col scripture-compare__col--alt">
+				<div class="scripture-compare__alt-header">
+					<div class="scripture-compare__version-label scripture-compare__alt-label">
+						{ altVersions[0] }
+					</div>
+					if len(altContents) > 1 {
+						<div class="scripture-compare__cycle">
+							<span class="scripture-compare__position">1/{ strconv.Itoa(len(altContents)) }</span>
+							<button type="button" class="scripture-compare__cycle-btn">Next &#8594;</button>
+						</div>
+					}
+				</div>
+				<div class="scripture-compare__panels">
+					for i, alt := range altContents {
+						<div
+							class={ "scripture-compare__panel scripture-text",
+								templ.KV("scripture-text--poetry", poetry),
+								templ.KV("scripture-compare__panel--active", i == 0) }
+							data-panel-index={ strconv.Itoa(i) }
+						>
+							@templ.Raw(alt)
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+		<footer class="scripture-compare__ref">
+			<cite>{ ref }</cite>
+			if ref != "" {
+				<a
+					class="scripture-gateway-link"
+					href={ templ.SafeURL(bibleGatewayURL(ref, pinnedVersion)) }
+					target="_blank"
+					rel="noopener noreferrer"
+					data-gateway-ref={ ref }
+				>
+					View on Bible Gateway ↗
+				</a>
+			}
+		</footer>
+	</div>
+}
+
 // formatVerseNumbers converts bare numbers to superscript verse numbers in scripture content.
 // Numbers at the start of content or preceded by whitespace become verse markers.
 // Escape with backslash: \7 renders as literal "7".

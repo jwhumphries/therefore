@@ -21,7 +21,8 @@ func ShortcodeRenderers() map[string]renderer.ShortcodeRenderer {
 		"term":     renderTerm,
 		"parallel": renderParallel,
 		"timeline":  renderTimeline,
-		"scripture": renderScripture,
+		"scripture":         renderScripture,
+		"scripture-compare": renderScriptureCompare,
 	}
 }
 
@@ -98,6 +99,47 @@ func renderScripture(sc renderer.Shortcode, _ *renderer.RenderContext) string {
 
 	var buf bytes.Buffer
 	_ = Scripture(sc.Attrs["ref"], sc.Attrs["version"], content, poetry).Render(context.Background(), &buf)
+	return buf.String()
+}
+
+func renderScriptureCompare(sc renderer.Shortcode, _ *renderer.RenderContext) string {
+	// Split content on "---" — first section = pinned, rest = alternates
+	sections := strings.Split(sc.Content, "---")
+	if len(sections) < 2 {
+		return ""
+	}
+
+	processSection := func(s string) string {
+		content := renderInlineMarkdown(strings.TrimSpace(s))
+		content = formatVerseNumbers(content)
+		content = applyScriptureDropCap(content)
+		return content
+	}
+
+	pinnedContent := processSection(sections[0])
+
+	var altContents []string
+	for _, s := range sections[1:] {
+		altContents = append(altContents, processSection(s))
+	}
+
+	// Parse comma-separated alt version names
+	var altVersions []string
+	if alts := sc.Attrs["alts"]; alts != "" {
+		for _, v := range strings.Split(alts, ",") {
+			altVersions = append(altVersions, strings.TrimSpace(v))
+		}
+	}
+
+	// Pad altVersions if fewer names than sections
+	for len(altVersions) < len(altContents) {
+		altVersions = append(altVersions, "")
+	}
+
+	poetry := sc.Attrs["format"] == "poetry"
+
+	var buf bytes.Buffer
+	_ = ScriptureCompare(sc.Attrs["ref"], sc.Attrs["pinned"], altVersions, pinnedContent, altContents, poetry).Render(context.Background(), &buf)
 	return buf.String()
 }
 
