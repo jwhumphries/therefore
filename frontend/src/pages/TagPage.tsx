@@ -7,6 +7,7 @@ import { TransitionLink } from "../components/TransitionLink";
 import { TagLink } from "../components/TagLink";
 import { useViewTransitionNavigate } from "../hooks/useViewTransition";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { useSSGData } from "../hooks/useSSGData";
 
 const POSTS_PER_PAGE = 6;
 
@@ -174,6 +175,7 @@ function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) 
 }
 
 export function TagPage() {
+  useSSGData(); // Pre-seed query cache from SSG data
   const { tag } = useParams<{ tag: string }>();
   usePageMeta(tag ? { title: `Posts tagged "${tag}"`, description: `All posts tagged "${tag}" on Therefore.` } : {});
   const [currentPage, setCurrentPage] = useState(1);

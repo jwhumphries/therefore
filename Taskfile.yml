@@ -98,6 +98,12 @@ tasks:
     cmds:
       - dagger -m .dagger call templ-fmt --source=. export --path=.
 
+  ssg:
+    desc: Generate pre-rendered HTML pages for SEO via Dagger
+    deps: [build-frontend]
+    cmds:
+      - dagger -m .dagger call ssg --source=. --frontend-dist=./internal/static/dist export --path=./internal/static/dist
+
   clean:
     desc: Remove build artifacts
     cmds:

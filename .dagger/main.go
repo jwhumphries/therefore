@@ -177,6 +177,34 @@ func (m *Therefore) BuildFrontend(source *dagger.Directory) *dagger.Directory {
 		Directory("/app/internal/static/dist")
 }
 
+// SSG generates pre-rendered HTML pages for SEO.
+// It runs after the frontend is built, using Vite's output to extract asset references.
+func (m *Therefore) SSG(
+	source *dagger.Directory,
+	frontendDist *dagger.Directory,
+	// +optional
+	// +default="https://faith.john-humphries.com"
+	baseURL string,
+) *dagger.Directory {
+	// Generate templ code first
+	templSource := m.TemplGenerate(source)
+
+	// Merge frontend dist into source so SSG can read Vite's index.html
+	sourceWithFrontend := templSource.WithDirectory("internal/static/dist", frontendDist)
+
+	// Run SSG command with base URL for correct meta tags and links
+	return dag.Container().
+		From("golang:1.25-alpine").
+		WithEnvVariable("GOCACHE", "/go-build-cache").
+		WithEnvVariable("GOMODCACHE", "/go-mod-cache").
+		WithMountedCache("/go-build-cache", dag.CacheVolume("go-build-cache")).
+		WithMountedCache("/go-mod-cache", dag.CacheVolume("go-mod-cache")).
+		WithDirectory("/app", sourceWithFrontend).
+		WithWorkdir("/app").
+		WithExec([]string{"go", "run", "./cmd/therefore", "ssg", "--base-url", baseURL}).
+		Directory("/app/internal/static/dist")
+}
+
 // BuildBinary builds the Go binary
 func (m *Therefore) BuildBinary(source *dagger.Directory, version string) *dagger.Container {
 	return dag.Container().
@@ -229,8 +257,11 @@ func (m *Therefore) Build(
 	// Build frontend assets
 	frontendDist := m.BuildFrontend(templSource)
 
-	// Merge frontend dist into source
-	fullSource := templSource.WithDirectory("internal/static/dist", frontendDist)
+	// Generate SSG pages (pre-rendered HTML for SEO)
+	ssgDist := m.SSG(source, frontendDist, "https://faith.john-humphries.com")
+
+	// Merge SSG dist (which includes frontend + pre-rendered pages) into source
+	fullSource := templSource.WithDirectory("internal/static/dist", ssgDist)
 
 	// Build binary
 	return m.BuildBinary(fullSource, version), nil

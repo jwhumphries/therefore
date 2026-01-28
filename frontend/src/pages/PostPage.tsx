@@ -9,9 +9,11 @@ import { useViewTransitionNavigate } from "../hooks/useViewTransition";
 import { TableOfContents } from "../components/TableOfContents";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { useJsonLd } from "../hooks/useJsonLd";
+import { useSSGData } from "../hooks/useSSGData";
 // import { ScrollProgressBars } from "../components/ScrollProgressBars";
 
 export function PostPage() {
+  useSSGData(); // Pre-seed query cache from SSG data
   const { slug } = useParams<{ slug: string }>();
   const { data: post, isLoading, error } = usePost(slug ?? "");
   usePageMeta(post ? {

@@ -14,13 +14,13 @@ var inlineRenderer = renderer.NewGoldmarkRenderer()
 // ShortcodeRenderers returns a map of shortcode renderers for use with the markdown renderer.
 func ShortcodeRenderers() map[string]renderer.ShortcodeRenderer {
 	return map[string]renderer.ShortcodeRenderer{
-		"figure":   renderFigure,
-		"quote":    renderQuote,
-		"sidenote": renderSidenote,
-		"cite":     renderCite,
-		"term":     renderTerm,
-		"parallel": renderParallel,
-		"timeline":  renderTimeline,
+		"figure":            renderFigure,
+		"quote":             renderQuote,
+		"sidenote":          renderSidenote,
+		"cite":              renderCite,
+		"term":              renderTerm,
+		"parallel":          renderParallel,
+		"timeline":          renderTimeline,
 		"scripture":         renderScripture,
 		"scripture-compare": renderScriptureCompare,
 	}

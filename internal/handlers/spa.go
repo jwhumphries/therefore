@@ -40,6 +40,8 @@ func NewSPAHandler(distFS fs.FS) (*SPAHandler, error) {
 }
 
 // Handler returns an Echo handler that serves the SPA.
+// It checks for pre-rendered SSG files first, then static assets,
+// and falls back to index.html for client-side routing.
 func (h *SPAHandler) Handler() echo.HandlerFunc {
 	fileServer := http.FileServer(http.FS(h.distFS))
 
@@ -48,6 +50,16 @@ func (h *SPAHandler) Handler() echo.HandlerFunc {
 
 		// Clean and normalize path
 		reqPath = path.Clean(reqPath)
+
+		// Try pre-rendered SSG file first (for SEO)
+		// We serve these directly via Blob to avoid FileServer redirect issues
+		if ssgPath := h.ssgFilePath(reqPath); ssgPath != "" {
+			if content, err := h.readFile(ssgPath); err == nil {
+				return c.Blob(http.StatusOK, "text/html; charset=utf-8", content)
+			}
+		}
+
+		// Handle root path
 		if reqPath == "/" {
 			reqPath = "/index.html"
 		}
@@ -55,7 +67,7 @@ func (h *SPAHandler) Handler() echo.HandlerFunc {
 		// Remove leading slash for fs.Open
 		fsPath := strings.TrimPrefix(reqPath, "/")
 
-		// Try to open the file
+		// Try to open the file (static assets like JS, CSS, images)
 		f, err := h.distFS.Open(fsPath)
 		if err == nil {
 			_ = f.Close()
@@ -70,13 +82,67 @@ func (h *SPAHandler) Handler() echo.HandlerFunc {
 	}
 }
 
+// readFile reads a file from the embedded filesystem
+func (h *SPAHandler) readFile(path string) ([]byte, error) {
+	f, err := h.distFS.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = f.Close() }()
+	return io.ReadAll(f)
+}
+
+// ssgFilePath maps a request path to the corresponding SSG file path.
+// Returns empty string if the route is not pre-rendered.
+func (h *SPAHandler) ssgFilePath(reqPath string) string {
+	// Remove leading/trailing slashes for consistent matching
+	reqPath = strings.Trim(reqPath, "/")
+
+	switch {
+	case reqPath == "":
+		// Root path: /
+		return "index.html"
+
+	case reqPath == "posts":
+		// Posts listing: /posts
+		return "posts/index.html"
+
+	case strings.HasPrefix(reqPath, "posts/"):
+		// Individual post: /posts/:slug
+		slug := strings.TrimPrefix(reqPath, "posts/")
+		if slug != "" && !strings.Contains(slug, "/") {
+			return "posts/" + slug + ".html"
+		}
+
+	case reqPath == "tags":
+		// Tags listing: /tags
+		return "tags/index.html"
+
+	case strings.HasPrefix(reqPath, "tags/"):
+		// Tag page: /tags/:tag
+		tag := strings.TrimPrefix(reqPath, "tags/")
+		if tag != "" && !strings.Contains(tag, "/") {
+			return "tags/" + tag + ".html"
+		}
+
+	case reqPath == "series":
+		// Series listing: /series
+		return "series/index.html"
+
+	case reqPath == "about":
+		// About page: /about
+		return "about/index.html"
+	}
+
+	return ""
+}
+
 // ServeAssets returns a handler that serves static assets from /assets/*
 func (h *SPAHandler) ServeAssets() echo.HandlerFunc {
 	fileServer := http.FileServer(http.FS(h.distFS))
 
 	return func(c *echo.Context) error {
-		// Strip the /assets prefix - the file server will look in the assets directory
-		c.Request().URL.Path = strings.TrimPrefix(c.Request().URL.Path, "/assets")
+		// Serve directly - files are in assets/ subdirectory of distFS
 		fileServer.ServeHTTP(c.Response(), c.Request())
 		return nil
 	}
