@@ -10,7 +10,10 @@ export function initSidenote(el: HTMLElement): () => void {
   if (!trigger || !content) return () => {};
 
   // Create popover element
+  const popoverId = `sidenote-popover-${Math.random().toString(36).slice(2, 9)}`;
   const popover = document.createElement("div");
+  popover.id = popoverId;
+  popover.setAttribute("role", "tooltip");
   popover.className =
     "sidenote-popover absolute z-50 p-3 text-sm bg-overlay text-overlay-foreground border border-border rounded shadow-lg w-[min(20rem,calc(100vw-2rem))]";
   popover.style.display = "none";
@@ -76,6 +79,7 @@ export function initSidenote(el: HTMLElement): () => void {
   // Set up ARIA attributes
   trigger.setAttribute("aria-expanded", "false");
   trigger.setAttribute("aria-haspopup", "true");
+  trigger.setAttribute("aria-controls", popoverId);
   trigger.setAttribute("aria-label", "Show sidenote");
 
   // Event handlers (stored for cleanup)

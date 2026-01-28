@@ -4,6 +4,7 @@ import { usePaginatedPosts } from "../hooks/api";
 import { TagLink } from "../components/TagLink";
 import { useViewTransitionNavigate } from "../hooks/useViewTransition";
 import { ReadingRail, ReadingRailMobile } from "../components/ReadingRail";
+import { usePageMeta } from "../hooks/usePageMeta";
 
 const LATEST_POSTS_LIMIT = 10;
 
@@ -31,6 +32,7 @@ function PostCardSkeleton() {
 }
 
 export function HomePage() {
+  usePageMeta({ title: "Latest Posts", description: "Browse the latest posts on Therefore." });
   const { data, isLoading, error } = usePaginatedPosts({ limit: LATEST_POSTS_LIMIT });
   const navigate = useViewTransitionNavigate();
   const scrollContainerRef = useRef<HTMLDivElement>(null);

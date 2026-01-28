@@ -1,4 +1,7 @@
+import { usePageMeta } from "../hooks/usePageMeta";
+
 export function AboutPage() {
+  usePageMeta({ title: "About", description: "About Therefore — a blog exploring philosophy and theology." });
   return (
     <div className="max-w-3xl mx-auto">
       <h1 className="text-4xl font-display font-bold mb-8">About</h1>

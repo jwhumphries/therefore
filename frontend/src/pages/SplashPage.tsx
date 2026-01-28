@@ -3,8 +3,10 @@ import { SplitText } from "../components/SplitText";
 import { SlideInButton } from "../components/SlideInButton";
 import { AncientScriptBackground } from "../components/background";
 import { useViewTransitionNavigate } from "../hooks/useViewTransition";
+import { usePageMeta } from "../hooks/usePageMeta";
 
 export function SplashPage() {
+  usePageMeta({ description: "A blog exploring ideas at the intersection of philosophy and theology." });
   const [animationComplete, setAnimationComplete] = useState(false);
   const navigate = useViewTransitionNavigate();
 

@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import "./index.css";
 import { Layout } from "./components/Layout";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { SplashPage, HomePage, PostPage, TagsPage, TagPage, AboutPage, SeriesPage } from "./pages";
 
 const queryClient = new QueryClient({
@@ -20,6 +21,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
+        <ErrorBoundary>
         <Routes>
           {/* Splash page without layout */}
           <Route path="/" element={<SplashPage />} />
@@ -34,6 +36,7 @@ function App() {
             <Route path="/about" element={<AboutPage />} />
           </Route>
         </Routes>
+        </ErrorBoundary>
       </BrowserRouter>
     </QueryClientProvider>
   );

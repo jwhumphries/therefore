@@ -7,11 +7,33 @@ import { initTagLinks } from "../components/hydration/taglink";
 import { TransitionLink } from "../components/TransitionLink";
 import { useViewTransitionNavigate } from "../hooks/useViewTransition";
 import { TableOfContents } from "../components/TableOfContents";
+import { usePageMeta } from "../hooks/usePageMeta";
+import { useJsonLd } from "../hooks/useJsonLd";
 // import { ScrollProgressBars } from "../components/ScrollProgressBars";
 
 export function PostPage() {
   const { slug } = useParams<{ slug: string }>();
   const { data: post, isLoading, error } = usePost(slug ?? "");
+  usePageMeta(post ? {
+    title: post.title,
+    description: post.summary,
+    type: "article",
+    publishedTime: post.publishDate,
+    author: post.author?.name,
+  } : {});
+  useJsonLd(post ? {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.summary,
+    datePublished: post.publishDate,
+    ...(post.author?.name && {
+      author: { "@type": "Person", name: post.author.name },
+    }),
+    ...(post.tags?.length && {
+      keywords: post.tags.join(", "),
+    }),
+  } : null);
   const navigate = useViewTransitionNavigate();
   const contentRef = useRef<HTMLDivElement>(null);
 

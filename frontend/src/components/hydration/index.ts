@@ -21,8 +21,9 @@ const registry: Record<string, ComponentInit> = {
   "scripture-compare": initScriptureCompare,
 };
 
-// Store cleanup functions for all hydrated components
+// Store cleanup functions and element references for all hydrated components
 let cleanupFunctions: CleanupFn[] = [];
+let hydratedElements: HTMLElement[] = [];
 
 /**
  * Hydrates all components with data-component attributes within a container.
@@ -44,6 +45,7 @@ export function hydrateComponents(container: HTMLElement): void {
           cleanupFunctions.push(cleanup);
         }
         el.dataset.hydrated = "true";
+        hydratedElements.push(el);
       }
     } else {
       console.warn(`Unknown component: ${componentName}`);
@@ -64,5 +66,7 @@ export function hydrateComponents(container: HTMLElement): void {
 export function cleanupComponents(): void {
   cleanupFunctions.forEach((cleanup) => cleanup());
   cleanupFunctions = [];
+  hydratedElements.forEach((el) => delete el.dataset.hydrated);
+  hydratedElements = [];
   resetCitationRegistry();
 }

@@ -32,10 +32,12 @@ func init() {
 	rootCmd.PersistentFlags().String("port", ":8080", "server port")
 	rootCmd.PersistentFlags().String("log-level", "info", "log level (debug, info, warn, error)")
 	rootCmd.PersistentFlags().Bool("dev", false, "enable development mode (use Vite dev server for assets)")
+	rootCmd.PersistentFlags().String("base-url", "http://localhost:8080", "public base URL for sitemap and SEO")
 
 	_ = viper.BindPFlag("port", rootCmd.PersistentFlags().Lookup("port"))
 	_ = viper.BindPFlag("log_level", rootCmd.PersistentFlags().Lookup("log-level"))
 	_ = viper.BindPFlag("dev", rootCmd.PersistentFlags().Lookup("dev"))
+	_ = viper.BindPFlag("base_url", rootCmd.PersistentFlags().Lookup("base-url"))
 }
 
 func initConfig() {
@@ -54,6 +56,7 @@ func initConfig() {
 	viper.SetDefault("port", ":8080")
 	viper.SetDefault("log_level", "info")
 	viper.SetDefault("dev", false)
+	viper.SetDefault("base_url", "http://localhost:8080")
 
 	if err := viper.ReadInConfig(); err != nil {
 		var configFileNotFoundError viper.ConfigFileNotFoundError

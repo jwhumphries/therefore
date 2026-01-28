@@ -17,6 +17,7 @@ templ Figure(src, caption, alt string) {
 		<img
 			src={ src }
 			alt={ alt }
+			loading="lazy"
 			class="w-full rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
 		/>
 		if caption != "" {
@@ -269,7 +270,7 @@ templ Parallel(leftLabel, rightLabel, leftContent, rightContent string) {
 
 // Timeline renders a chronological list of events.
 templ Timeline(start, end string, events []TimelineEvent) {
-	<ul class="timeline" data-component="timeline" data-start={ start } data-end={ end }>
+	<ul class="timeline" data-component="timeline" data-start={ start } data-end={ end } aria-label="Timeline of events">
 		for i, event := range events {
 			<li>
 				if i > 0 {

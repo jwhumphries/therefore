@@ -64,6 +64,11 @@ tasks:
     cmds:
       - dagger -m .dagger call typecheck --source=.
 
+  test-frontend:
+    desc: Run frontend Vitest tests via Dagger
+    cmds:
+      - dagger -m .dagger call test-frontend --source=.
+
   check:
     desc: Run all checks (lint, typecheck, test)
     cmds:
@@ -71,6 +76,7 @@ tasks:
       - task: lint-frontend
       - task: typecheck
       - task: test
+      - task: test-frontend
 
   fmt:
     desc: Format Go code via Dagger

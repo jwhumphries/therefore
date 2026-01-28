@@ -67,7 +67,7 @@ func Figure(src, caption, alt string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"w-full rounded-lg cursor-pointer hover:opacity-90 transition-opacity\"> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" loading=\"lazy\" class=\"w-full rounded-lg cursor-pointer hover:opacity-90 transition-opacity\"> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -79,7 +79,7 @@ func Figure(src, caption, alt string) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(caption)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 24, Col: 13}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 25, Col: 13}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -145,7 +145,7 @@ func Quote(author, source, content string) templ.Component {
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(author)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 40, Col: 41}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 41, Col: 41}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
@@ -164,7 +164,7 @@ func Quote(author, source, content string) templ.Component {
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(source)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 44, Col: 34}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 45, Col: 34}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
@@ -217,7 +217,7 @@ func Sidenote(id, content string) templ.Component {
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(content)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 53, Col: 89}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 54, Col: 89}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -261,7 +261,7 @@ func CitationRef(text, url string) templ.Component {
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(text)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 61, Col: 83}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 62, Col: 83}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -274,7 +274,7 @@ func CitationRef(text, url string) templ.Component {
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(url)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 61, Col: 109}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 62, Col: 109}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
@@ -325,7 +325,7 @@ func CitationsAccordion(citations []CitationEntry) templ.Component {
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(len(citations))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 81, Col: 31}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 82, Col: 31}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
@@ -343,7 +343,7 @@ func CitationsAccordion(citations []CitationEntry) templ.Component {
 				var templ_7745c5c3_Var15 string
 				templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(formatCitationNumber(c.Number))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 85, Col: 47}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 86, Col: 47}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 				if templ_7745c5c3_Err != nil {
@@ -356,7 +356,7 @@ func CitationsAccordion(citations []CitationEntry) templ.Component {
 				var templ_7745c5c3_Var16 string
 				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(formatCitationNumber(c.Number))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 86, Col: 77}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 87, Col: 77}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 				if templ_7745c5c3_Err != nil {
@@ -369,7 +369,7 @@ func CitationsAccordion(citations []CitationEntry) templ.Component {
 				var templ_7745c5c3_Var17 templ.SafeURL
 				templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(c.URL))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 87, Col: 36}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 88, Col: 36}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 				if templ_7745c5c3_Err != nil {
@@ -382,7 +382,7 @@ func CitationsAccordion(citations []CitationEntry) templ.Component {
 				var templ_7745c5c3_Var18 string
 				templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(c.Text)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 88, Col: 15}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 89, Col: 15}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 				if templ_7745c5c3_Err != nil {
@@ -431,7 +431,7 @@ func Term(word, origin, content string) templ.Component {
 		var templ_7745c5c3_Var20 string
 		templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(word)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 104, Col: 82}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 105, Col: 82}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 		if templ_7745c5c3_Err != nil {
@@ -449,7 +449,7 @@ func Term(word, origin, content string) templ.Component {
 			var templ_7745c5c3_Var21 string
 			templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(origin)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 106, Col: 57}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 107, Col: 57}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 			if templ_7745c5c3_Err != nil {
@@ -553,7 +553,7 @@ func Scripture(ref, version, content string, poetry bool) templ.Component {
 		var templ_7745c5c3_Var27 string
 		templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(ref)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 123, Col: 14}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 124, Col: 14}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 		if templ_7745c5c3_Err != nil {
@@ -571,7 +571,7 @@ func Scripture(ref, version, content string, poetry bool) templ.Component {
 			var templ_7745c5c3_Var28 string
 			templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(version)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 125, Col: 21}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 126, Col: 21}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 			if templ_7745c5c3_Err != nil {
@@ -590,7 +590,7 @@ func Scripture(ref, version, content string, poetry bool) templ.Component {
 			var templ_7745c5c3_Var29 templ.SafeURL
 			templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(bibleGatewayURL(ref, version)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 130, Col: 56}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 131, Col: 56}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 			if templ_7745c5c3_Err != nil {
@@ -669,7 +669,7 @@ func ScriptureCompare(ref, pinnedVersion string, altVersions []string, pinnedCon
 		var templ_7745c5c3_Var33 string
 		templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(strings.Join(altVersions, ","))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 159, Col: 52}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 160, Col: 52}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 		if templ_7745c5c3_Err != nil {
@@ -682,7 +682,7 @@ func ScriptureCompare(ref, pinnedVersion string, altVersions []string, pinnedCon
 		var templ_7745c5c3_Var34 string
 		templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(len(altContents)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 160, Col: 49}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 161, Col: 49}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 		if templ_7745c5c3_Err != nil {
@@ -695,7 +695,7 @@ func ScriptureCompare(ref, pinnedVersion string, altVersions []string, pinnedCon
 		var templ_7745c5c3_Var35 string
 		templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(ref)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 161, Col: 16}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 162, Col: 16}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 		if templ_7745c5c3_Err != nil {
@@ -708,7 +708,7 @@ func ScriptureCompare(ref, pinnedVersion string, altVersions []string, pinnedCon
 		var templ_7745c5c3_Var36 string
 		templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinStringErrs(pinnedVersion)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 165, Col: 65}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 166, Col: 65}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 		if templ_7745c5c3_Err != nil {
@@ -751,7 +751,7 @@ func ScriptureCompare(ref, pinnedVersion string, altVersions []string, pinnedCon
 		var templ_7745c5c3_Var39 string
 		templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(altVersions[0])
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 173, Col: 22}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 174, Col: 22}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 		if templ_7745c5c3_Err != nil {
@@ -769,7 +769,7 @@ func ScriptureCompare(ref, pinnedVersion string, altVersions []string, pinnedCon
 			var templ_7745c5c3_Var40 string
 			templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(len(altContents)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 177, Col: 83}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 178, Col: 83}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var40))
 			if templ_7745c5c3_Err != nil {
@@ -812,7 +812,7 @@ func ScriptureCompare(ref, pinnedVersion string, altVersions []string, pinnedCon
 			var templ_7745c5c3_Var43 string
 			templ_7745c5c3_Var43, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(i))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 188, Col: 41}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 189, Col: 41}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var43))
 			if templ_7745c5c3_Err != nil {
@@ -838,7 +838,7 @@ func ScriptureCompare(ref, pinnedVersion string, altVersions []string, pinnedCon
 		var templ_7745c5c3_Var44 string
 		templ_7745c5c3_Var44, templ_7745c5c3_Err = templ.JoinStringErrs(ref)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 197, Col: 14}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 198, Col: 14}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var44))
 		if templ_7745c5c3_Err != nil {
@@ -856,7 +856,7 @@ func ScriptureCompare(ref, pinnedVersion string, altVersions []string, pinnedCon
 			var templ_7745c5c3_Var45 templ.SafeURL
 			templ_7745c5c3_Var45, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(bibleGatewayURL(ref, pinnedVersion)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 201, Col: 62}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 202, Col: 62}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var45))
 			if templ_7745c5c3_Err != nil {
@@ -869,7 +869,7 @@ func ScriptureCompare(ref, pinnedVersion string, altVersions []string, pinnedCon
 			var templ_7745c5c3_Var46 string
 			templ_7745c5c3_Var46, templ_7745c5c3_Err = templ.JoinStringErrs(ref)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 204, Col: 27}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 205, Col: 27}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var46))
 			if templ_7745c5c3_Err != nil {
@@ -954,7 +954,7 @@ func Parallel(leftLabel, rightLabel, leftContent, rightContent string) templ.Com
 		var templ_7745c5c3_Var48 string
 		templ_7745c5c3_Var48, templ_7745c5c3_Err = templ.JoinStringErrs(leftLabel)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 255, Col: 43}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 256, Col: 43}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var48))
 		if templ_7745c5c3_Err != nil {
@@ -975,7 +975,7 @@ func Parallel(leftLabel, rightLabel, leftContent, rightContent string) templ.Com
 		var templ_7745c5c3_Var49 string
 		templ_7745c5c3_Var49, templ_7745c5c3_Err = templ.JoinStringErrs(rightLabel)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 261, Col: 44}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 262, Col: 44}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var49))
 		if templ_7745c5c3_Err != nil {
@@ -1026,7 +1026,7 @@ func Timeline(start, end string, events []TimelineEvent) templ.Component {
 		var templ_7745c5c3_Var51 string
 		templ_7745c5c3_Var51, templ_7745c5c3_Err = templ.JoinStringErrs(start)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 272, Col: 66}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 273, Col: 66}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var51))
 		if templ_7745c5c3_Err != nil {
@@ -1039,13 +1039,13 @@ func Timeline(start, end string, events []TimelineEvent) templ.Component {
 		var templ_7745c5c3_Var52 string
 		templ_7745c5c3_Var52, templ_7745c5c3_Err = templ.JoinStringErrs(end)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 272, Col: 83}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 273, Col: 83}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var52))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 76, "\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 76, "\" aria-label=\"Timeline of events\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1073,7 +1073,7 @@ func Timeline(start, end string, events []TimelineEvent) templ.Component {
 				var templ_7745c5c3_Var53 string
 				templ_7745c5c3_Var53, templ_7745c5c3_Err = templ.JoinStringErrs(event.Date)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 281, Col: 71}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 282, Col: 71}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var53))
 				if templ_7745c5c3_Err != nil {
@@ -1086,7 +1086,7 @@ func Timeline(start, end string, events []TimelineEvent) templ.Component {
 				var templ_7745c5c3_Var54 string
 				templ_7745c5c3_Var54, templ_7745c5c3_Err = templ.JoinStringErrs(event.Title)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 286, Col: 70}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 287, Col: 70}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var54))
 				if templ_7745c5c3_Err != nil {
@@ -1104,7 +1104,7 @@ func Timeline(start, end string, events []TimelineEvent) templ.Component {
 					var templ_7745c5c3_Var55 string
 					templ_7745c5c3_Var55, templ_7745c5c3_Err = templ.JoinStringErrs(event.Description)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 288, Col: 79}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 289, Col: 79}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var55))
 					if templ_7745c5c3_Err != nil {
@@ -1127,7 +1127,7 @@ func Timeline(start, end string, events []TimelineEvent) templ.Component {
 				var templ_7745c5c3_Var56 string
 				templ_7745c5c3_Var56, templ_7745c5c3_Err = templ.JoinStringErrs(event.Title)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 293, Col: 70}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 294, Col: 70}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var56))
 				if templ_7745c5c3_Err != nil {
@@ -1145,7 +1145,7 @@ func Timeline(start, end string, events []TimelineEvent) templ.Component {
 					var templ_7745c5c3_Var57 string
 					templ_7745c5c3_Var57, templ_7745c5c3_Err = templ.JoinStringErrs(event.Description)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 295, Col: 79}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 296, Col: 79}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var57))
 					if templ_7745c5c3_Err != nil {
@@ -1163,7 +1163,7 @@ func Timeline(start, end string, events []TimelineEvent) templ.Component {
 				var templ_7745c5c3_Var58 string
 				templ_7745c5c3_Var58, templ_7745c5c3_Err = templ.JoinStringErrs(event.Date)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 301, Col: 69}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/shortcodes.templ`, Line: 302, Col: 69}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var58))
 				if templ_7745c5c3_Err != nil {

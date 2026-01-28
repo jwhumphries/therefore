@@ -1,12 +1,14 @@
 import { Skeleton } from "@heroui/react";
 import { useTags } from "../hooks/api";
 import { TagWithCount } from "../components/TagLink";
+import { usePageMeta } from "../hooks/usePageMeta";
 
 function TagSkeleton() {
   return <Skeleton className="h-7 w-24 rounded-full" />;
 }
 
 export function TagsPage() {
+  usePageMeta({ title: "Tags", description: "Browse all tags on Therefore." });
   const { data: tags, isLoading, error } = useTags();
 
   if (isLoading) {

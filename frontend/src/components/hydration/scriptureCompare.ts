@@ -22,11 +22,21 @@ export function initScriptureCompare(el: HTMLElement): () => void {
 
   if (!cycleBtn || panels.length === 0) return () => {};
 
+  cycleBtn.setAttribute("aria-label", "Next translation");
+  if (label) label.setAttribute("aria-live", "polite");
+
+  // Set initial aria-hidden on inactive panels
+  panels.forEach((panel, i) => {
+    panel.setAttribute("aria-hidden", i === 0 ? "false" : "true");
+  });
+
   let current = 0;
 
   function update(next: number) {
     panels[current].classList.remove("scripture-compare__panel--active");
+    panels[current].setAttribute("aria-hidden", "true");
     panels[next].classList.add("scripture-compare__panel--active");
+    panels[next].setAttribute("aria-hidden", "false");
     current = next;
 
     if (label) label.textContent = altVersions[current] || "";
@@ -42,9 +52,18 @@ export function initScriptureCompare(el: HTMLElement): () => void {
     update((current + 1) % altCount);
   };
 
+  const handleKeydown = (e: KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      update((current + 1) % altCount);
+    }
+  };
+
   cycleBtn.addEventListener("click", handleClick);
+  cycleBtn.addEventListener("keydown", handleKeydown);
 
   return () => {
     cycleBtn.removeEventListener("click", handleClick);
+    cycleBtn.removeEventListener("keydown", handleKeydown);
   };
 }

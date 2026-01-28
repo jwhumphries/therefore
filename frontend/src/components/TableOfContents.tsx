@@ -52,6 +52,7 @@ function TocItem({ heading, isActive, onClick }: TocItemProps) {
           e.preventDefault();
           onClick();
         }}
+        aria-current={isActive ? "location" : undefined}
         className={`
           inline-block text-sm py-1
           ${isActive ? "active" : "text-default-500 hover:text-foreground"}

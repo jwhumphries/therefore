@@ -6,6 +6,7 @@ import { usePaginatedPosts, type PostsQueryOptions } from "../hooks/api";
 import { TransitionLink } from "../components/TransitionLink";
 import { TagLink } from "../components/TagLink";
 import { useViewTransitionNavigate } from "../hooks/useViewTransition";
+import { usePageMeta } from "../hooks/usePageMeta";
 
 const POSTS_PER_PAGE = 6;
 
@@ -174,6 +175,7 @@ function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) 
 
 export function TagPage() {
   const { tag } = useParams<{ tag: string }>();
+  usePageMeta(tag ? { title: `Posts tagged "${tag}"`, description: `All posts tagged "${tag}" on Therefore.` } : {});
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOption, setSortOption] = useState<SortOption>("date-desc");
   const [animationState, setAnimationState] = useState<AnimationState>("idle");

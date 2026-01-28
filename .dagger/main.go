@@ -144,6 +144,17 @@ func (m *Therefore) LintFrontend(ctx context.Context, source *dagger.Directory) 
 		Stdout(ctx)
 }
 
+// TestFrontend runs Vitest frontend tests
+func (m *Therefore) TestFrontend(ctx context.Context, source *dagger.Directory) (string, error) {
+	return dag.Container().
+		From("ghcr.io/jwhumphries/frontend:latest").
+		WithDirectory("/app", source).
+		WithWorkdir("/app/frontend").
+		WithExec([]string{"bun", "install"}).
+		WithExec([]string{"bun", "run", "test"}).
+		Stdout(ctx)
+}
+
 // FmtFrontend formats frontend code and returns the modified directory
 func (m *Therefore) FmtFrontend(source *dagger.Directory) *dagger.Directory {
 	return dag.Container().
@@ -274,6 +285,11 @@ func (m *Therefore) Check(ctx context.Context, source *dagger.Directory) error {
 	// Run Go tests
 	if _, err := m.Test(ctx, source); err != nil {
 		return fmt.Errorf("test failed: %w", err)
+	}
+
+	// Run frontend tests
+	if _, err := m.TestFrontend(ctx, source); err != nil {
+		return fmt.Errorf("frontend test failed: %w", err)
 	}
 
 	return nil

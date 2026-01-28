@@ -4,6 +4,7 @@ import { Button, Skeleton } from "@heroui/react";
 import { useSeries } from "../hooks/api";
 import { SeriesAccordion } from "../components/SeriesAccordion";
 import type { NavigationState } from "../hooks/useViewTransition";
+import { usePageMeta } from "../hooks/usePageMeta";
 
 const SERIES_PER_PAGE = 15;
 
@@ -137,6 +138,7 @@ function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) 
 }
 
 export function SeriesPage() {
+  usePageMeta({ title: "Series", description: "Browse all series on Therefore." });
   const location = useLocation();
   const navState = location.state as NavigationState | null;
   const { data, isLoading, error } = useSeries();

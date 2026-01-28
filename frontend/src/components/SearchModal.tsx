@@ -223,7 +223,7 @@ export function SearchModal({ isOpen, onOpenChange }: SearchModalProps) {
                 No posts found for "{query}"
               </p>
             ) : (
-              <ul className="space-y-1" role="listbox">
+              <ul className="space-y-1" role="listbox" aria-label="Search results">
                 {/* Series card - shown at top if applicable */}
                 {showSeriesCard && topSeries && (
                   <SeriesCard

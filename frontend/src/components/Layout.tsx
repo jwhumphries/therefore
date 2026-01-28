@@ -56,6 +56,9 @@ export function Layout() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-2 focus:left-2 focus:px-4 focus:py-2 focus:bg-accent focus:text-accent-foreground focus:rounded">
+        Skip to main content
+      </a>
       <header className="border-b border-border sticky top-0 bg-background/80 backdrop-blur-md z-50" style={{ viewTransitionName: 'header' }}>
         <nav className="container mx-auto px-4 py-4 flex justify-between items-center">
           <TransitionLink
@@ -85,7 +88,7 @@ export function Layout() {
 
       <SearchModal isOpen={searchOpen} onOpenChange={setSearchOpen} />
 
-      <main className="container mx-auto px-4 py-8 flex-grow">
+      <main id="main-content" className="container mx-auto px-4 py-8 flex-grow">
         <Outlet />
       </main>
 

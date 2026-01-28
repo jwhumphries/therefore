@@ -28,7 +28,10 @@ export function initCitation(el: HTMLElement): () => void {
   el.dataset.citationNumber = String(citationNumber);
 
   // Create popover element
+  const popoverId = `citation-popover-${citationNumber}`;
   const popover = document.createElement("div");
+  popover.id = popoverId;
+  popover.setAttribute("role", "tooltip");
   popover.className =
     "citation-popover absolute z-50 p-3 text-sm bg-overlay text-overlay-foreground border border-border rounded shadow-lg w-[min(20rem,calc(100vw-2rem))]";
   popover.style.display = "none";
@@ -49,7 +52,7 @@ export function initCitation(el: HTMLElement): () => void {
     linkEl.rel = "noopener noreferrer";
     linkEl.className =
       "text-accent hover:underline text-xs flex items-center gap-1";
-    linkEl.innerHTML = `View source <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>`;
+    linkEl.innerHTML = `View source <svg aria-hidden="true" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>`;
     contentWrapper.appendChild(linkEl);
   }
 
@@ -111,7 +114,8 @@ export function initCitation(el: HTMLElement): () => void {
   // Set up ARIA attributes
   trigger.setAttribute("aria-expanded", "false");
   trigger.setAttribute("aria-haspopup", "true");
-  trigger.setAttribute("aria-label", "Show citation");
+  trigger.setAttribute("aria-controls", popoverId);
+  trigger.setAttribute("aria-label", `Show citation ${citationNumber}`);
 
   // Event handlers (stored for cleanup)
   const handleTriggerClick = (e: Event) => {
@@ -167,7 +171,7 @@ export function buildCitationsAccordion(container: HTMLElement): () => void {
   summary.className =
     "cursor-pointer text-sm font-medium text-muted hover:text-foreground transition-colors flex items-center gap-2";
   summary.innerHTML = `
-    <svg class="citations-chevron w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg aria-hidden="true" class="citations-chevron w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
     </svg>
     Citations (${citationRegistry.length})
@@ -192,7 +196,8 @@ export function buildCitationsAccordion(container: HTMLElement): () => void {
       link.target = "_blank";
       link.rel = "noopener noreferrer";
       link.className = "text-accent hover:underline";
-      link.innerHTML = `${citation.text} <svg class="inline-block w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>`;
+      link.textContent = citation.text;
+      link.insertAdjacentHTML("beforeend", ' <svg aria-hidden="true" class="inline-block w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>');
       li.appendChild(link);
     } else {
       const textSpan = document.createElement("span");

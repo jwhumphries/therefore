@@ -70,7 +70,7 @@ func (s *EmbeddedStore) loadConfig(fs afero.Fs) error {
 			// Config is optional
 			return nil
 		}
-		return err
+		return fmt.Errorf("opening config: %w", err)
 	}
 	defer func() { _ = f.Close() }()
 

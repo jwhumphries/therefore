@@ -30,11 +30,16 @@ export function initLightbox(el: HTMLElement): () => void {
 }
 
 function openLightbox(src: string, alt: string): () => void {
+  // Store the element that had focus so we can restore it
+  const previousFocus = document.activeElement as HTMLElement | null;
+
   // Create overlay
   const overlay = document.createElement("div");
   overlay.className =
     "fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4";
-  overlay.style.cursor = "pointer";
+  overlay.setAttribute("role", "dialog");
+  overlay.setAttribute("aria-modal", "true");
+  overlay.setAttribute("aria-label", alt || "Image lightbox");
 
   // Create image container
   const container = document.createElement("div");
@@ -53,16 +58,22 @@ function openLightbox(src: string, alt: string): () => void {
   closeBtn.innerHTML = "&times;";
   closeBtn.setAttribute("aria-label", "Close lightbox");
 
-  // Close handler - removes all listeners
+  // Close handler - removes all listeners and restores focus
   const close = () => {
     document.removeEventListener("keydown", handleKeydown);
     overlay.remove();
     document.body.style.overflow = "";
+    previousFocus?.focus();
   };
 
   const handleKeydown = (e: KeyboardEvent) => {
     if (e.key === "Escape") {
       close();
+    }
+    // Trap focus within the lightbox (only the close button is focusable)
+    if (e.key === "Tab") {
+      e.preventDefault();
+      closeBtn.focus();
     }
   };
 
@@ -83,6 +94,9 @@ function openLightbox(src: string, alt: string): () => void {
   container.appendChild(img);
   overlay.appendChild(container);
   document.body.appendChild(overlay);
+
+  // Focus the close button
+  closeBtn.focus();
 
   // Return cleanup function for this lightbox instance
   return close;
