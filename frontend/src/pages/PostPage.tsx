@@ -20,6 +20,7 @@ export function PostPage() {
     type: "article",
     publishedTime: post.publishDate,
     author: post.author?.name,
+    url: `${window.location.origin}/posts/${post.slug}`,
   } : {});
   useJsonLd(post ? {
     "@context": "https://schema.org",
