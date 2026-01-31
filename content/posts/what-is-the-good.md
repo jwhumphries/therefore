@@ -6,7 +6,7 @@ draft: false
 tags:
   - philosophy
   - ethics
-series: "foundations"
+series: "Foundations"
 summary: "The first in a series exploring foundational questions in philosophy. We begin with the most practical of inquiries: what makes something good?"
 ---
 

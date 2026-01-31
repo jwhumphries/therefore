@@ -20,6 +20,7 @@
 :root {
   --font-display: 'Fraunces Variable', Georgia, serif;
   --font-body: 'Lora Variable', Georgia, serif;
+  --header-height: 4rem; /* ~64px - sticky header height for TOC positioning */
 }
 
 /* Base font for body text */
@@ -44,6 +45,7 @@ button,
 /* Prose styling - body text with Lora, headings with Fraunces */
 .prose {
   font-family: var(--font-body);
+  color: var(--foreground);
 }
 
 .prose h1,
@@ -54,57 +56,588 @@ button,
 .prose h6 {
   font-family: var(--font-display);
   font-weight: 600;
+  color: var(--foreground);
+}
+
+.prose p,
+.prose li,
+.prose blockquote {
+  color: var(--foreground);
+}
+
+.prose strong,
+.prose b {
+  color: var(--foreground);
+}
+
+.prose a {
+  color: var(--accent);
+}
+
+/* Article container - reset sidenote counter */
+article.prose {
+  counter-reset: sidenote-counter citation-counter;
+}
+
+/* Sidenote symbols - cycle through academic margin note symbols */
+@counter-style sidenote-symbols {
+  system: cyclic;
+  symbols: '*' '†' '‡' '§' '‖' '¶';
+  suffix: '';
+}
+
+/* ============================================================================
+   DROP CAP / INITIAL LETTER
+   Medieval-style illuminated initial with gold gradient and small caps run-in
+   ============================================================================ */
+
+/* Target the first paragraph of article content */
+article.prose .content > p:first-of-type::first-letter {
+  float: left;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 3.5em;
+  line-height: 0.8;
+  padding-right: 0.1em;
+  margin-top: 0.05em;
+  margin-bottom: -0.1em;
+  color: var(--secondary);
+}
+
+/* Small caps for the first line - graceful transition into body text */
+article.prose .content > p:first-of-type::first-line {
+  font-variant: small-caps;
+  font-weight: 500;
+  letter-spacing: 0.05em;
 }
 
 /* Sidenote styles */
 .sidenote-wrapper {
   position: relative;
-}
-
-.sidenote-number {
-  counter-increment: sidenote-counter;
-}
-
-.sidenote-number::after {
-  content: counter(sidenote-counter);
-  font-size: 0.75rem;
-  vertical-align: super;
-}
-
-.sidenote {
-  display: none;
-  margin-left: 0.5rem;
-}
-
-.sidenote-toggle:checked + .sidenote {
   display: inline;
 }
 
-@media (min-width: 1280px) {
-  .sidenote {
-    display: block;
-    position: absolute;
-    right: -280px;
-    width: 250px;
-    margin-top: -1.5rem;
+.sidenote-trigger {
+  counter-increment: sidenote-counter;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0 0.1em;
+  cursor: pointer;
+}
+
+.sidenote-trigger::after {
+  content: counter(sidenote-counter, sidenote-symbols);
+  font-size: 0.85em;
+  vertical-align: super;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.sidenote-trigger:hover::after {
+  text-decoration: underline;
+}
+
+.sidenote-popover {
+  font-style: italic;
+}
+
+/* Invert italics within sidenotes - emphasized text becomes normal */
+.sidenote-popover em,
+.sidenote-popover i {
+  font-style: normal;
+}
+
+/* ============================================================================
+   CITATION STYLES
+   Numbered inline references [1], [2], etc. with popovers linking to source
+   ============================================================================ */
+
+.citation-wrapper {
+  position: relative;
+  display: inline;
+}
+
+.citation-trigger {
+  counter-increment: citation-counter;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0 0.05em;
+  cursor: pointer;
+}
+
+.citation-trigger::after {
+  content: '[' counter(citation-counter) ']';
+  font-size: 0.75em;
+  vertical-align: super;
+  color: var(--accent);
+  font-weight: 600;
+  font-family: var(--font-display);
+}
+
+.citation-trigger:hover::after {
+  text-decoration: underline;
+}
+
+/* Citations accordion at bottom of post */
+.citations-accordion summary {
+  list-style: none; /* Remove default marker */
+}
+
+.citations-accordion[open] .citations-chevron {
+  transform: rotate(90deg);
+}
+
+.citations-list {
+  padding-left: 0;
+  list-style: none;
+}
+
+.citations-list li {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+
+/* ============================================================================
+   TERM/DEFINITION SHORTCODE
+   ============================================================================ */
+
+.term-box {
+  border-left: 2px solid var(--secondary);
+}
+
+/* ============================================================================
+   SCRIPTURE SHORTCODE
+   Bookended blockquote with vertical borders and accent dots
+   ============================================================================ */
+
+.scripture-block {
+  margin: 2rem 0;
+  padding: 1.5rem 1.5rem 1rem;
+  border-left: 2px solid var(--border);
+  border-right: 2px solid var(--border);
+}
+
+/* Scripture body text */
+.scripture-text {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--foreground);
+}
+
+/* Poetry/centered formatting */
+.scripture-text--poetry {
+  text-align: center;
+  white-space: pre-line;
+}
+
+/* Subtle drop cap on first prose letter (inline, not floated) */
+.scripture-drop-cap {
+  font-size: 1.5em;
+  line-height: 1;
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+/* Verse number superscripts */
+.verse-num {
+  font-size: 0.65em;
+  vertical-align: super;
+  font-weight: 600;
+  color: var(--muted);
+  margin-right: 0.05em;
+  font-family: var(--font-body);
+}
+
+/* Reference attribution */
+.scripture-ref {
+  margin-top: 0.75rem;
+  text-align: right;
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  color: var(--default-500);
+}
+
+.scripture-ref cite {
+  font-style: normal;
+  font-weight: 600;
+}
+
+.scripture-gateway-link {
+  display: block;
+  text-align: right;
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-decoration: none;
+  margin-top: 0.15rem;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.scripture-gateway-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+/* ============================================================================
+   SCRIPTURE COMPARE SHORTCODE
+   Two-column scripture comparison with pinned + cycling alternate translations
+   ============================================================================ */
+
+.scripture-compare {
+  margin: 2rem 0;
+}
+
+.scripture-compare__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+/* Mobile: stack columns, each gets bookended borders */
+.scripture-compare__col {
+  padding: 1.5rem 1.5rem 1rem;
+  border-left: 2px solid var(--border);
+  border-right: 2px solid var(--border);
+}
+
+.scripture-compare__col--alt {
+  border-top: 1px solid var(--border);
+}
+
+/* Desktop: two columns, three visible vertical lines */
+@media (min-width: 640px) {
+  .scripture-compare__grid {
+    grid-template-columns: 1fr 1fr;
   }
 
-  .sidenote-toggle:checked + .sidenote {
-    display: block;
-  }
-
-  .sidenote-number {
-    cursor: default;
+  .scripture-compare__col--alt {
+    border-top: none;
+    border-left: none; /* pinned's right border serves as center divider */
   }
 }
 
-/* Timeline styles */
-.timeline-event {
-  transition: transform 0.2s ease;
+/* Version labels */
+.scripture-compare__version-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
 }
 
-.timeline-event:hover {
-  transform: translateX(4px);
+/* Alternate header: label + cycle controls */
+.scripture-compare__alt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.scripture-compare__alt-header .scripture-compare__version-label {
+  margin-bottom: 0;
+}
+
+/* Cycle controls */
+.scripture-compare__cycle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.scripture-compare__position {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.scripture-compare__cycle-btn {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.15rem 0.5rem;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.scripture-compare__cycle-btn:hover {
+  color: var(--foreground);
+  border-color: var(--foreground);
+}
+
+/* Panel switching — grid overlay so all panels share the same cell */
+.scripture-compare__panels {
+  display: grid;
+}
+
+.scripture-compare__panel {
+  grid-area: 1 / 1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease-in-out;
+}
+
+.scripture-compare__panel--active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Footer */
+.scripture-compare__ref {
+  margin-top: 0.75rem;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  color: var(--default-500);
+}
+
+.scripture-compare__ref cite {
+  font-style: normal;
+  font-weight: 600;
+}
+
+.scripture-compare__ref .scripture-gateway-link {
+  text-align: center;
+}
+
+/* ============================================================================
+   PARALLEL SHORTCODE
+   Side-by-side comparison of two viewpoints or texts
+   ============================================================================ */
+
+.parallel-box {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.parallel-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .parallel-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+}
+
+.parallel-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.parallel-content {
+  font-size: 0.875rem;
+  color: var(--default-600);
+  line-height: 1.625;
+}
+
+/* ============================================================================
+   TIMELINE SHORTCODE
+   Horizontal timeline with alternating content above/below the line
+   ============================================================================ */
+
+.timeline {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  margin: 2rem 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+.timeline > li {
+  display: grid;
+  /* 3 columns: left-line | dot | right-line */
+  grid-template-columns: 1fr auto 1fr;
+  /* 3 rows: content-above | middle-line | content-below */
+  grid-template-rows: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  flex: 0 0 auto;
+  min-width: 12rem;
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+
+/* Connecting lines (hr elements) */
+.timeline > li > hr {
+  border: none;
+  height: 2px;
+  background-color: var(--border);
+  margin: 0;
+  grid-row: 2;
+}
+
+/* Left connector - from previous item to dot */
+.timeline > li > hr.timeline-hr-start {
+  grid-column: 1;
+  justify-self: stretch;
+}
+
+/* Right connector - from dot to next item */
+.timeline > li > hr.timeline-hr-end {
+  grid-column: 3;
+  justify-self: stretch;
+}
+
+/* Middle section with the dot */
+.timeline-middle {
+  grid-column: 2;
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.25rem;
+  z-index: 10;
+}
+
+.timeline-circle {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 9999px;
+  background-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--background);
+  flex-shrink: 0;
+}
+
+/* Content above the line (row 1) */
+.timeline-start {
+  grid-column: 1 / -1; /* Span all 3 columns */
+  grid-row: 1;
+  justify-self: center;
+  align-self: end;
+  text-align: center;
+  padding: 0 0.5rem 0.75rem;
+  width: 100%;
+}
+
+/* Content below the line (row 3) */
+.timeline-end {
+  grid-column: 1 / -1; /* Span all 3 columns */
+  grid-row: 3;
+  justify-self: center;
+  align-self: start;
+  text-align: center;
+  padding: 0.75rem 0.5rem 0;
+  width: 100%;
+}
+
+/* Date styling */
+.timeline-date {
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+/* Box styling for content */
+.timeline-box {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md, 0.5rem);
+  box-shadow: 0 1px 3px oklch(0% 0 0 / 0.05);
+  max-width: 10rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: manual; /* Only hyphenate where explicitly marked with &shy; */
+}
+
+.timeline-box h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin: 0;
+  color: var(--foreground);
+}
+
+.timeline-box p {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0.25rem 0 0;
+  line-height: 1.4;
+}
+
+/* Mobile: Stack vertically */
+@media (max-width: 640px) {
+  .timeline {
+    flex-direction: column;
+    overflow-x: visible;
+    padding-bottom: 0;
+  }
+
+  .timeline > li {
+    /* Vertical: left-content | middle-line | right-content */
+    grid-template-columns: 1fr auto 1fr;
+    /* Vertical: top-line | dot | bottom-line */
+    grid-template-rows: 1fr auto 1fr;
+    min-width: unset;
+    min-height: 5rem;
+  }
+
+  .timeline > li > hr {
+    width: 2px;
+    height: auto;
+    grid-column: 2;
+  }
+
+  .timeline > li > hr.timeline-hr-start {
+    grid-row: 1;
+    align-self: stretch;
+    justify-self: center;
+  }
+
+  .timeline > li > hr.timeline-hr-end {
+    grid-row: 3;
+    align-self: stretch;
+    justify-self: center;
+  }
+
+  .timeline-middle {
+    grid-column: 2;
+    grid-row: 2;
+    padding: 0.25rem 0;
+  }
+
+  .timeline-start {
+    grid-column: 1;
+    grid-row: 1 / -1;
+    justify-self: end;
+    align-self: center;
+    text-align: right;
+    padding: 0 1rem 0 0;
+  }
+
+  .timeline-end {
+    grid-column: 3;
+    grid-row: 1 / -1;
+    justify-self: start;
+    align-self: center;
+    text-align: left;
+    padding: 0 0 0 1rem;
+  }
 }
 
 /* Lightbox placeholder styles */
@@ -115,4 +648,324 @@ button,
 [data-component="lightbox"] img:hover {
   transform: scale(1.02);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Static gradient text */
+.gradient-text-static {
+  background: linear-gradient(
+    90deg,
+    #6d28d9,
+    #a855f7,
+    #c084fc,
+    #a855f7,
+    #6d28d9
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Animated gradient text */
+.gradient-text-animated {
+  background: linear-gradient(
+    90deg,
+    #6d28d9,
+    #a855f7,
+    #c084fc,
+    #a855f7,
+    #6d28d9
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 6s ease-in-out infinite;
+}
+
+/* Split text with solid purple color (for animation phase before gradient) */
+.split-text-solid {
+  color: #a855f7 !important;
+  -webkit-text-fill-color: #a855f7 !important;
+}
+
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% center;
+  }
+  50% {
+    background-position: 100% center;
+  }
+}
+
+/* Tag link styles */
+a.tag-link {
+  color: var(--foreground);
+  text-decoration: none;
+  font-weight: 500;
+  background-image: linear-gradient(
+    var(--accent) 0%,
+    var(--accent) 100%
+  );
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 2px;
+  transition: background-size 0.2s ease;
+}
+
+a.tag-link:hover {
+  color: var(--foreground);
+  background-size: 100% 4px;
+}
+
+.tag-hash {
+  transition: color 0.2s ease, font-weight 0.2s ease;
+}
+
+a.tag-link:hover .tag-hash {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* ============================================================================
+   TABLE OF CONTENTS STYLING
+   Animated underline draws outward from center when section becomes active
+   ============================================================================ */
+
+.toc-nav a {
+  transition: color 0.15s ease-out;
+}
+
+.toc-nav a.active {
+  position: relative;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.toc-nav a.active::before {
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background-color: var(--accent);
+  transform-origin: 50% 50%; /* Center - draws outward */
+  animation: toc-underline-in 0.3s ease-out forwards;
+}
+
+@keyframes toc-underline-in {
+  from {
+    transform: scale3d(0, 1, 1);
+  }
+  to {
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+/* ============================================================================
+   SCROLL PROGRESS BARS
+   Adjust visibility for dark mode using theme selector
+   ============================================================================ */
+
+.scroll-progress-bar {
+  background-color: oklch(from var(--accent) l c h / 0.4);
+}
+
+[data-theme="brodie-dark"] .scroll-progress-bar {
+  background-color: oklch(from var(--secondary) l c h / 0.85);
+}
+
+/* ============================================================================
+   PAGINATION PAGE TRANSITIONS
+   Posts slide out left, new posts slide in from right
+   ============================================================================ */
+
+.posts-container {
+  position: relative;
+}
+
+/* Horizontal slide animations for pagination */
+.posts-exit-left {
+  animation: posts-slide-out-left 250ms ease-in forwards;
+}
+
+.posts-enter-right {
+  animation: posts-slide-in-right 300ms ease-out forwards;
+}
+
+.posts-exit-right {
+  animation: posts-slide-out-right 250ms ease-in forwards;
+}
+
+.posts-enter-left {
+  animation: posts-slide-in-left 300ms ease-out forwards;
+}
+
+/* Vertical shuffle animations for sort changes */
+.posts-exit-down {
+  animation: posts-shuffle-out 200ms ease-in forwards;
+}
+
+.posts-enter-up {
+  animation: posts-shuffle-in 250ms ease-out forwards;
+}
+
+@keyframes posts-slide-out-left {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+}
+
+@keyframes posts-slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes posts-slide-out-right {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(60px);
+  }
+}
+
+@keyframes posts-slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes posts-shuffle-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+}
+
+@keyframes posts-shuffle-in {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ============================================================================
+   READING RAIL SIDEBAR
+   Timeline of Thought - sticky sidebar showing active series
+   ============================================================================ */
+
+.reading-rail-node {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reading-rail-node:hover {
+  transform: scale(1.2);
+}
+
+/* Pulse animation for active series nodes */
+@keyframes rail-node-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 oklch(from var(--accent) l c h / 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 4px oklch(from var(--accent) l c h / 0);
+  }
+}
+
+.reading-rail-node-active {
+  animation: rail-node-pulse 2s ease-in-out infinite;
+}
+
+/* View Transitions API styles */
+@supports (view-transition-name: none) {
+  /* Header stays in place during transitions */
+  ::view-transition-old(header),
+  ::view-transition-new(header) {
+    animation: none;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.35s;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Fade transition (for posts) */
+  [data-transition="fade"]::view-transition-old(root) {
+    animation-name: fade-out;
+  }
+
+  [data-transition="fade"]::view-transition-new(root) {
+    animation-name: fade-in;
+  }
+
+  /* Slide transition (for navigation pages) */
+  [data-transition="slide"]::view-transition-old(root) {
+    animation-name: slide-fade-out;
+  }
+
+  [data-transition="slide"]::view-transition-new(root) {
+    animation-name: slide-fade-in;
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  @keyframes slide-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-fade-out {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+  }
 }

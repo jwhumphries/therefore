@@ -1,7 +1,17 @@
 package renderer
 
+// RenderContext provides additional context for shortcode rendering.
+type RenderContext struct {
+	// Citations maps alias names to citation data (text, url).
+	Citations map[string]struct {
+		Text string
+		URL  string
+	}
+}
+
 // ShortcodeRenderer is a function that renders a shortcode to HTML.
-type ShortcodeRenderer func(sc Shortcode) string
+// The context parameter provides access to post-level data like citations.
+type ShortcodeRenderer func(sc Shortcode, ctx *RenderContext) string
 
 // Renderer combines markdown conversion with shortcode processing.
 type Renderer struct {
@@ -23,7 +33,8 @@ func New(shortcodeRenderers map[string]ShortcodeRenderer) *Renderer {
 // 1. Parse shortcodes and replace with placeholders
 // 2. Convert markdown to HTML via Goldmark
 // 3. Replace placeholders with rendered shortcode HTML
-func (r *Renderer) Render(raw string) (string, error) {
+// The ctx parameter provides post-level context like citations (can be nil).
+func (r *Renderer) Render(raw string, ctx *RenderContext) (string, error) {
 	// Step 1: Extract shortcodes
 	content, shortcodes := r.parser.Parse(raw)
 
@@ -42,7 +53,7 @@ func (r *Renderer) Render(raw string) (string, error) {
 			// Unknown shortcode, leave placeholder as-is (or could render as error)
 			continue
 		}
-		rendered := renderer(sc)
+		rendered := renderer(sc, ctx)
 		result = ReplacePlaceholder(result, sc.ID, rendered)
 	}
 

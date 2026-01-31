@@ -1,7 +1,7 @@
 ---
 title: "Councils and Creeds: How Early Christianity Defined Itself"
 slug: "councils-and-creeds"
-publishDate: 2025-01-10T00:00:00Z
+publishDate: 2026-01-19T00:00:00Z
 draft: false
 tags:
   - theology

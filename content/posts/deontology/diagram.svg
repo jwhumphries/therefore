@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">
+  <rect width="400" height="200" fill="#f8f8f8"/>
+  <text x="200" y="30" text-anchor="middle" font-family="Georgia" font-size="16" font-weight="bold">Categorical Imperative</text>
+
+  <rect x="20" y="60" width="160" height="60" fill="#e8e0f0" stroke="#6d28d9" stroke-width="2"/>
+  <text x="100" y="85" text-anchor="middle" font-family="Georgia" font-size="12">Universal Law</text>
+  <text x="100" y="105" text-anchor="middle" font-family="Georgia" font-size="10" fill="#666">"Can this be universalized?"</text>
+
+  <rect x="220" y="60" width="160" height="60" fill="#e8e0f0" stroke="#6d28d9" stroke-width="2"/>
+  <text x="300" y="85" text-anchor="middle" font-family="Georgia" font-size="12">Humanity as End</text>
+  <text x="300" y="105" text-anchor="middle" font-family="Georgia" font-size="10" fill="#666">"Never merely as means"</text>
+
+  <rect x="120" y="140" width="160" height="50" fill="#d4c4e8" stroke="#6d28d9" stroke-width="2"/>
+  <text x="200" y="165" text-anchor="middle" font-family="Georgia" font-size="12" font-weight="bold">Moral Duty</text>
+
+  <line x1="100" y1="120" x2="170" y2="140" stroke="#6d28d9" stroke-width="2"/>
+  <line x1="300" y1="120" x2="230" y2="140" stroke="#6d28d9" stroke-width="2"/>
+</svg>

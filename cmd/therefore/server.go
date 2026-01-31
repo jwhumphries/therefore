@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/fs"
 	"log/slog"
 	"net/http"
@@ -55,16 +56,25 @@ func runServer(cmd *cobra.Command, args []string) error {
 	api.GET("/posts", apiHandler.ListPosts)
 	api.GET("/posts/:slug", apiHandler.GetPost)
 	api.GET("/tags", apiHandler.ListTags)
+	api.GET("/series", apiHandler.ListSeries)
+
+	// Post bundle assets (images, etc.)
+	e.GET("/posts/:slug/:filename", apiHandler.GetPostAsset)
+
+	// SEO
+	baseURL := viper.GetString("base_url")
+	e.GET("/robots.txt", handlers.RobotsTxtHandler(baseURL))
+	e.GET("/sitemap.xml", handlers.SitemapHandler(store, baseURL))
 
 	// Serve embedded frontend SPA
 	distFS, err := fs.Sub(static.DistFS, "dist")
 	if err != nil {
-		return err
+		return fmt.Errorf("loading static assets: %w", err)
 	}
 
 	spaHandler, err := handlers.NewSPAHandler(distFS)
 	if err != nil {
-		return err
+		return fmt.Errorf("initializing SPA handler: %w", err)
 	}
 
 	// Static assets route
@@ -81,7 +91,7 @@ func initContentStore() (content.ContentStore, error) {
 	// Create afero filesystem from embedded posts
 	postsSubFS, err := fs.Sub(embeddedcontent.PostsFS, "posts")
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("loading embedded posts: %w", err)
 	}
 
 	afs := afero.FromIOFS{FS: postsSubFS}

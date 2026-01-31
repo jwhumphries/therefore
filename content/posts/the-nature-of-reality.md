@@ -1,13 +1,13 @@
 ---
 title: "The Nature of Reality: Metaphysics and Being"
 slug: "the-nature-of-reality"
-publishDate: 2025-01-01T00:00:00Z
+publishDate: 2026-01-20T00:00:00Z
 draft: false
 tags:
   - philosophy
   - metaphysics
   - theology
-series: "foundations"
+series: "Foundations"
 summary: "The third essay in our foundations series ventures into metaphysics—the study of what exists and the fundamental nature of reality."
 ---
 

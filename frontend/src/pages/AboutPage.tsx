@@ -1,10 +1,13 @@
+import { usePageMeta } from "../hooks/usePageMeta";
+
 export function AboutPage() {
+  usePageMeta({ title: "About", description: "About Therefore — a blog exploring philosophy and theology." });
   return (
     <div className="max-w-3xl mx-auto">
       <h1 className="text-4xl font-display font-bold mb-8">About</h1>
       <div className="prose prose-lg max-w-none">
         <p>
-          <strong>Therefore</strong> is a blog exploring ideas at the
+          <strong className="text-accent">Therefore</strong> is a blog exploring ideas at the
           intersection of philosophy and theology. The name comes from the
           logical connective that links premises to conclusions&mdash;a reminder
           that careful reasoning matters.

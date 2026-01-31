@@ -64,6 +64,11 @@ tasks:
     cmds:
       - dagger -m .dagger call typecheck --source=.
 
+  test-frontend:
+    desc: Run frontend Vitest tests via Dagger
+    cmds:
+      - dagger -m .dagger call test-frontend --source=.
+
   check:
     desc: Run all checks (lint, typecheck, test)
     cmds:
@@ -71,6 +76,7 @@ tasks:
       - task: lint-frontend
       - task: typecheck
       - task: test
+      - task: test-frontend
 
   fmt:
     desc: Format Go code via Dagger
@@ -91,6 +97,12 @@ tasks:
     desc: Format templ files via Dagger
     cmds:
       - dagger -m .dagger call templ-fmt --source=. export --path=.
+
+  ssg:
+    desc: Generate pre-rendered HTML pages for SEO via Dagger
+    deps: [build-frontend]
+    cmds:
+      - dagger -m .dagger call ssg --source=. --frontend-dist=./internal/static/dist export --path=./internal/static/dist
 
   clean:
     desc: Remove build artifacts

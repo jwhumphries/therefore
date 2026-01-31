@@ -6,13 +6,15 @@ import (
 	"testing"
 	"time"
 
+	"therefore/internal/renderer"
+
 	"github.com/spf13/afero"
 )
 
 // mockRenderer implements Renderer for testing.
 type mockRenderer struct{}
 
-func (m *mockRenderer) Render(raw string) (string, error) {
+func (m *mockRenderer) Render(raw string, _ *renderer.RenderContext) (string, error) {
 	return "<p>" + raw + "</p>", nil
 }
 
@@ -228,33 +230,42 @@ Content.`), 0644)
 	ctx := context.Background()
 
 	// Test sorting (newest first)
-	posts, err := store.ListPosts(ctx, ListOptions{})
+	posts, total, err := store.ListPosts(ctx, ListOptions{})
 	if err != nil {
 		t.Fatalf("ListPosts() error = %v", err)
 	}
 	if len(posts) != 3 {
 		t.Fatalf("len(posts) = %d, want 3", len(posts))
 	}
+	if total != 3 {
+		t.Errorf("total = %d, want 3", total)
+	}
 	if posts[0].Meta.Slug != "third" {
 		t.Errorf("posts[0].Slug = %q, want %q", posts[0].Meta.Slug, "third")
 	}
 
 	// Test limit
-	posts, err = store.ListPosts(ctx, ListOptions{Limit: 2})
+	posts, total, err = store.ListPosts(ctx, ListOptions{Limit: 2})
 	if err != nil {
 		t.Fatalf("ListPosts(limit=2) error = %v", err)
 	}
 	if len(posts) != 2 {
 		t.Errorf("len(posts) = %d, want 2", len(posts))
 	}
+	if total != 3 {
+		t.Errorf("total = %d, want 3 (total before pagination)", total)
+	}
 
 	// Test offset
-	posts, err = store.ListPosts(ctx, ListOptions{Offset: 1})
+	posts, total, err = store.ListPosts(ctx, ListOptions{Offset: 1})
 	if err != nil {
 		t.Fatalf("ListPosts(offset=1) error = %v", err)
 	}
 	if len(posts) != 2 {
 		t.Errorf("len(posts) = %d, want 2", len(posts))
+	}
+	if total != 3 {
+		t.Errorf("total = %d, want 3 (total before pagination)", total)
 	}
 }
 
@@ -298,30 +309,39 @@ Content.`), 0644)
 	ctx := context.Background()
 
 	// Filter by philosophy tag
-	posts, err := store.ListPosts(ctx, ListOptions{Tag: "philosophy"})
+	posts, total, err := store.ListPosts(ctx, ListOptions{Tag: "philosophy"})
 	if err != nil {
 		t.Fatalf("ListPosts(tag=philosophy) error = %v", err)
 	}
 	if len(posts) != 2 {
 		t.Errorf("len(posts) = %d, want 2", len(posts))
 	}
+	if total != 2 {
+		t.Errorf("total = %d, want 2", total)
+	}
 
 	// Filter by theology tag
-	posts, err = store.ListPosts(ctx, ListOptions{Tag: "theology"})
+	posts, total, err = store.ListPosts(ctx, ListOptions{Tag: "theology"})
 	if err != nil {
 		t.Fatalf("ListPosts(tag=theology) error = %v", err)
 	}
 	if len(posts) != 2 {
 		t.Errorf("len(posts) = %d, want 2", len(posts))
 	}
+	if total != 2 {
+		t.Errorf("total = %d, want 2", total)
+	}
 
 	// Filter by nonexistent tag
-	posts, err = store.ListPosts(ctx, ListOptions{Tag: "nonexistent"})
+	posts, total, err = store.ListPosts(ctx, ListOptions{Tag: "nonexistent"})
 	if err != nil {
 		t.Fatalf("ListPosts(tag=nonexistent) error = %v", err)
 	}
 	if len(posts) != 0 {
 		t.Errorf("len(posts) = %d, want 0", len(posts))
+	}
+	if total != 0 {
+		t.Errorf("total = %d, want 0", total)
 	}
 }
 
@@ -396,5 +416,75 @@ Content.`), 0644)
 	}
 	if post.Meta.Slug != "my-post-name" {
 		t.Errorf("Slug = %q, want %q", post.Meta.Slug, "my-post-name")
+	}
+}
+
+func TestEmbeddedStore_GetSeries(t *testing.T) {
+	fs := afero.NewMemMapFs()
+	past := time.Now().Add(-24 * time.Hour).Format(time.RFC3339)
+
+	_ = afero.WriteFile(fs, "post1.md", []byte(`---
+title: Post 1
+slug: post1
+publishDate: `+past+`
+series: Series A
+tags: [philosophy, ethics]
+---
+Content.`), 0644)
+
+	_ = afero.WriteFile(fs, "post2.md", []byte(`---
+title: Post 2
+slug: post2
+publishDate: `+past+`
+series: Series A
+tags: [philosophy, metaphysics]
+---
+Content.`), 0644)
+
+	_ = afero.WriteFile(fs, "post3.md", []byte(`---
+title: Post 3
+slug: post3
+publishDate: `+past+`
+series: Series B
+tags: [theology]
+---
+Content.`), 0644)
+
+	store, err := NewEmbeddedStore(fs, &mockRenderer{})
+	if err != nil {
+		t.Fatalf("NewEmbeddedStore() error = %v", err)
+	}
+
+	ctx := context.Background()
+
+	series, err := store.GetSeries(ctx)
+	if err != nil {
+		t.Fatalf("GetSeries() error = %v", err)
+	}
+	if len(series) != 2 {
+		t.Fatalf("len(series) = %d, want 2", len(series))
+	}
+
+	// Series should be sorted by count (descending), then name
+	if series[0].Series != "Series A" || series[0].Count != 2 {
+		t.Errorf("series[0] = %+v, want {Series: Series A, Count: 2}", series[0])
+	}
+	if series[1].Series != "Series B" || series[1].Count != 1 {
+		t.Errorf("series[1] = %+v, want {Series: Series B, Count: 1}", series[1])
+	}
+
+	// TopTags should be computed correctly
+	// Series A has: philosophy (2), ethics (1), metaphysics (1)
+	// Top 3 should be: philosophy, ethics, metaphysics (sorted alphabetically for ties)
+	if len(series[0].TopTags) != 3 {
+		t.Errorf("series[0].TopTags length = %d, want 3", len(series[0].TopTags))
+	}
+	if series[0].TopTags[0] != "philosophy" {
+		t.Errorf("series[0].TopTags[0] = %q, want philosophy", series[0].TopTags[0])
+	}
+
+	// Series B has: theology (1)
+	if len(series[1].TopTags) != 1 || series[1].TopTags[0] != "theology" {
+		t.Errorf("series[1].TopTags = %v, want [theology]", series[1].TopTags)
 	}
 }

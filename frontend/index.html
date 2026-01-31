@@ -1,10 +1,32 @@
 <!doctype html>
-<html lang="en" data-theme="brodie">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="A blog exploring ideas at the intersection of philosophy and theology." />
+    <!-- Open Graph defaults (overridden by usePageMeta on client) -->
+    <meta property="og:title" content="Therefore" />
+    <meta property="og:site_name" content="Therefore" />
+    <meta property="og:type" content="website" />
+    <meta property="og:description" content="A blog exploring ideas at the intersection of philosophy and theology." />
+    <!-- Twitter Card defaults -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Therefore" />
+    <meta name="twitter:description" content="A blog exploring ideas at the intersection of philosophy and theology." />
     <title>Therefore</title>
+    <script>
+      // Apply theme immediately to prevent flash
+      (function() {
+        var stored = localStorage.getItem('therefore-theme');
+        var isDark = stored === 'brodie-dark' ||
+          (stored !== 'brodie' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        var theme = isDark ? 'brodie-dark' : 'brodie';
+        document.documentElement.setAttribute('data-theme', theme);
+        // Set background color immediately to prevent white flash
+        document.documentElement.style.backgroundColor = isDark ? 'oklch(15% 0.01 265)' : 'oklch(99% 0.002 265)';
+      })();
+    </script>
   </head>
   <body class="bg-background text-foreground">
     <div id="root"></div>

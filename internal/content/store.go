@@ -3,6 +3,8 @@ package content
 import (
 	"context"
 	"errors"
+
+	"therefore/internal/renderer"
 )
 
 var (
@@ -12,7 +14,7 @@ var (
 
 // Renderer converts raw markdown content to HTML.
 type Renderer interface {
-	Render(raw string) (string, error)
+	Render(raw string, ctx *renderer.RenderContext) (string, error)
 }
 
 // ContentStore provides access to blog posts.
@@ -22,8 +24,15 @@ type ContentStore interface {
 
 	// ListPosts returns posts matching the given options.
 	// Posts are returned sorted by publish date, newest first.
-	ListPosts(ctx context.Context, opts ListOptions) ([]*Post, error)
+	// Returns the posts, total count (before pagination), and any error.
+	ListPosts(ctx context.Context, opts ListOptions) ([]*Post, int, error)
 
 	// GetTags returns all tags with their post counts.
 	GetTags(ctx context.Context) ([]TagCount, error)
+
+	// GetSeries returns all series with their post counts.
+	GetSeries(ctx context.Context) ([]SeriesCount, error)
+
+	// GetPostAsset retrieves an asset from a post's bundle directory.
+	GetPostAsset(ctx context.Context, slug, filename string) ([]byte, error)
 }

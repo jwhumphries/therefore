@@ -1,6 +1,15 @@
 package views
 
-import "strings"
+import (
+	"regexp"
+	"strconv"
+	"strings"
+)
+
+// formatCitationNumber formats a citation number as [1], [2], etc.
+func formatCitationNumber(n int) string {
+	return "[" + strconv.Itoa(n) + "]"
+}
 
 // Figure renders an image with optional caption.
 templ Figure(src, caption, alt string) {
@@ -8,6 +17,7 @@ templ Figure(src, caption, alt string) {
 		<img
 			src={ src }
 			alt={ alt }
+			loading="lazy"
 			class="w-full rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
 		/>
 		if caption != "" {
@@ -39,33 +49,266 @@ templ Quote(author, source, content string) {
 	</blockquote>
 }
 
-// Sidenote renders a margin note that can be expanded on mobile.
+// Sidenote renders a margin note as a popover.
 templ Sidenote(id, content string) {
-	<span class="sidenote-wrapper" data-component="sidenote">
-		<label for={ id } class="sidenote-number cursor-pointer text-primary"></label>
-		<input type="checkbox" id={ id } class="sidenote-toggle hidden"/>
-		<span class="sidenote text-sm text-default-500 italic">
-			@templ.Raw(content)
-		</span>
+	<span class="sidenote-wrapper" data-component="sidenote" data-sidenote-content={ content }>
+		<button type="button" class="sidenote-trigger cursor-pointer text-accent font-medium"></button>
 	</span>
+}
+
+// CitationRef renders an inline citation reference with popover.
+// The number is determined by the citation-counter CSS counter.
+templ CitationRef(text, url string) {
+	<span class="citation-wrapper" data-component="citation" data-citation-text={ text } data-citation-url={ url }>
+		<button type="button" class="citation-trigger cursor-pointer"></button>
+	</span>
+}
+
+// CitationEntry represents a citation for the citations list.
+type CitationEntry struct {
+	Number int
+	Text   string
+	URL    string
+}
+
+// CitationsAccordion renders the collapsible citations section at the bottom of a post.
+templ CitationsAccordion(citations []CitationEntry) {
+	if len(citations) > 0 {
+		<details class="citations-accordion mt-12 border-t border-border pt-6">
+			<summary class="cursor-pointer text-sm font-medium text-muted hover:text-foreground transition-colors list-none flex items-center gap-2">
+				<svg class="citations-chevron w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+				</svg>
+				Citations ({ len(citations) })
+			</summary>
+			<ol class="citations-list mt-4 space-y-2 text-sm">
+				for _, c := range citations {
+					<li value={ formatCitationNumber(c.Number) } class="flex gap-2">
+						<span class="text-muted flex-shrink-0">{ formatCitationNumber(c.Number) }</span>
+						<a href={ templ.SafeURL(c.URL) } target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">
+							{ c.Text }
+							<svg class="inline-block w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+							</svg>
+						</a>
+					</li>
+				}
+			</ol>
+		</details>
+	}
+}
+
+// Term renders a compact definition box for technical/philosophical terms.
+templ Term(word, origin, content string) {
+	<aside class="term-box my-4 py-2 pl-4 not-prose">
+		<div class="term-header">
+			<span class="font-display font-semibold text-sm tracking-wide uppercase">{ word }</span>
+			if origin != "" {
+				<span class="text-muted text-xs italic">— { origin }</span>
+			}
+		</div>
+		<p class="text-sm text-default-600 mt-1 leading-relaxed">
+			@templ.Raw(content)
+		</p>
+	</aside>
+}
+
+// Scripture renders a Bible passage with bookended borders.
+templ Scripture(ref, version, content string, poetry bool) {
+	<blockquote class={ "scripture-block not-prose", templ.KV("scripture-poetry", poetry) }>
+		<div class={ "scripture-text", templ.KV("scripture-text--poetry", poetry) }>
+			@templ.Raw(content)
+		</div>
+		<footer class="scripture-ref">
+			<span>— </span>
+			<cite>{ ref }</cite>
+			if version != "" {
+				<span>({ version })</span>
+			}
+			if ref != "" {
+				<a
+					class="scripture-gateway-link"
+					href={ templ.SafeURL(bibleGatewayURL(ref, version)) }
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					View on Bible Gateway ↗
+				</a>
+			}
+		</footer>
+	</blockquote>
+}
+
+// bibleGatewayURL constructs a Bible Gateway link from a reference and version.
+func bibleGatewayURL(ref, version string) string {
+	// URL-encode the reference for the search parameter
+	encoded := strings.ReplaceAll(ref, " ", "+")
+	encoded = strings.ReplaceAll(encoded, ":", "%3A")
+	url := "https://www.biblegateway.com/passage/?search=" + encoded
+	if version != "" {
+		url += "&version=" + version
+	}
+	return url
+}
+
+// ScriptureCompare renders a two-column scripture comparison with a pinned reference
+// translation on the left and one or more cycling alternate translations on the right.
+templ ScriptureCompare(ref, pinnedVersion string, altVersions []string, pinnedContent string, altContents []string, poetry bool) {
+	<div
+		class={ "scripture-compare not-prose", templ.KV("scripture-poetry", poetry) }
+		data-component="scripture-compare"
+		data-alt-versions={ strings.Join(altVersions, ",") }
+		data-alt-count={ strconv.Itoa(len(altContents)) }
+		data-ref={ ref }
+	>
+		<div class="scripture-compare__grid">
+			<div class="scripture-compare__col scripture-compare__col--pinned">
+				<div class="scripture-compare__version-label">{ pinnedVersion }</div>
+				<div class={ "scripture-text", templ.KV("scripture-text--poetry", poetry) }>
+					@templ.Raw(pinnedContent)
+				</div>
+			</div>
+			<div class="scripture-compare__col scripture-compare__col--alt">
+				<div class="scripture-compare__alt-header">
+					<div class="scripture-compare__version-label scripture-compare__alt-label">
+						{ altVersions[0] }
+					</div>
+					if len(altContents) > 1 {
+						<div class="scripture-compare__cycle">
+							<span class="scripture-compare__position">1/{ strconv.Itoa(len(altContents)) }</span>
+							<button type="button" class="scripture-compare__cycle-btn">Next &#8594;</button>
+						</div>
+					}
+				</div>
+				<div class="scripture-compare__panels">
+					for i, alt := range altContents {
+						<div
+							class={ "scripture-compare__panel scripture-text",
+								templ.KV("scripture-text--poetry", poetry),
+								templ.KV("scripture-compare__panel--active", i == 0) }
+							data-panel-index={ strconv.Itoa(i) }
+						>
+							@templ.Raw(alt)
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+		<footer class="scripture-compare__ref">
+			<cite>{ ref }</cite>
+			if ref != "" {
+				<a
+					class="scripture-gateway-link"
+					href={ templ.SafeURL(bibleGatewayURL(ref, pinnedVersion)) }
+					target="_blank"
+					rel="noopener noreferrer"
+					data-gateway-ref={ ref }
+				>
+					View on Bible Gateway ↗
+				</a>
+			}
+		</footer>
+	</div>
+}
+
+// formatVerseNumbers converts bare numbers to superscript verse numbers in scripture content.
+// Numbers at the start of content or preceded by whitespace become verse markers.
+// Escape with backslash: \7 renders as literal "7".
+func formatVerseNumbers(content string) string {
+	// First, protect escaped numbers: \123 -> placeholder
+	escaped := regexp.MustCompile(`\\(\d+)`)
+	placeholders := map[string]string{}
+	i := 0
+	result := escaped.ReplaceAllStringFunc(content, func(match string) string {
+		num := match[1:] // strip leading backslash
+		placeholder := "%%ESCAPED_NUM_" + strconv.Itoa(i) + "%%"
+		placeholders[placeholder] = num
+		i++
+		return placeholder
+	})
+
+	// Convert verse numbers: standalone numbers followed by a space
+	// Match at start of string, after newline, or after whitespace
+	verseNum := regexp.MustCompile(`(^|\n|\s)(\d{1,3})\s`)
+	result = verseNum.ReplaceAllString(result, `$1<sup class="verse-num">$2</sup>`)
+
+	// Restore escaped numbers
+	for placeholder, num := range placeholders {
+		result = strings.ReplaceAll(result, placeholder, num)
+	}
+
+	return result
+}
+
+// applyScriptureDropCap wraps the first actual letter (skipping any leading
+// <sup> verse number tags) in a drop cap span.
+func applyScriptureDropCap(content string) string {
+	// Skip past any leading <sup ...>...</sup> tags and whitespace
+	dropCap := regexp.MustCompile(`^((?:<sup[^>]*>[^<]*</sup>|\s)*)(\pL)`)
+	return dropCap.ReplaceAllString(content, `$1<span class="scripture-drop-cap">$2</span>`)
+}
+
+// Parallel renders a side-by-side comparison of two viewpoints or texts.
+templ Parallel(leftLabel, rightLabel, leftContent, rightContent string) {
+	<aside class="parallel-box not-prose">
+		<div class="parallel-grid">
+			<div>
+				<div class="parallel-label">{ leftLabel }</div>
+				<p class="parallel-content">
+					@templ.Raw(leftContent)
+				</p>
+			</div>
+			<div>
+				<div class="parallel-label">{ rightLabel }</div>
+				<p class="parallel-content">
+					@templ.Raw(rightContent)
+				</p>
+			</div>
+		</div>
+	</aside>
 }
 
 // Timeline renders a chronological list of events.
 templ Timeline(start, end string, events []TimelineEvent) {
-	<div class="timeline my-8" data-component="timeline" data-start={ start } data-end={ end }>
-		<div class="relative pl-8 border-l-2 border-default-300">
-			for _, event := range events {
-				<div class="timeline-event mb-6 relative">
-					<div class="absolute -left-[25px] w-4 h-4 rounded-full bg-primary border-4 border-background"></div>
-					<time class="text-sm font-medium text-primary">{ event.Date }</time>
-					<h4 class="font-semibold mt-1">{ event.Title }</h4>
-					if event.Description != "" {
-						<p class="text-default-600 mt-1">{ event.Description }</p>
-					}
-				</div>
-			}
-		</div>
-	</div>
+	<ul class="timeline" data-component="timeline" data-start={ start } data-end={ end } aria-label="Timeline of events">
+		for i, event := range events {
+			<li>
+				if i > 0 {
+					<hr class="timeline-hr-start"/>
+				} else {
+					<hr class="invisible timeline-hr-start"/>
+				}
+				if i%2 == 0 {
+					<div class="timeline-start timeline-date text-center">{ event.Date }</div>
+					<div class="timeline-middle">
+						<div class="timeline-circle"></div>
+					</div>
+					<div class="timeline-end timeline-box text-center">
+						<h4 class="font-semibold font-display text-center">{ event.Title }</h4>
+						if event.Description != "" {
+							<p class="text-sm text-default-600 mt-1 text-center">{ event.Description }</p>
+						}
+					</div>
+				} else {
+					<div class="timeline-start timeline-box text-center">
+						<h4 class="font-semibold font-display text-center">{ event.Title }</h4>
+						if event.Description != "" {
+							<p class="text-sm text-default-600 mt-1 text-center">{ event.Description }</p>
+						}
+					</div>
+					<div class="timeline-middle">
+						<div class="timeline-circle"></div>
+					</div>
+					<div class="timeline-end timeline-date text-center">{ event.Date }</div>
+				}
+				if i < len(events)-1 {
+					<hr class="timeline-hr-end"/>
+				} else {
+					<hr class="invisible timeline-hr-end"/>
+				}
+			</li>
+		}
+	</ul>
 }
 
 // TimelineEvent represents a single event in a timeline.

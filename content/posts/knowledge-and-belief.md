@@ -7,15 +7,27 @@ tags:
   - philosophy
   - epistemology
   - metaphysics
-series: "foundations"
+series: "Foundations"
 summary: "The second installment in our foundations series tackles epistemology: the study of knowledge itself. How do we distinguish genuine knowledge from mere opinion?"
+citations:
+  plato-theaetetus:
+    text: "Plato, Theaetetus (c. 369 BC)"
+    url: "https://plato.stanford.edu/entries/plato-theaetetus/"
+  gettier1963:
+    text: "Gettier, E. (1963). Is Justified True Belief Knowledge? Analysis, 23(6), 121-123"
+    url: "https://www.jstor.org/stable/3326922"
+  descartes:
+    text: "Descartes, R. (1641). Meditations on First Philosophy"
+    url: "https://plato.stanford.edu/entries/descartes-epistemology/"
 ---
 
 You believe many things. You believe the sun will rise tomorrow. You believe your memories are generally reliable. You believe other people have minds like yours. But do you *know* these things? And what's the difference?
 
+{{term word="Epistemology" origin="Greek: ἐπιστήμη (epistēmē), knowledge"}}The branch of philosophy concerned with the nature, sources, and limits of knowledge. It asks: *What can we know? How do we know it? What justifies our beliefs?*{{/term}}
+
 ## The Classical Definition
 
-Since Plato, philosophers have generally defined knowledge as "justified true belief." {{sidenote id="jtb"}}This definition appears in Plato's *Theaetetus*, though Plato himself raises objections to it. The dialogue ends in aporia—philosophical puzzlement—without a definitive answer.{{/sidenote}} To know something, on this account, you need three things:
+Since Plato, philosophers have generally defined knowledge as "justified true belief."{{cite alias="plato-theaetetus"}} {{sidenote id="jtb"}}This definition appears in Plato's *Theaetetus*, though Plato himself raises objections to it. The dialogue ends in aporia—philosophical puzzlement—without a definitive answer.{{/sidenote}} To know something, on this account, you need three things:
 
 1. **Belief**: You must actually hold the proposition to be true
 2. **Truth**: The proposition must actually be true
@@ -25,7 +37,7 @@ This seems reasonable enough. If you don't believe something, you can't be said 
 
 ## The Gettier Problem
 
-For over two thousand years, this definition seemed adequate. Then, in 1963, Edmund Gettier published a three-page paper that changed everything. {{sidenote id="gettier"}}Gettier's paper, "Is Justified True Belief Knowledge?", is one of the most influential short papers in the history of philosophy. It spawned an entire industry of responses and counter-examples.{{/sidenote}}
+For over two thousand years, this definition seemed adequate. Then, in 1963, Edmund Gettier published a three-page paper that changed everything.{{cite alias="gettier1963"}} {{sidenote id="gettier"}}Gettier's paper is one of the most influential short papers in the history of philosophy. It spawned an entire industry of responses and counter-examples.{{/sidenote}}
 
 Gettier showed that you can have justified true belief and still not have knowledge. Consider this scenario:
 
@@ -39,7 +51,7 @@ Even setting aside Gettier cases, there are deeper challenges to our claims of k
 
 **The Dream Argument**: How do you know you're not dreaming right now? Dreams can seem completely real while we're in them. What evidence could you possibly have that would distinguish waking life from a very vivid dream?
 
-**The Evil Demon**: Descartes imagined a powerful deceiver who manipulates all your experiences. Everything you perceive could be an illusion created by this demon. How could you ever rule this out?
+**The Evil Demon**: Descartes imagined a powerful deceiver who manipulates all your experiences.{{cite alias="descartes"}} Everything you perceive could be an illusion created by this demon. How could you ever rule this out?
 
 **Brain in a Vat**: The modern version of Descartes' scenario. What if you're just a brain in a vat, being fed electrical impulses that simulate an entire world? Your experiences would be indistinguishable from "real" ones.
 

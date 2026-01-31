@@ -244,10 +244,10 @@ End`
 
 func TestRenderer_FullPipeline(t *testing.T) {
 	renderers := map[string]ShortcodeRenderer{
-		"figure": func(sc Shortcode) string {
+		"figure": func(sc Shortcode, _ *RenderContext) string {
 			return "<figure><img src=\"" + sc.Attrs["src"] + "\" /></figure>"
 		},
-		"quote": func(sc Shortcode) string {
+		"quote": func(sc Shortcode, _ *RenderContext) string {
 			return "<blockquote><p>" + sc.Content + "</p><cite>" + sc.Attrs["author"] + "</cite></blockquote>"
 		},
 	}
@@ -266,7 +266,7 @@ And a quote:
 
 The end.`
 
-	result, err := r.Render(input)
+	result, err := r.Render(input, nil)
 	if err != nil {
 		t.Fatalf("Render() error = %v", err)
 	}
@@ -306,7 +306,7 @@ func TestRenderer_UnknownShortcode(t *testing.T) {
 
 	input := `Text with {{unknown attr="val"}} shortcode.`
 
-	result, err := r.Render(input)
+	result, err := r.Render(input, nil)
 	if err != nil {
 		t.Fatalf("Render() error = %v", err)
 	}

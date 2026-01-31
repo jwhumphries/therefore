@@ -5,6 +5,7 @@ primary_region = "iad"
   image = "ghcr.io/jwhumphries/therefore:latest"
 
 [env]
+  THEREFORE_BASE_URL = "https://faith.john-humphries.com"
   THEREFORE_PORT = ":8080"
   THEREFORE_LOG_LEVEL = "info"
   TZ = "America/New_York"

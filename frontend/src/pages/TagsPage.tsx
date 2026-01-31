@@ -1,14 +1,27 @@
-import { Link } from "react-router-dom";
-import { Spinner } from "@heroui/react";
+import { Skeleton } from "@heroui/react";
 import { useTags } from "../hooks/api";
+import { TagWithCount } from "../components/TagLink";
+import { usePageMeta } from "../hooks/usePageMeta";
+
+function TagSkeleton() {
+  return <Skeleton className="h-7 w-24 rounded-full" />;
+}
 
 export function TagsPage() {
+  usePageMeta({ title: "Tags", description: "Browse all tags on Therefore." });
   const { data: tags, isLoading, error } = useTags();
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-[50vh]">
-        <Spinner size="lg" />
+      <div className="max-w-3xl mx-auto">
+        <h1 className="text-4xl font-display font-bold mb-8">Tags</h1>
+        <div className="flex flex-wrap gap-x-6 gap-y-3">
+          <TagSkeleton />
+          <TagSkeleton />
+          <TagSkeleton />
+          <TagSkeleton />
+          <TagSkeleton />
+        </div>
       </div>
     );
   }
@@ -33,16 +46,14 @@ export function TagsPage() {
   return (
     <div className="max-w-3xl mx-auto">
       <h1 className="text-4xl font-display font-bold mb-8">Tags</h1>
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-x-6 gap-y-3">
         {tags.map((tag) => (
-          <Link
+          <TagWithCount
             key={tag.tag}
-            to={`/tags/${tag.tag}`}
-            className="px-4 py-2 bg-default-100 rounded-lg hover:bg-default-200 transition-colors"
-          >
-            <span className="font-medium">{tag.tag}</span>
-            <span className="text-default-500 ml-2">({tag.count})</span>
-          </Link>
+            tag={tag.tag}
+            count={tag.count}
+            className="text-lg"
+          />
         ))}
       </div>
     </div>

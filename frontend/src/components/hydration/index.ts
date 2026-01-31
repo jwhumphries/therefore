@@ -1,14 +1,29 @@
 import { initLightbox } from "./lightbox";
 import { initTimeline } from "./timeline";
 import { initSidenote } from "./sidenote";
+import {
+  initCitation,
+  buildCitationsAccordion,
+  resetCitationRegistry,
+} from "./citation";
+import { initAvatar } from "./avatar";
+import { initScriptureCompare } from "./scriptureCompare";
 
-type ComponentInit = (el: HTMLElement) => void;
+type CleanupFn = () => void;
+type ComponentInit = (el: HTMLElement) => CleanupFn | void;
 
 const registry: Record<string, ComponentInit> = {
   lightbox: initLightbox,
   timeline: initTimeline,
   sidenote: initSidenote,
+  citation: initCitation,
+  avatar: initAvatar,
+  "scripture-compare": initScriptureCompare,
 };
+
+// Store cleanup functions and element references for all hydrated components
+let cleanupFunctions: CleanupFn[] = [];
+let hydratedElements: HTMLElement[] = [];
 
 /**
  * Hydrates all components with data-component attributes within a container.
@@ -25,11 +40,33 @@ export function hydrateComponents(container: HTMLElement): void {
     if (init) {
       // Avoid re-initializing
       if (!el.dataset.hydrated) {
-        init(el);
+        const cleanup = init(el);
+        if (cleanup) {
+          cleanupFunctions.push(cleanup);
+        }
         el.dataset.hydrated = "true";
+        hydratedElements.push(el);
       }
     } else {
       console.warn(`Unknown component: ${componentName}`);
     }
   });
+
+  // Build citations accordion after all citations are hydrated
+  const accordionCleanup = buildCitationsAccordion(container);
+  if (accordionCleanup) {
+    cleanupFunctions.push(accordionCleanup);
+  }
+}
+
+/**
+ * Cleans up all hydrated components.
+ * Call this before navigating away or re-hydrating.
+ */
+export function cleanupComponents(): void {
+  cleanupFunctions.forEach((cleanup) => cleanup());
+  cleanupFunctions = [];
+  hydratedElements.forEach((el) => delete el.dataset.hydrated);
+  hydratedElements = [];
+  resetCitationRegistry();
 }
