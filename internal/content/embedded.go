@@ -21,6 +21,20 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+var (
+	// Match markdown images: ![alt](path) where path doesn't start with / or http
+	imgRegex = regexp.MustCompile(`!\[([^\]]*)\]\(([^/)][^)]*)\)`)
+
+	// Match code blocks
+	codeBlockRegex = regexp.MustCompile("(?s)```.*?```")
+
+	// Match inline code
+	inlineCodeRegex = regexp.MustCompile("`[^`]+`")
+
+	// Match shortcodes
+	shortcodeRegex = regexp.MustCompile(`\{\{[^}]+\}\}`)
+)
+
 // SiteConfig contains site-wide configuration loaded from config.yaml.
 type SiteConfig struct {
 	Author Author `yaml:"author"`
@@ -215,8 +229,6 @@ func (s *EmbeddedStore) parsePost(fs afero.Fs, path string, r Renderer, bundleDi
 // transformBundleImagePaths converts relative image paths to absolute paths for page bundles.
 // e.g., ![alt](image.jpg) -> ![alt](/posts/my-slug/image.jpg)
 func transformBundleImagePaths(content, slug string) string {
-	// Match markdown images: ![alt](path) where path doesn't start with / or http
-	imgRegex := regexp.MustCompile(`!\[([^\]]*)\]\(([^/)][^)]*)\)`)
 	return imgRegex.ReplaceAllStringFunc(content, func(match string) string {
 		parts := imgRegex.FindStringSubmatch(match)
 		if len(parts) != 3 {
@@ -236,15 +248,12 @@ func transformBundleImagePaths(content, slug string) string {
 // countWords counts words in markdown text, excluding code blocks and shortcodes.
 func countWords(text string) int {
 	// Remove code blocks
-	codeBlockRegex := regexp.MustCompile("(?s)```.*?```")
 	text = codeBlockRegex.ReplaceAllString(text, "")
 
 	// Remove inline code
-	inlineCodeRegex := regexp.MustCompile("`[^`]+`")
 	text = inlineCodeRegex.ReplaceAllString(text, "")
 
 	// Remove shortcodes
-	shortcodeRegex := regexp.MustCompile(`\{\{[^}]+\}\}`)
 	text = shortcodeRegex.ReplaceAllString(text, "")
 
 	// Split on whitespace and count non-empty words
