@@ -162,56 +162,6 @@ function updateCharacterMorph(
 }
 
 /**
- * Update row scroll position and wrap characters
- */
-function updateRowScroll(
-  row: Row,
-  deltaTime: number,
-  config: AnimationConfig,
-  viewportWidth: number
-): void {
-  const scrollAmount = (config.scrollSpeed * deltaTime) / 1000;
-  row.offset += scrollAmount * row.direction;
-
-  // Check each character and wrap if it goes off-screen
-  for (const char of row.chars) {
-    const renderX = char.x + row.offset;
-
-    if (row.direction > 0) {
-      // Scrolling right - characters move right, wrap from right to left
-      if (renderX > viewportWidth + config.charWidth) {
-        // Find leftmost position and place this char before it
-        const minX = Math.min(...row.chars.map((c) => c.x));
-        char.x = minX - config.charWidth;
-        // Reset character with new random values
-        const newChar = createCharacter(char.x, row.y);
-        char.char = newChar.char;
-        char.color = newChar.color;
-        char.scriptType = newChar.scriptType;
-        char.morphPhase = "normal";
-        char.weight = 400;
-        char.opacity = config.baseOpacity;
-      }
-    } else {
-      // Scrolling left - characters move left, wrap from left to right
-      if (renderX < -config.charWidth * 2) {
-        // Find rightmost position and place this char after it
-        const maxX = Math.max(...row.chars.map((c) => c.x));
-        char.x = maxX + config.charWidth;
-        // Reset character with new random values
-        const newChar = createCharacter(char.x, row.y);
-        char.char = newChar.char;
-        char.color = newChar.color;
-        char.scriptType = newChar.scriptType;
-        char.morphPhase = "normal";
-        char.weight = 400;
-        char.opacity = config.baseOpacity;
-      }
-    }
-  }
-}
-
-/**
  * Render a batch of characters with the same blur level
  */
 function renderCharacterBatch(
@@ -317,12 +267,48 @@ export function AncientScriptBackground({ className = "" }: AncientScriptBackgro
       for (const row of rows) {
         // Update scroll position (skip if reduced motion)
         if (!prefersReducedMotion) {
-          updateRowScroll(row, deltaTime, CONFIG, width);
+          const scrollAmount = (CONFIG.scrollSpeed * deltaTime) / 1000;
+          // eslint-disable-next-line react-hooks/immutability
+          row.offset += scrollAmount * row.direction;
         }
 
         for (const char of row.chars) {
-          // Update morph state (skip if reduced motion)
+          // Update state (skip if reduced motion)
           if (!prefersReducedMotion) {
+            const checkX = char.x + row.offset;
+
+            if (row.direction > 0) {
+              // Scrolling right - characters move right, wrap from right to left
+              if (checkX > width + CONFIG.charWidth) {
+                // Find leftmost position and place this char before it
+                const minX = Math.min(...row.chars.map((c) => c.x));
+                char.x = minX - CONFIG.charWidth;
+                // Reset character with new random values
+                const newChar = createCharacter(char.x, row.y);
+                char.char = newChar.char;
+                char.color = newChar.color;
+                char.scriptType = newChar.scriptType;
+                char.morphPhase = "normal";
+                char.weight = 400;
+                char.opacity = CONFIG.baseOpacity;
+              }
+            } else {
+              // Scrolling left - characters move left, wrap from left to right
+              if (checkX < -CONFIG.charWidth * 2) {
+                // Find rightmost position and place this char after it
+                const maxX = Math.max(...row.chars.map((c) => c.x));
+                char.x = maxX + CONFIG.charWidth;
+                // Reset character with new random values
+                const newChar = createCharacter(char.x, row.y);
+                char.char = newChar.char;
+                char.color = newChar.color;
+                char.scriptType = newChar.scriptType;
+                char.morphPhase = "normal";
+                char.weight = 400;
+                char.opacity = CONFIG.baseOpacity;
+              }
+            }
+
             updateCharacterMorph(char, time, deltaTime, CONFIG);
           }
 
