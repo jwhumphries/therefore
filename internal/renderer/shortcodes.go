@@ -64,7 +64,14 @@ func (p *ShortcodeParser) Parse(content string) (string, []Shortcode) {
 
 // parseBlockShortcodes finds and extracts block shortcodes (with closing tags).
 func (p *ShortcodeParser) parseBlockShortcodes(content string, shortcodes *[]Shortcode) string {
+	var sb strings.Builder
+	// Pre-allocate buffer to avoid repeated allocations.
+	// The new content will likely be similar in size or smaller (placeholders are usually smaller than blocks).
+	sb.Grow(len(content))
+
 	offset := 0
+	lastIndex := 0
+
 	for {
 		// Find next opening tag from current offset
 		openMatch := p.openPattern.FindStringSubmatchIndex(content[offset:])
@@ -89,7 +96,7 @@ func (p *ShortcodeParser) parseBlockShortcodes(content string, shortcodes *[]Sho
 			offset = openEnd
 			continue
 		}
-		closeStart += openEnd
+		closeStart += openEnd // make absolute
 		closeEnd := closeStart + len(closeTag)
 
 		// Extract the block shortcode
@@ -103,14 +110,24 @@ func (p *ShortcodeParser) parseBlockShortcodes(content string, shortcodes *[]Sho
 		}
 		*shortcodes = append(*shortcodes, sc)
 
-		// Replace the entire block with a placeholder
+		// Append content before the block
+		sb.WriteString(content[lastIndex:openMatch[0]])
+
+		// Append the placeholder
 		placeholder := fmt.Sprintf("<!--shortcode:%s-->", sc.ID)
-		content = content[:openMatch[0]] + placeholder + content[closeEnd:]
-		// Reset offset since content has changed
-		offset = openMatch[0] + len(placeholder)
+		sb.WriteString(placeholder)
+
+		// Update indices
+		lastIndex = closeEnd
+		offset = closeEnd
 	}
 
-	return content
+	// Append any remaining content
+	if lastIndex < len(content) {
+		sb.WriteString(content[lastIndex:])
+	}
+
+	return sb.String()
 }
 
 func (p *ShortcodeParser) parseAttrs(attrStr string) map[string]string {
