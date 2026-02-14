@@ -14,6 +14,13 @@ import (
 	"therefore/internal/views"
 )
 
+var (
+	cssRegex        = regexp.MustCompile(`<link[^>]+rel=["']stylesheet["'][^>]+href=["']([^"']+)["']`)
+	cssRegexReverse = regexp.MustCompile(`<link[^>]+href=["']([^"']+\.css)["'][^>]*>`)
+	jsRegex         = regexp.MustCompile(`<script[^>]+type=["']module["'][^>]+src=["']([^"']+)["']`)
+	jsRegexReverse  = regexp.MustCompile(`<script[^>]+src=["']([^"']+\.js)["'][^>]+type=["']module["']`)
+)
+
 // Generator produces static HTML files for SEO.
 type Generator struct {
 	store   content.ContentStore
@@ -88,7 +95,6 @@ func (g *Generator) parseViteAssets() error {
 	html := string(data)
 
 	// Extract CSS links: <link rel="stylesheet" ... href="/assets/...">
-	cssRegex := regexp.MustCompile(`<link[^>]+rel=["']stylesheet["'][^>]+href=["']([^"']+)["']`)
 	cssMatches := cssRegex.FindAllStringSubmatch(html, -1)
 	for _, match := range cssMatches {
 		if len(match) > 1 {
@@ -97,8 +103,7 @@ func (g *Generator) parseViteAssets() error {
 	}
 
 	// Also try the reverse order: href before rel
-	cssRegex2 := regexp.MustCompile(`<link[^>]+href=["']([^"']+\.css)["'][^>]*>`)
-	cssMatches2 := cssRegex2.FindAllStringSubmatch(html, -1)
+	cssMatches2 := cssRegexReverse.FindAllStringSubmatch(html, -1)
 	for _, match := range cssMatches2 {
 		if len(match) > 1 && !contains(g.cssLinks, match[1]) {
 			g.cssLinks = append(g.cssLinks, match[1])
@@ -106,7 +111,6 @@ func (g *Generator) parseViteAssets() error {
 	}
 
 	// Extract JS entry: <script type="module" src="/assets/...">
-	jsRegex := regexp.MustCompile(`<script[^>]+type=["']module["'][^>]+src=["']([^"']+)["']`)
 	jsMatches := jsRegex.FindAllStringSubmatch(html, -1)
 	if len(jsMatches) > 0 && len(jsMatches[0]) > 1 {
 		g.jsEntry = jsMatches[0][1]
@@ -114,8 +118,7 @@ func (g *Generator) parseViteAssets() error {
 
 	// Also try reverse order
 	if g.jsEntry == "" {
-		jsRegex2 := regexp.MustCompile(`<script[^>]+src=["']([^"']+\.js)["'][^>]+type=["']module["']`)
-		jsMatches2 := jsRegex2.FindAllStringSubmatch(html, -1)
+		jsMatches2 := jsRegexReverse.FindAllStringSubmatch(html, -1)
 		if len(jsMatches2) > 0 && len(jsMatches2[0]) > 1 {
 			g.jsEntry = jsMatches2[0][1]
 		}
