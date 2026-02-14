@@ -80,7 +80,7 @@ func (m *Therefore) Lint(ctx context.Context, source *dagger.Directory) (string,
 func (m *Therefore) lintSource(ctx context.Context, source *dagger.Directory) (string, error) {
 	templSource := m.TemplGenerate(source)
 	return dag.Container().
-		From("golangci/golangci-lint:v2.9-alpine").
+		From("golangci/golangci-lint:v2.9.0-alpine@sha256:efea7fae4d772680c2c2dc3a067bde22c8c0344dde7e800d110589aaee6ce977").
 		WithEnvVariable("GOCACHE", "/go-build-cache").
 		WithEnvVariable("GOMODCACHE", "/go-mod-cache").
 		WithEnvVariable("GOLANGCI_LINT_CACHE", "/golangci-lint-cache").
@@ -89,7 +89,7 @@ func (m *Therefore) lintSource(ctx context.Context, source *dagger.Directory) (s
 		WithMountedCache("/golangci-lint-cache", dag.CacheVolume("golangci-lint-cache")).
 		WithDirectory("/app", m.withEmbedPlaceholder(templSource)).
 		WithWorkdir("/app").
-		WithExec([]string{"golangci-lint", "run", "--timeout", "5m"}).
+		WithExec([]string{"golangci-lint", "run", "./..."}).
 		Stdout(ctx)
 }
 
