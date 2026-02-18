@@ -245,12 +245,6 @@ func transformBundleImagePaths(content, slug string) string {
 	})
 }
 
-var (
-	codeBlockRegex  = regexp.MustCompile("(?s)```.*?```")
-	inlineCodeRegex = regexp.MustCompile("`[^`]+`")
-	shortcodeRegex  = regexp.MustCompile(`\{\{[^}]+\}\}`)
-)
-
 // countWords counts words in markdown text, excluding code blocks and shortcodes.
 func countWords(text string) int {
 	// Remove code blocks
