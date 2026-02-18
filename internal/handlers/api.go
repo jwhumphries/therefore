@@ -216,11 +216,15 @@ func hasExtension(filename string, exts ...string) bool {
 	return false
 }
 
+var (
+	tagRegex = regexp.MustCompile(`<[^>]*>`)
+	wsRegex  = regexp.MustCompile(`\s+`)
+)
+
 // extractSearchContent extracts plain text from HTML content for search indexing.
 // It strips HTML tags, collapses whitespace, and truncates to maxLen characters.
 func extractSearchContent(htmlContent string, maxLen int) string {
 	// Remove HTML tags
-	tagRegex := regexp.MustCompile(`<[^>]*>`)
 	text := tagRegex.ReplaceAllString(htmlContent, " ")
 
 	// Decode common HTML entities
@@ -232,7 +236,6 @@ func extractSearchContent(htmlContent string, maxLen int) string {
 	text = strings.ReplaceAll(text, "&nbsp;", " ")
 
 	// Collapse whitespace
-	wsRegex := regexp.MustCompile(`\s+`)
 	text = wsRegex.ReplaceAllString(text, " ")
 	text = strings.TrimSpace(text)
 
