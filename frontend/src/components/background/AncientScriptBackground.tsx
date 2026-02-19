@@ -270,6 +270,9 @@ export function AncientScriptBackground({ className = "" }: AncientScriptBackgro
     if (width > 0 && height > 0 && (widthChanged || heightChanged || dprChanged || rowsRef.current.length === 0)) {
       lastDimensionsRef.current = { width, height, dpr };
       rowsRef.current = initializeRows(width, height, CONFIG);
+      zone0Ref.current = { chars: [], xs: [], ys: [] };
+      zone1Ref.current = { chars: [], xs: [], ys: [] };
+      zone2Ref.current = { chars: [], xs: [], ys: [] };
 
       // Create vignette overlay
       const vignetteCanvas = document.createElement("canvas");
