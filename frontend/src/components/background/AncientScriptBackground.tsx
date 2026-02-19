@@ -216,13 +216,16 @@ function updateRowScroll(
  */
 function renderCharacterBatch(
   ctx: CanvasRenderingContext2D,
-  chars: { char: Character; renderX: number; renderY: number }[],
+  chars: Character[],
+  renderXs: number[],
+  renderYs: number[],
+  count: number,
   blur: number,
   dpr: number,
   fontSize: number,
   opacityMultiplier: number = 1
 ): void {
-  if (chars.length === 0) return;
+  if (count === 0) return;
 
   ctx.save();
 
@@ -230,7 +233,11 @@ function renderCharacterBatch(
     ctx.filter = `blur(${blur}px)`;
   }
 
-  for (const { char, renderX, renderY } of chars) {
+  for (let i = 0; i < count; i++) {
+    const char = chars[i];
+    const renderX = renderXs[i];
+    const renderY = renderYs[i];
+
     ctx.globalAlpha = char.opacity * opacityMultiplier;
     ctx.font = `${char.weight} ${fontSize * dpr}px 'Lora Variable', Georgia, serif`;
     ctx.fillStyle = char.color;
@@ -243,6 +250,11 @@ function renderCharacterBatch(
 export function AncientScriptBackground({ className = "" }: AncientScriptBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rowsRef = useRef<Row[]>([]);
+  // Use reusable buffers for zones to avoid allocation in render loop
+  const zone0Ref = useRef<{ chars: Character[]; xs: number[]; ys: number[] }>({ chars: [], xs: [], ys: [] });
+  const zone1Ref = useRef<{ chars: Character[]; xs: number[]; ys: number[] }>({ chars: [], xs: [], ys: [] });
+  const zone2Ref = useRef<{ chars: Character[]; xs: number[]; ys: number[] }>({ chars: [], xs: [], ys: [] });
+
   const vignetteCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const prefersReducedMotion = useReducedMotion();
   const { width, height, dpr } = useCanvasDimensions(canvasRef);
@@ -258,6 +270,11 @@ export function AncientScriptBackground({ className = "" }: AncientScriptBackgro
     if (width > 0 && height > 0 && (widthChanged || heightChanged || dprChanged || rowsRef.current.length === 0)) {
       lastDimensionsRef.current = { width, height, dpr };
       rowsRef.current = initializeRows(width, height, CONFIG);
+
+      // Reset zone buffers to prevent memory leaks from old characters
+      zone0Ref.current = { chars: [], xs: [], ys: [] };
+      zone1Ref.current = { chars: [], xs: [], ys: [] };
+      zone2Ref.current = { chars: [], xs: [], ys: [] };
 
       // Create vignette overlay
       const vignetteCanvas = document.createElement("canvas");
@@ -309,10 +326,13 @@ export function AncientScriptBackground({ className = "" }: AncientScriptBackgro
       // Calculate drifting river center (once per frame, not per character)
       const driftingCenter = getRiverCenter(time, width / 2, width);
 
-      // Batch characters by blur zone
-      const zone0: { char: Character; renderX: number; renderY: number }[] = [];
-      const zone1: { char: Character; renderX: number; renderY: number }[] = [];
-      const zone2: { char: Character; renderX: number; renderY: number }[] = [];
+      // Get reusable buffers
+      const z0 = zone0Ref.current;
+      const z1 = zone1Ref.current;
+      const z2 = zone2Ref.current;
+      let c0 = 0;
+      let c1 = 0;
+      let c2 = 0;
 
       for (const row of rows) {
         // Update scroll position (skip if reduced motion)
@@ -345,10 +365,22 @@ export function AncientScriptBackground({ className = "" }: AncientScriptBackgro
             width
           );
 
-          const charData = { char, renderX, renderY };
-          if (zone === 0) zone0.push(charData);
-          else if (zone === 1) zone1.push(charData);
-          else zone2.push(charData);
+          if (zone === 0) {
+            z0.chars[c0] = char;
+            z0.xs[c0] = renderX;
+            z0.ys[c0] = renderY;
+            c0++;
+          } else if (zone === 1) {
+            z1.chars[c1] = char;
+            z1.xs[c1] = renderX;
+            z1.ys[c1] = renderY;
+            c1++;
+          } else {
+            z2.chars[c2] = char;
+            z2.xs[c2] = renderX;
+            z2.ys[c2] = renderY;
+            c2++;
+          }
         }
       }
 
@@ -356,13 +388,13 @@ export function AncientScriptBackground({ className = "" }: AncientScriptBackgro
       ctx.textBaseline = "middle";
 
       // Heavy blur first (background) - also reduce opacity
-      renderCharacterBatch(ctx, zone2, 6, dpr, CONFIG.fontSize, 0.4);
+      renderCharacterBatch(ctx, z2.chars, z2.xs, z2.ys, c2, 6, dpr, CONFIG.fontSize, 0.4);
 
       // Light blur (transition) - slightly reduce opacity
-      renderCharacterBatch(ctx, zone1, 3, dpr, CONFIG.fontSize, 0.65);
+      renderCharacterBatch(ctx, z1.chars, z1.xs, z1.ys, c1, 3, dpr, CONFIG.fontSize, 0.65);
 
       // Sharp (river center) - full opacity
-      renderCharacterBatch(ctx, zone0, 0, dpr, CONFIG.fontSize, 1.0);
+      renderCharacterBatch(ctx, z0.chars, z0.xs, z0.ys, c0, 0, dpr, CONFIG.fontSize, 1.0);
 
       // Overlay vignette
       if (vignetteCanvasRef.current) {
