@@ -1,5 +1,8 @@
 {
   "name": "therefore",
-  "sdk": "go",
+  "engineVersion": "v0.19.11",
+  "sdk": {
+    "source": "go"
+  },
   "source": ".dagger"
 }

@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	"dagger/therefore/internal/dagger"
+
+	"golang.org/x/sync/errgroup"
 )
 
 type Therefore struct{}
@@ -50,7 +52,7 @@ func (m *Therefore) Version(
 // templContainer returns a container with templ installed
 func (m *Therefore) templContainer() *dagger.Container {
 	return dag.Container().
-		From("golang:1.25-alpine").
+		From("golang:1.26-alpine").
 		WithExec([]string{"go", "install", "github.com/a-h/templ/cmd/templ@latest"})
 }
 
@@ -80,7 +82,7 @@ func (m *Therefore) Lint(ctx context.Context, source *dagger.Directory) (string,
 func (m *Therefore) lintSource(ctx context.Context, source *dagger.Directory) (string, error) {
 	templSource := m.TemplGenerate(source)
 	return dag.Container().
-		From("golangci/golangci-lint:v2.8.0-alpine").
+		From("golangci/golangci-lint:v2.9.0-alpine@sha256:efea7fae4d772680c2c2dc3a067bde22c8c0344dde7e800d110589aaee6ce977").
 		WithEnvVariable("GOCACHE", "/go-build-cache").
 		WithEnvVariable("GOMODCACHE", "/go-mod-cache").
 		WithEnvVariable("GOLANGCI_LINT_CACHE", "/golangci-lint-cache").
@@ -89,7 +91,7 @@ func (m *Therefore) lintSource(ctx context.Context, source *dagger.Directory) (s
 		WithMountedCache("/golangci-lint-cache", dag.CacheVolume("golangci-lint-cache")).
 		WithDirectory("/app", m.withEmbedPlaceholder(templSource)).
 		WithWorkdir("/app").
-		WithExec([]string{"golangci-lint", "run", "--timeout", "5m"}).
+		WithExec([]string{"golangci-lint", "run", "./..."}).
 		Stdout(ctx)
 }
 
@@ -101,7 +103,7 @@ func (m *Therefore) Test(ctx context.Context, source *dagger.Directory) (string,
 func (m *Therefore) testSource(ctx context.Context, source *dagger.Directory) (string, error) {
 	templSource := m.TemplGenerate(source)
 	return dag.Container().
-		From("golang:1.25-alpine").
+		From("golang:1.26-alpine").
 		WithEnvVariable("GOCACHE", "/go-build-cache").
 		WithEnvVariable("GOMODCACHE", "/go-mod-cache").
 		WithMountedCache("/go-build-cache", dag.CacheVolume("go-build-cache")).
@@ -115,7 +117,7 @@ func (m *Therefore) testSource(ctx context.Context, source *dagger.Directory) (s
 // Fmt formats Go code and returns the modified directory
 func (m *Therefore) Fmt(source *dagger.Directory) *dagger.Directory {
 	return dag.Container().
-		From("golang:1.25-alpine").
+		From("golang:1.26-alpine").
 		WithDirectory("/app", source).
 		WithWorkdir("/app").
 		WithExec([]string{"go", "fmt", "./..."}).
@@ -194,7 +196,7 @@ func (m *Therefore) SSG(
 
 	// Run SSG command with base URL for correct meta tags and links
 	return dag.Container().
-		From("golang:1.25-alpine").
+		From("golang:1.26-alpine").
 		WithEnvVariable("GOCACHE", "/go-build-cache").
 		WithEnvVariable("GOMODCACHE", "/go-mod-cache").
 		WithMountedCache("/go-build-cache", dag.CacheVolume("go-build-cache")).
@@ -208,7 +210,7 @@ func (m *Therefore) SSG(
 // BuildBinary builds the Go binary
 func (m *Therefore) BuildBinary(source *dagger.Directory, version string) *dagger.Container {
 	return dag.Container().
-		From("golang:1.25-alpine").
+		From("golang:1.26-alpine").
 		WithEnvVariable("GOCACHE", "/go-build-cache").
 		WithEnvVariable("GOMODCACHE", "/go-mod-cache").
 		WithMountedCache("/go-build-cache", dag.CacheVolume("go-build-cache")).
@@ -298,30 +300,28 @@ func (m *Therefore) Release(
 
 // Check runs all checks (lint, test, typecheck, lint-frontend)
 func (m *Therefore) Check(ctx context.Context, source *dagger.Directory) error {
-	// Run Go lint
-	if _, err := m.Lint(ctx, source); err != nil {
-		return fmt.Errorf("lint failed: %w", err)
-	}
+	g, ctx := errgroup.WithContext(ctx)
 
-	// Run frontend lint
-	if _, err := m.LintFrontend(ctx, source); err != nil {
-		return fmt.Errorf("frontend lint failed: %w", err)
-	}
+	g.Go(func() error {
+		_, err := m.Lint(ctx, source)
+		return err
+	})
+	g.Go(func() error {
+		_, err := m.LintFrontend(ctx, source)
+		return err
+	})
+	g.Go(func() error {
+		_, err := m.Typecheck(ctx, source)
+		return err
+	})
+	g.Go(func() error {
+		_, err := m.Test(ctx, source)
+		return err
+	})
+	g.Go(func() error {
+		_, err := m.TestFrontend(ctx, source)
+		return err
+	})
 
-	// Run TypeScript typecheck
-	if _, err := m.Typecheck(ctx, source); err != nil {
-		return fmt.Errorf("typecheck failed: %w", err)
-	}
-
-	// Run Go tests
-	if _, err := m.Test(ctx, source); err != nil {
-		return fmt.Errorf("test failed: %w", err)
-	}
-
-	// Run frontend tests
-	if _, err := m.TestFrontend(ctx, source); err != nil {
-		return fmt.Errorf("frontend test failed: %w", err)
-	}
-
-	return nil
+	return g.Wait()
 }
