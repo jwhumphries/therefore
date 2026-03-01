@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	"dagger/therefore/internal/dagger"
+
+	"golang.org/x/sync/errgroup"
 )
 
 type Therefore struct{}
@@ -298,30 +300,28 @@ func (m *Therefore) Release(
 
 // Check runs all checks (lint, test, typecheck, lint-frontend)
 func (m *Therefore) Check(ctx context.Context, source *dagger.Directory) error {
-	// Run Go lint
-	if _, err := m.Lint(ctx, source); err != nil {
-		return fmt.Errorf("lint failed: %w", err)
-	}
+	g, ctx := errgroup.WithContext(ctx)
 
-	// Run frontend lint
-	if _, err := m.LintFrontend(ctx, source); err != nil {
-		return fmt.Errorf("frontend lint failed: %w", err)
-	}
+	g.Go(func() error {
+		_, err := m.Lint(ctx, source)
+		return err
+	})
+	g.Go(func() error {
+		_, err := m.LintFrontend(ctx, source)
+		return err
+	})
+	g.Go(func() error {
+		_, err := m.Typecheck(ctx, source)
+		return err
+	})
+	g.Go(func() error {
+		_, err := m.Test(ctx, source)
+		return err
+	})
+	g.Go(func() error {
+		_, err := m.TestFrontend(ctx, source)
+		return err
+	})
 
-	// Run TypeScript typecheck
-	if _, err := m.Typecheck(ctx, source); err != nil {
-		return fmt.Errorf("typecheck failed: %w", err)
-	}
-
-	// Run Go tests
-	if _, err := m.Test(ctx, source); err != nil {
-		return fmt.Errorf("test failed: %w", err)
-	}
-
-	// Run frontend tests
-	if _, err := m.TestFrontend(ctx, source); err != nil {
-		return fmt.Errorf("frontend test failed: %w", err)
-	}
-
-	return nil
+	return g.Wait()
 }
