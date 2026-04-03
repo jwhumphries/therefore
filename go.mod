@@ -4,7 +4,7 @@ go 1.26.0
 
 require (
 	github.com/a-h/templ v0.3.1001
-	github.com/andybalholm/brotli v1.2.0
+	github.com/andybalholm/brotli v1.2.1
 	github.com/google/uuid v1.6.0
 	github.com/labstack/echo/v5 v5.0.4
 	github.com/spf13/afero v1.15.0
