@@ -1,13 +1,13 @@
-import { useState } from "react";
-import { useLocation, Outlet } from "react-router-dom";
-import type { ReactNode } from "react";
-import { Button } from "@heroui/react";
-import { ThemeSwitcher } from "./ThemeSwitcher";
-import { TransitionLink } from "./TransitionLink";
-import { useViewTransitionNavigate } from "../hooks/useViewTransition";
-import { SearchModal } from "./SearchModal";
+import {useState} from 'react';
+import {useLocation, Outlet} from 'react-router-dom';
+import type {ReactNode} from 'react';
+import {Button} from '@heroui/react';
+import {ThemeSwitcher} from './ThemeSwitcher';
+import {TransitionLink} from './TransitionLink';
+import {useViewTransitionNavigate} from '../hooks/useViewTransition';
+import {SearchModal} from './SearchModal';
 
-function SearchIcon({ className }: { className?: string }) {
+function SearchIcon({className}: {className?: string}) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -24,16 +24,18 @@ function SearchIcon({ className }: { className?: string }) {
   );
 }
 
-function NavLink({ to, children }: { to: string; children: ReactNode }) {
+function NavLink({to, children}: {to: string; children: ReactNode}) {
   const location = useLocation();
   const navigate = useViewTransitionNavigate();
-  const isActive = to === "/posts"
-    ? location.pathname === "/posts" || location.pathname.startsWith("/posts/")
-    : location.pathname.startsWith(to);
+  const isActive =
+    to === '/posts'
+      ? location.pathname === '/posts' ||
+        location.pathname.startsWith('/posts/')
+      : location.pathname.startsWith(to);
 
   const handlePress = () => {
     if (location.pathname === to) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.scrollTo({top: 0, behavior: 'smooth'});
     } else {
       navigate(to);
     }
@@ -44,7 +46,7 @@ function NavLink({ to, children }: { to: string; children: ReactNode }) {
       variant="ghost"
       size="sm"
       onPress={handlePress}
-      className={isActive ? "text-accent font-medium" : ""}
+      className={isActive ? 'text-accent font-medium' : ''}
     >
       {children}
     </Button>
@@ -56,15 +58,21 @@ export function Layout() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
-      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-2 focus:left-2 focus:px-4 focus:py-2 focus:bg-accent focus:text-accent-foreground focus:rounded">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-2 focus:left-2 focus:px-4 focus:py-2 focus:bg-accent focus:text-accent-foreground focus:rounded"
+      >
         Skip to main content
       </a>
-      <header className="border-b border-border sticky top-0 bg-background/80 backdrop-blur-md z-50" style={{ viewTransitionName: 'header' }}>
+      <header
+        className="border-b border-border sticky top-0 bg-background/80 backdrop-blur-md z-50"
+        style={{viewTransitionName: 'header'}}
+      >
         <nav className="container mx-auto px-4 py-4 flex justify-between items-center">
           <TransitionLink
             to="/posts"
             className="text-2xl font-semibold hover:text-accent transition-colors"
-            style={{ fontFamily: 'var(--font-display)' }}
+            style={{fontFamily: 'var(--font-display)'}}
           >
             Therefore
           </TransitionLink>

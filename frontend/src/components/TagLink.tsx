@@ -1,4 +1,4 @@
-import { TransitionLink } from "./TransitionLink";
+import {TransitionLink} from './TransitionLink';
 
 interface TagLinkProps {
   tag: string;
@@ -6,14 +6,15 @@ interface TagLinkProps {
   onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
 }
 
-export function TagLink({ tag, className = "", onClick }: TagLinkProps) {
+export function TagLink({tag, className = '', onClick}: TagLinkProps) {
   return (
     <TransitionLink
       to={`/tags/${tag}`}
       className={`tag-link ${className}`}
       onClick={onClick}
     >
-      <span className="tag-hash">#</span>{tag}
+      <span className="tag-hash">#</span>
+      {tag}
     </TransitionLink>
   );
 }
@@ -24,7 +25,7 @@ interface TagWithCountProps {
   className?: string;
 }
 
-export function TagWithCount({ tag, count, className = "" }: TagWithCountProps) {
+export function TagWithCount({tag, count, className = ''}: TagWithCountProps) {
   return (
     <span className={`inline-flex items-center gap-2 ${className}`}>
       <TagLink tag={tag} />

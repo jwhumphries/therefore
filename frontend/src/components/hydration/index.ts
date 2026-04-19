@@ -1,13 +1,13 @@
-import { initLightbox } from "./lightbox";
-import { initTimeline } from "./timeline";
-import { initSidenote } from "./sidenote";
+import {initLightbox} from './lightbox';
+import {initTimeline} from './timeline';
+import {initSidenote} from './sidenote';
 import {
   initCitation,
   buildCitationsAccordion,
   resetCitationRegistry,
-} from "./citation";
-import { initAvatar } from "./avatar";
-import { initScriptureCompare } from "./scriptureCompare";
+} from './citation';
+import {initAvatar} from './avatar';
+import {initScriptureCompare} from './scriptureCompare';
 
 type CleanupFn = () => void;
 type ComponentInit = (el: HTMLElement) => CleanupFn | void;
@@ -18,7 +18,7 @@ const registry: Record<string, ComponentInit> = {
   sidenote: initSidenote,
   citation: initCitation,
   avatar: initAvatar,
-  "scripture-compare": initScriptureCompare,
+  'scripture-compare': initScriptureCompare,
 };
 
 // Store cleanup functions and element references for all hydrated components
@@ -30,9 +30,9 @@ let hydratedElements: HTMLElement[] = [];
  * This is the main entry point for progressive enhancement.
  */
 export function hydrateComponents(container: HTMLElement): void {
-  const elements = container.querySelectorAll<HTMLElement>("[data-component]");
+  const elements = container.querySelectorAll<HTMLElement>('[data-component]');
 
-  elements.forEach((el) => {
+  elements.forEach(el => {
     const componentName = el.dataset.component;
     if (!componentName) return;
 
@@ -44,7 +44,7 @@ export function hydrateComponents(container: HTMLElement): void {
         if (cleanup) {
           cleanupFunctions.push(cleanup);
         }
-        el.dataset.hydrated = "true";
+        el.dataset.hydrated = 'true';
         hydratedElements.push(el);
       }
     } else {
@@ -64,9 +64,9 @@ export function hydrateComponents(container: HTMLElement): void {
  * Call this before navigating away or re-hydrating.
  */
 export function cleanupComponents(): void {
-  cleanupFunctions.forEach((cleanup) => cleanup());
+  cleanupFunctions.forEach(cleanup => cleanup());
   cleanupFunctions = [];
-  hydratedElements.forEach((el) => delete el.dataset.hydrated);
+  hydratedElements.forEach(el => delete el.dataset.hydrated);
   hydratedElements = [];
   resetCitationRegistry();
 }

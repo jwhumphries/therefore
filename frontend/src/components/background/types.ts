@@ -1,5 +1,5 @@
 /** Morph state machine phases */
-export type MorphPhase = "normal" | "bolding" | "fading" | "unbolding";
+export type MorphPhase = 'normal' | 'bolding' | 'fading' | 'unbolding';
 
 /** Individual character in the animation */
 export interface Character {
@@ -20,7 +20,7 @@ export interface Character {
   /** Time when current morph phase started */
   morphStartTime: number;
   /** Script type for character replacement */
-  scriptType: "greek" | "hebrew" | "aramaic";
+  scriptType: 'greek' | 'hebrew' | 'aramaic';
 }
 
 /** Row of characters with scroll state */

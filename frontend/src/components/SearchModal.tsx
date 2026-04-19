@@ -1,16 +1,16 @@
-import { useState, useMemo, useCallback } from "react";
-import { Modal, Input, Skeleton } from "@heroui/react";
-import Fuse, { type IFuseOptions, type FuseResult } from "fuse.js";
-import { usePosts, type PostListItem } from "../hooks/api";
-import { useViewTransitionNavigate } from "../hooks/useViewTransition";
+import {useState, useMemo, useCallback} from 'react';
+import {Modal, Input, Skeleton} from '@heroui/react';
+import Fuse, {type IFuseOptions, type FuseResult} from 'fuse.js';
+import {usePosts, type PostListItem} from '../hooks/api';
+import {useViewTransitionNavigate} from '../hooks/useViewTransition';
 
 const FUSE_OPTIONS: IFuseOptions<PostListItem> = {
   keys: [
-    { name: "title", weight: 0.35 },
-    { name: "summary", weight: 0.25 },
-    { name: "searchContent", weight: 0.2 },
-    { name: "tags", weight: 0.15 },
-    { name: "series", weight: 0.05 },
+    {name: 'title', weight: 0.35},
+    {name: 'summary', weight: 0.25},
+    {name: 'searchContent', weight: 0.2},
+    {name: 'tags', weight: 0.15},
+    {name: 'series', weight: 0.05},
   ],
   threshold: 0.35,
   distance: 100,
@@ -42,7 +42,13 @@ function SearchResultSkeleton() {
   );
 }
 
-function HighlightedText({ text, indices }: { text: string; indices?: readonly [number, number][] }) {
+function HighlightedText({
+  text,
+  indices,
+}: {
+  text: string;
+  indices?: readonly [number, number][];
+}) {
   if (!indices || indices.length === 0) {
     return <>{text}</>;
   }
@@ -57,7 +63,7 @@ function HighlightedText({ text, indices }: { text: string; indices?: readonly [
     parts.push(
       <mark key={i} className="bg-accent/30 text-foreground rounded px-0.5">
         {text.slice(start, end + 1)}
-      </mark>
+      </mark>,
     );
     lastIndex = end + 1;
   });
@@ -83,8 +89,8 @@ function SeriesCard({
       role="option"
       tabIndex={0}
       onClick={onSelect}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
+      onKeyDown={e => {
+        if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           onSelect();
         }
@@ -98,25 +104,28 @@ function SeriesCard({
         </h3>
       </div>
       <p className="text-sm text-muted mt-1 ml-4">
-        {count} matching {count === 1 ? "post" : "posts"} in this series
+        {count} matching {count === 1 ? 'post' : 'posts'} in this series
       </p>
     </li>
   );
 }
 
-export function SearchModal({ isOpen, onOpenChange }: SearchModalProps) {
-  const [query, setQuery] = useState("");
-  const { data, isLoading } = usePosts();
+export function SearchModal({isOpen, onOpenChange}: SearchModalProps) {
+  const [query, setQuery] = useState('');
+  const {data, isLoading} = usePosts();
   const navigate = useViewTransitionNavigate();
 
   // Reset query when closing modal
-  const handleOpenChange = useCallback((open: boolean) => {
-    if (!open) {
-      // Delay reset to after close animation
-      setTimeout(() => setQuery(""), 200);
-    }
-    onOpenChange(open);
-  }, [onOpenChange]);
+  const handleOpenChange = useCallback(
+    (open: boolean) => {
+      if (!open) {
+        // Delay reset to after close animation
+        setTimeout(() => setQuery(''), 200);
+      }
+      onOpenChange(open);
+    },
+    [onOpenChange],
+  );
 
   const posts = data?.posts;
   const fuse = useMemo(() => {
@@ -126,13 +135,13 @@ export function SearchModal({ isOpen, onOpenChange }: SearchModalProps) {
 
   const results = useMemo(() => {
     if (!fuse || query.length < 2) return [];
-    return fuse.search(query, { limit: 12 });
+    return fuse.search(query, {limit: 12});
   }, [fuse, query]);
 
   // Group results by series and find the top series
-  const { topSeries, showSeriesCard } = useMemo(() => {
+  const {topSeries, showSeriesCard} = useMemo(() => {
     if (results.length <= 1) {
-      return { topSeries: null, showSeriesCard: false };
+      return {topSeries: null, showSeriesCard: false};
     }
 
     // Group by series
@@ -145,7 +154,7 @@ export function SearchModal({ isOpen, onOpenChange }: SearchModalProps) {
           existing.count++;
           existing.posts.push(result);
         } else {
-          seriesGroups.set(series, { series, count: 1, posts: [result] });
+          seriesGroups.set(series, {series, count: 1, posts: [result]});
         }
       }
     }
@@ -162,30 +171,39 @@ export function SearchModal({ isOpen, onOpenChange }: SearchModalProps) {
     // - There's a series with 2+ matches
     // - There's more than one unique series (or some posts without series)
     const uniqueSeriesCount = seriesGroups.size;
-    const postsWithoutSeries = results.filter((r) => !r.item.series).length;
+    const postsWithoutSeries = results.filter(r => !r.item.series).length;
     const hasVariety = uniqueSeriesCount > 1 || postsWithoutSeries > 0;
 
     const shouldShow = top !== null && top.count >= 2 && hasVariety;
 
-    return { topSeries: top, showSeriesCard: shouldShow };
+    return {topSeries: top, showSeriesCard: shouldShow};
   }, [results]);
 
-  const handleSelect = useCallback((slug: string) => {
-    onOpenChange(false);
-    navigate(`/posts/${slug}`);
-  }, [onOpenChange, navigate]);
+  const handleSelect = useCallback(
+    (slug: string) => {
+      onOpenChange(false);
+      navigate(`/posts/${slug}`);
+    },
+    [onOpenChange, navigate],
+  );
 
-  const handleSeriesSelect = useCallback((series: string) => {
-    onOpenChange(false);
-    navigate("/series", { openSeries: series });
-  }, [onOpenChange, navigate]);
+  const handleSeriesSelect = useCallback(
+    (series: string) => {
+      onOpenChange(false);
+      navigate('/series', {openSeries: series});
+    },
+    [onOpenChange, navigate],
+  );
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent, slug: string) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      handleSelect(slug);
-    }
-  }, [handleSelect]);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent, slug: string) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleSelect(slug);
+      }
+    },
+    [handleSelect],
+  );
 
   return (
     <Modal.Backdrop
@@ -201,7 +219,7 @@ export function SearchModal({ isOpen, onOpenChange }: SearchModalProps) {
                 autoFocus
                 placeholder="Search posts..."
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={e => setQuery(e.target.value)}
                 className="w-full text-lg"
                 aria-label="Search posts"
               />
@@ -223,7 +241,11 @@ export function SearchModal({ isOpen, onOpenChange }: SearchModalProps) {
                 No posts found for "{query}"
               </p>
             ) : (
-              <ul className="space-y-1" role="listbox" aria-label="Search results">
+              <ul
+                className="space-y-1"
+                role="listbox"
+                aria-label="Search results"
+              >
                 {/* Series card - shown at top if applicable */}
                 {showSeriesCard && topSeries && (
                   <SeriesCard
@@ -234,10 +256,12 @@ export function SearchModal({ isOpen, onOpenChange }: SearchModalProps) {
                 )}
 
                 {/* Individual post results */}
-                {results.map(({ item, matches }) => {
-                  const titleMatch = matches?.find(m => m.key === "title");
-                  const summaryMatch = matches?.find(m => m.key === "summary");
-                  const contentMatch = matches?.find(m => m.key === "searchContent");
+                {results.map(({item, matches}) => {
+                  const titleMatch = matches?.find(m => m.key === 'title');
+                  const summaryMatch = matches?.find(m => m.key === 'summary');
+                  const contentMatch = matches?.find(
+                    m => m.key === 'searchContent',
+                  );
 
                   return (
                     <li
@@ -245,7 +269,7 @@ export function SearchModal({ isOpen, onOpenChange }: SearchModalProps) {
                       role="option"
                       tabIndex={0}
                       onClick={() => handleSelect(item.slug)}
-                      onKeyDown={(e) => handleKeyDown(e, item.slug)}
+                      onKeyDown={e => handleKeyDown(e, item.slug)}
                       className="p-3 rounded-lg cursor-pointer hover:bg-surface-hover focus:bg-surface-hover focus:outline-none transition-colors"
                     >
                       <h3 className="font-display font-semibold text-foreground">
@@ -265,16 +289,24 @@ export function SearchModal({ isOpen, onOpenChange }: SearchModalProps) {
                       {/* Show content match snippet if no summary match */}
                       {!summaryMatch && contentMatch && item.searchContent && (
                         <p className="text-sm text-muted line-clamp-2 mt-1 italic">
-                          ...{getMatchSnippet(item.searchContent, contentMatch.indices)}...
+                          ...
+                          {getMatchSnippet(
+                            item.searchContent,
+                            contentMatch.indices,
+                          )}
+                          ...
                         </p>
                       )}
                       <div className="flex items-center gap-2 mt-2 text-xs text-muted">
                         <time dateTime={item.publishDate}>
-                          {new Date(item.publishDate).toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                          })}
+                          {new Date(item.publishDate).toLocaleDateString(
+                            'en-US',
+                            {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                            },
+                          )}
                         </time>
                         {item.series && (
                           <>
@@ -285,7 +317,7 @@ export function SearchModal({ isOpen, onOpenChange }: SearchModalProps) {
                         {item.tags && item.tags.length > 0 && (
                           <>
                             <span>&middot;</span>
-                            <span>{item.tags.slice(0, 2).join(", ")}</span>
+                            <span>{item.tags.slice(0, 2).join(', ')}</span>
                           </>
                         )}
                       </div>
@@ -298,9 +330,24 @@ export function SearchModal({ isOpen, onOpenChange }: SearchModalProps) {
           <Modal.Footer className="pt-0 pb-3 px-3">
             <div className="flex items-center justify-between w-full text-xs text-muted">
               <div className="flex items-center gap-3">
-                <span><kbd className="px-1.5 py-0.5 bg-surface rounded text-xs">↑↓</kbd> navigate</span>
-                <span><kbd className="px-1.5 py-0.5 bg-surface rounded text-xs">↵</kbd> select</span>
-                <span><kbd className="px-1.5 py-0.5 bg-surface rounded text-xs">esc</kbd> close</span>
+                <span>
+                  <kbd className="px-1.5 py-0.5 bg-surface rounded text-xs">
+                    ↑↓
+                  </kbd>{' '}
+                  navigate
+                </span>
+                <span>
+                  <kbd className="px-1.5 py-0.5 bg-surface rounded text-xs">
+                    ↵
+                  </kbd>{' '}
+                  select
+                </span>
+                <span>
+                  <kbd className="px-1.5 py-0.5 bg-surface rounded text-xs">
+                    esc
+                  </kbd>{' '}
+                  close
+                </span>
               </div>
             </div>
           </Modal.Footer>
@@ -317,7 +364,7 @@ export function SearchModal({ isOpen, onOpenChange }: SearchModalProps) {
 function getMatchSnippet(
   text: string,
   indices: readonly [number, number][] | undefined,
-  contextChars: number = 60
+  contextChars: number = 60,
 ): string {
   if (!indices || indices.length === 0) {
     return text.slice(0, contextChars * 2);

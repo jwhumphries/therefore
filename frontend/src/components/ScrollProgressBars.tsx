@@ -1,5 +1,5 @@
-import { useRef } from "react";
-import { motion, useScroll, useTransform, MotionValue } from "motion/react";
+import {useRef} from 'react';
+import {motion, useScroll, useTransform, MotionValue} from 'motion/react';
 
 const BAR_COUNT = 30;
 const INITIAL_WIDTH = 20;
@@ -18,7 +18,7 @@ interface ScrollProgressBarsProps {
 function calculateBarWidth(
   barIndex: number,
   totalBars: number,
-  scrollProgress: number
+  scrollProgress: number,
 ): number {
   const percentilePosition = (barIndex + 1) / totalBars;
   const barSpacing = 1 / totalBars;
@@ -46,27 +46,27 @@ interface BarProps {
   scrollYProgress: MotionValue<number>;
 }
 
-function Bar({ index, scrollYProgress }: BarProps) {
-  const width = useTransform(scrollYProgress, (progress) =>
-    calculateBarWidth(index, BAR_COUNT, progress)
+function Bar({index, scrollYProgress}: BarProps) {
+  const width = useTransform(scrollYProgress, progress =>
+    calculateBarWidth(index, BAR_COUNT, progress),
   );
 
   return (
     <motion.div
       className="scroll-progress-bar h-[0.2vh] min-h-[0.5px]"
-      style={{ width }}
+      style={{width}}
     />
   );
 }
 
-export function ScrollProgressBars({ contentRef }: ScrollProgressBarsProps) {
+export function ScrollProgressBars({contentRef}: ScrollProgressBarsProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const { scrollYProgress } = useScroll({
+  const {scrollYProgress} = useScroll({
     target: contentRef,
     // Start tracking when top of content hits top of viewport
     // End when bottom of content hits bottom of viewport
-    offset: ["start start", "end end"],
+    offset: ['start start', 'end end'],
   });
 
   return (
@@ -75,7 +75,7 @@ export function ScrollProgressBars({ contentRef }: ScrollProgressBarsProps) {
       className="flex flex-col items-start justify-between h-full"
       aria-hidden="true"
     >
-      {Array.from({ length: BAR_COUNT }).map((_, i) => (
+      {Array.from({length: BAR_COUNT}).map((_, i) => (
         <Bar key={i} index={i} scrollYProgress={scrollYProgress} />
       ))}
     </div>

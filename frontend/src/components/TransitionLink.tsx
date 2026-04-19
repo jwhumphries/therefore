@@ -1,6 +1,6 @@
-import type { ReactNode, MouseEvent } from "react";
-import { useLocation } from "react-router-dom";
-import { useViewTransitionNavigate } from "../hooks/useViewTransition";
+import type {ReactNode, MouseEvent} from 'react';
+import {useLocation} from 'react-router-dom';
+import {useViewTransitionNavigate} from '../hooks/useViewTransition';
 
 interface TransitionLinkProps {
   to: string;
@@ -30,7 +30,7 @@ export function TransitionLink({
 
     // If already on the target page, smooth scroll to top instead of navigating
     if (location.pathname === to) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.scrollTo({top: 0, behavior: 'smooth'});
       return;
     }
 

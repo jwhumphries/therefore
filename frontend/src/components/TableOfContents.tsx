@@ -1,13 +1,13 @@
-import { useRef } from "react";
-import { useScrollspy, type Heading } from "../hooks/useScrollspy";
+import {useRef} from 'react';
+import {useScrollspy, type Heading} from '../hooks/useScrollspy';
 
 interface TableOfContentsProps {
   containerRef: React.RefObject<HTMLElement | null>;
 }
 
-export function TableOfContents({ containerRef }: TableOfContentsProps) {
+export function TableOfContents({containerRef}: TableOfContentsProps) {
   const tocRef = useRef<HTMLElement>(null);
-  const { headings, activeId, scrollToHeading } = useScrollspy({
+  const {headings, activeId, scrollToHeading} = useScrollspy({
     containerRef,
     tocRef,
   });
@@ -22,7 +22,7 @@ export function TableOfContents({ containerRef }: TableOfContentsProps) {
         On this page
       </div>
       <ul className="space-y-1">
-        {headings.map((heading) => (
+        {headings.map(heading => (
           <TocItem
             key={heading.id}
             heading={heading}
@@ -41,21 +41,21 @@ interface TocItemProps {
   onClick: () => void;
 }
 
-function TocItem({ heading, isActive, onClick }: TocItemProps) {
-  const indent = heading.level === 3 ? "pl-4" : "";
+function TocItem({heading, isActive, onClick}: TocItemProps) {
+  const indent = heading.level === 3 ? 'pl-4' : '';
 
   return (
     <li className={indent}>
       <a
         href={`#${heading.id}`}
-        onClick={(e) => {
+        onClick={e => {
           e.preventDefault();
           onClick();
         }}
-        aria-current={isActive ? "location" : undefined}
+        aria-current={isActive ? 'location' : undefined}
         className={`
           inline-block text-sm py-1
-          ${isActive ? "active" : "text-default-500 hover:text-foreground"}
+          ${isActive ? 'active' : 'text-default-500 hover:text-foreground'}
         `}
       >
         {heading.text}

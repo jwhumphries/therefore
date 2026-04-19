@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import {useEffect, useRef, useState} from 'react';
 
 export interface AnimationLoopState {
   /** Current animation time in milliseconds */
@@ -20,7 +20,10 @@ export interface UseAnimationLoopOptions {
  * Hook for managing a requestAnimationFrame loop
  * Handles delta time calculation, page visibility, and reduced motion preference
  */
-export function useAnimationLoop({ onFrame, pauseOnHidden = true }: UseAnimationLoopOptions) {
+export function useAnimationLoop({
+  onFrame,
+  pauseOnHidden = true,
+}: UseAnimationLoopOptions) {
   const frameRef = useRef<number | null>(null);
   const lastTimeRef = useRef<number>(0);
   const accumulatedTimeRef = useRef<number>(0);
@@ -39,7 +42,9 @@ export function useAnimationLoop({ onFrame, pauseOnHidden = true }: UseAnimation
         return;
       }
 
-      const deltaTime = lastTimeRef.current ? timestamp - lastTimeRef.current : 16.67;
+      const deltaTime = lastTimeRef.current
+        ? timestamp - lastTimeRef.current
+        : 16.67;
       lastTimeRef.current = timestamp;
 
       // Cap delta time to prevent huge jumps after tab switch
@@ -71,13 +76,13 @@ export function useAnimationLoop({ onFrame, pauseOnHidden = true }: UseAnimation
       }
     };
 
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       if (frameRef.current) {
         cancelAnimationFrame(frameRef.current);
       }
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [pauseOnHidden]);
 }
@@ -87,19 +92,19 @@ export function useAnimationLoop({ onFrame, pauseOnHidden = true }: UseAnimation
  */
 export function useReducedMotion(): boolean {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   });
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
     const handleChange = (event: MediaQueryListEvent) => {
       setPrefersReducedMotion(event.matches);
     };
 
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
   return prefersReducedMotion;
@@ -109,9 +114,9 @@ export function useReducedMotion(): boolean {
  * Hook to track canvas dimensions with devicePixelRatio
  */
 export function useCanvasDimensions(
-  canvasRef: React.RefObject<HTMLCanvasElement | null>
-): { width: number; height: number; dpr: number } {
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0, dpr: 1 });
+  canvasRef: React.RefObject<HTMLCanvasElement | null>,
+): {width: number; height: number; dpr: number} {
+  const [dimensions, setDimensions] = useState({width: 0, height: 0, dpr: 1});
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -141,8 +146,8 @@ export function useCanvasDimensions(
 
     updateDimensions();
 
-    window.addEventListener("resize", updateDimensions);
-    return () => window.removeEventListener("resize", updateDimensions);
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
   }, [canvasRef]);
 
   return dimensions;

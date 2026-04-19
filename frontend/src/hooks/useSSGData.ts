@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import {useEffect, useRef} from 'react';
+import {useQueryClient} from '@tanstack/react-query';
 
 /**
  * SSG data embedded in the page by the Go SSG generator.
@@ -37,7 +37,7 @@ interface SSGData {
   };
 }
 
-const SSG_DATA_ID = "__SSG_DATA__";
+const SSG_DATA_ID = '__SSG_DATA__';
 
 /**
  * Pre-seeds TanStack Query cache from SSG-embedded data.
@@ -61,11 +61,11 @@ export function useSSGData() {
     if (!dataEl) return;
 
     try {
-      const data: SSGData = JSON.parse(dataEl.textContent || "{}");
+      const data: SSGData = JSON.parse(dataEl.textContent || '{}');
 
       // Pre-seed post detail data
       if (data.post) {
-        queryClient.setQueryData(["post", data.post.slug], data.post);
+        queryClient.setQueryData(['post', data.post.slug], data.post);
       }
 
       // Pre-seed posts list data
@@ -81,7 +81,7 @@ export function useSSGData() {
       // Remove the script tag after processing
       dataEl.remove();
     } catch (e) {
-      console.warn("Failed to parse SSG data:", e);
+      console.warn('Failed to parse SSG data:', e);
     }
   }, [queryClient]);
 }
@@ -96,9 +96,9 @@ function buildPostsQueryKey(tag?: string): (string | number | undefined)[] {
   // Home page uses limit=10, tag pages use limit=6
   // sortBy and sortOrder default to undefined (use API defaults)
   return [
-    "posts",
-    "paginated",
-    tag ?? "all",
+    'posts',
+    'paginated',
+    tag ?? 'all',
     tag ? 6 : 10, // limit: 6 for tag pages, 10 for home
     0, // offset: always 0 for SSG (first page only)
     undefined, // sortBy: use API default

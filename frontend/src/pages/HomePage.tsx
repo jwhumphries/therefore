@@ -1,11 +1,11 @@
-import { useRef, useEffect, useState } from "react";
-import { Card, Chip, Skeleton, ScrollShadow } from "@heroui/react";
-import { usePaginatedPosts } from "../hooks/api";
-import { TagLink } from "../components/TagLink";
-import { useViewTransitionNavigate } from "../hooks/useViewTransition";
-import { ReadingRail, ReadingRailMobile } from "../components/ReadingRail";
-import { usePageMeta } from "../hooks/usePageMeta";
-import { useSSGData } from "../hooks/useSSGData";
+import {useRef, useEffect, useState} from 'react';
+import {Card, Chip, Skeleton, ScrollShadow} from '@heroui/react';
+import {usePaginatedPosts} from '../hooks/api';
+import {TagLink} from '../components/TagLink';
+import {useViewTransitionNavigate} from '../hooks/useViewTransition';
+import {ReadingRail, ReadingRailMobile} from '../components/ReadingRail';
+import {usePageMeta} from '../hooks/usePageMeta';
+import {useSSGData} from '../hooks/useSSGData';
 
 const LATEST_POSTS_LIMIT = 10;
 
@@ -34,8 +34,13 @@ function PostCardSkeleton() {
 
 export function HomePage() {
   useSSGData(); // Pre-seed query cache from SSG data
-  usePageMeta({ title: "Latest Posts", description: "Browse the latest posts on Therefore." });
-  const { data, isLoading, error } = usePaginatedPosts({ limit: LATEST_POSTS_LIMIT });
+  usePageMeta({
+    title: 'Latest Posts',
+    description: 'Browse the latest posts on Therefore.',
+  });
+  const {data, isLoading, error} = usePaginatedPosts({
+    limit: LATEST_POSTS_LIMIT,
+  });
   const navigate = useViewTransitionNavigate();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [railMaxHeight, setRailMaxHeight] = useState<string | undefined>();
@@ -50,8 +55,8 @@ export function HomePage() {
     };
 
     updateRailHeight();
-    window.addEventListener("resize", updateRailHeight);
-    return () => window.removeEventListener("resize", updateRailHeight);
+    window.addEventListener('resize', updateRailHeight);
+    return () => window.removeEventListener('resize', updateRailHeight);
   }, [data]);
 
   if (isLoading) {
@@ -97,12 +102,12 @@ export function HomePage() {
           hideScrollBar
         >
           <div className="space-y-6 pr-2">
-            {data.posts.map((post) => (
+            {data.posts.map(post => (
               <article
                 key={post.slug}
                 onClick={() => navigate(`/posts/${post.slug}`)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     navigate(`/posts/${post.slug}`);
                   }
@@ -117,17 +122,22 @@ export function HomePage() {
                       {post.title}
                     </Card.Title>
                     {isNewPost(post.publishDate) && (
-                      <Chip size="sm" color="accent" className="flex-shrink-0">New</Chip>
+                      <Chip size="sm" color="accent" className="flex-shrink-0">
+                        New
+                      </Chip>
                     )}
                   </Card.Header>
                   <Card.Content className="p-0">
                     <div className="flex items-center gap-3 text-sm text-muted mb-3">
                       <time dateTime={post.publishDate}>
-                        {new Date(post.publishDate).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
+                        {new Date(post.publishDate).toLocaleDateString(
+                          'en-US',
+                          {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                          },
+                        )}
                       </time>
                       <span>&middot;</span>
                       <span>{post.readingTime} min read</span>
@@ -140,12 +150,12 @@ export function HomePage() {
                   </Card.Content>
                   {post.tags && post.tags.length > 0 && (
                     <Card.Footer className="p-0 pt-3 flex-wrap gap-3">
-                      {post.tags.map((tag) => (
+                      {post.tags.map(tag => (
                         <TagLink
                           key={tag}
                           tag={tag}
                           className="text-sm"
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={e => e.stopPropagation()}
                         />
                       ))}
                     </Card.Footer>
@@ -164,7 +174,7 @@ export function HomePage() {
       <aside className="hidden xl:block">
         <div
           className="sticky top-[calc(var(--header-height,4rem)+1rem)] overflow-y-auto"
-          style={railMaxHeight ? { maxHeight: railMaxHeight } : undefined}
+          style={railMaxHeight ? {maxHeight: railMaxHeight} : undefined}
         >
           <ReadingRail />
         </div>

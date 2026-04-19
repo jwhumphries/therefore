@@ -1,12 +1,20 @@
-import { StrictMode } from "react";
-import { createRoot, hydrateRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {StrictMode} from 'react';
+import {createRoot, hydrateRoot} from 'react-dom/client';
+import {BrowserRouter, Routes, Route} from 'react-router-dom';
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 
-import "./index.css";
-import { Layout } from "./components/Layout";
-import { ErrorBoundary } from "./components/ErrorBoundary";
-import { SplashPage, HomePage, PostPage, TagsPage, TagPage, AboutPage, SeriesPage } from "./pages";
+import './index.css';
+import {Layout} from './components/Layout';
+import {ErrorBoundary} from './components/ErrorBoundary';
+import {
+  SplashPage,
+  HomePage,
+  PostPage,
+  TagsPage,
+  TagPage,
+  AboutPage,
+  SeriesPage,
+} from './pages';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,27 +30,27 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <ErrorBoundary>
-        <Routes>
-          {/* Splash page without layout */}
-          <Route path="/" element={<SplashPage />} />
+          <Routes>
+            {/* Splash page without layout */}
+            <Route path="/" element={<SplashPage />} />
 
-          {/* Main app with layout */}
-          <Route element={<Layout />}>
-            <Route path="/posts" element={<HomePage />} />
-            <Route path="/posts/:slug" element={<PostPage />} />
-            <Route path="/tags" element={<TagsPage />} />
-            <Route path="/tags/:tag" element={<TagPage />} />
-            <Route path="/series" element={<SeriesPage />} />
-            <Route path="/about" element={<AboutPage />} />
-          </Route>
-        </Routes>
+            {/* Main app with layout */}
+            <Route element={<Layout />}>
+              <Route path="/posts" element={<HomePage />} />
+              <Route path="/posts/:slug" element={<PostPage />} />
+              <Route path="/tags" element={<TagsPage />} />
+              <Route path="/tags/:tag" element={<TagPage />} />
+              <Route path="/series" element={<SeriesPage />} />
+              <Route path="/about" element={<AboutPage />} />
+            </Route>
+          </Routes>
         </ErrorBoundary>
       </BrowserRouter>
     </QueryClientProvider>
   );
 }
 
-const container = document.getElementById("root")!;
+const container = document.getElementById('root')!;
 const app = (
   <StrictMode>
     <App />

@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface Props {
   children: React.ReactNode;
@@ -11,11 +11,11 @@ interface State {
 export class ErrorBoundary extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = {hasError: false};
   }
 
   static getDerivedStateFromError(): State {
-    return { hasError: true };
+    return {hasError: true};
   }
 
   render() {

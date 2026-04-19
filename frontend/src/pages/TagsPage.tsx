@@ -1,15 +1,15 @@
-import { Skeleton } from "@heroui/react";
-import { useTags } from "../hooks/api";
-import { TagWithCount } from "../components/TagLink";
-import { usePageMeta } from "../hooks/usePageMeta";
+import {Skeleton} from '@heroui/react';
+import {useTags} from '../hooks/api';
+import {TagWithCount} from '../components/TagLink';
+import {usePageMeta} from '../hooks/usePageMeta';
 
 function TagSkeleton() {
   return <Skeleton className="h-7 w-24 rounded-full" />;
 }
 
 export function TagsPage() {
-  usePageMeta({ title: "Tags", description: "Browse all tags on Therefore." });
-  const { data: tags, isLoading, error } = useTags();
+  usePageMeta({title: 'Tags', description: 'Browse all tags on Therefore.'});
+  const {data: tags, isLoading, error} = useTags();
 
   if (isLoading) {
     return (
@@ -47,7 +47,7 @@ export function TagsPage() {
     <div className="max-w-3xl mx-auto">
       <h1 className="text-4xl font-display font-bold mb-8">Tags</h1>
       <div className="flex flex-wrap gap-x-6 gap-y-3">
-        {tags.map((tag) => (
+        {tags.map(tag => (
           <TagWithCount
             key={tag.tag}
             tag={tag.tag}
