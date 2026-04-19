@@ -49,6 +49,17 @@ func (m *Therefore) Version(
 	return m.gitVersion(ctx, git)
 }
 
+// frontendContainer returns a container with frontend dependencies installed and cached.
+func (m *Therefore) frontendContainer(source *dagger.Directory) *dagger.Container {
+	return dag.Container().
+		From("ghcr.io/jwhumphries/frontend:latest@sha256:2c0150dd4e95164a253f338703edeba2bc007fb8fc1862da7806ae2c6733f626").
+		WithEnvVariable("BUN_INSTALL_CACHE_DIR", "/bun-cache").
+		WithMountedCache("/bun-cache", dag.CacheVolume("therefore-bun-cache")).
+		WithDirectory("/app", source).
+		WithWorkdir("/app/frontend").
+		WithExec([]string{"bun", "install"})
+}
+
 // templContainer returns a container with templ installed
 func (m *Therefore) templContainer() *dagger.Container {
 	return dag.Container().
@@ -126,55 +137,35 @@ func (m *Therefore) Fmt(source *dagger.Directory) *dagger.Directory {
 
 // Typecheck runs TypeScript type checking
 func (m *Therefore) Typecheck(ctx context.Context, source *dagger.Directory) (string, error) {
-	return dag.Container().
-		From("ghcr.io/jwhumphries/frontend:latest@sha256:2c0150dd4e95164a253f338703edeba2bc007fb8fc1862da7806ae2c6733f626").
-		WithDirectory("/app", source).
-		WithWorkdir("/app/frontend").
-		WithExec([]string{"bun", "install"}).
+	return m.frontendContainer(source).
 		WithExec([]string{"bun", "run", "typecheck"}).
 		Stdout(ctx)
 }
 
 // LintFrontend runs ESLint on the frontend
 func (m *Therefore) LintFrontend(ctx context.Context, source *dagger.Directory) (string, error) {
-	return dag.Container().
-		From("ghcr.io/jwhumphries/frontend:latest@sha256:2c0150dd4e95164a253f338703edeba2bc007fb8fc1862da7806ae2c6733f626").
-		WithDirectory("/app", source).
-		WithWorkdir("/app/frontend").
-		WithExec([]string{"bun", "install"}).
+	return m.frontendContainer(source).
 		WithExec([]string{"bun", "run", "lint"}).
 		Stdout(ctx)
 }
 
 // TestFrontend runs Vitest frontend tests
 func (m *Therefore) TestFrontend(ctx context.Context, source *dagger.Directory) (string, error) {
-	return dag.Container().
-		From("ghcr.io/jwhumphries/frontend:latest@sha256:2c0150dd4e95164a253f338703edeba2bc007fb8fc1862da7806ae2c6733f626").
-		WithDirectory("/app", source).
-		WithWorkdir("/app/frontend").
-		WithExec([]string{"bun", "install"}).
+	return m.frontendContainer(source).
 		WithExec([]string{"bun", "run", "test"}).
 		Stdout(ctx)
 }
 
 // FmtFrontend formats frontend code and returns the modified directory
 func (m *Therefore) FmtFrontend(source *dagger.Directory) *dagger.Directory {
-	return dag.Container().
-		From("ghcr.io/jwhumphries/frontend:latest@sha256:2c0150dd4e95164a253f338703edeba2bc007fb8fc1862da7806ae2c6733f626").
-		WithDirectory("/app", source).
-		WithWorkdir("/app/frontend").
-		WithExec([]string{"bun", "install"}).
+	return m.frontendContainer(source).
 		WithExec([]string{"bun", "run", "lint", "--fix"}).
 		Directory("/app")
 }
 
 // BuildFrontend compiles the React/TypeScript frontend with Vite
 func (m *Therefore) BuildFrontend(source *dagger.Directory) *dagger.Directory {
-	return dag.Container().
-		From("ghcr.io/jwhumphries/frontend:latest@sha256:2c0150dd4e95164a253f338703edeba2bc007fb8fc1862da7806ae2c6733f626").
-		WithDirectory("/app", source).
-		WithWorkdir("/app/frontend").
-		WithExec([]string{"bun", "install"}).
+	return m.frontendContainer(source).
 		WithExec([]string{"bun", "run", "build"}).
 		Directory("/app/internal/static/dist")
 }
