@@ -1,3 +1,4 @@
+// Package content embeds the post files for distribution.
 package content
 
 import "embed"

@@ -40,7 +40,7 @@ func init() {
 	_ = viper.BindPFlag("ssg_output", ssgCmd.Flags().Lookup("output"))
 }
 
-func runSSG(cmd *cobra.Command, args []string) error {
+func runSSG(_ *cobra.Command, _ []string) error {
 	baseURL := viper.GetString("base_url")
 	outDir := viper.GetString("ssg_output")
 

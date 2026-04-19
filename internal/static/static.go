@@ -1,3 +1,4 @@
+// Package static embeds the compiled frontend assets for distribution.
 package static
 
 import "embed"

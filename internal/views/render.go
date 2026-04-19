@@ -1,3 +1,4 @@
+// Package views provides templ templates and rendering utilities.
 package views
 
 import (

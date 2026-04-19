@@ -1,3 +1,4 @@
+// Package content provides tests for the content store and post types.
 package content
 
 import (
