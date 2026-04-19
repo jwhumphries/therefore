@@ -26,7 +26,7 @@ export function useViewTransitionNavigate() {
 
       // Check if View Transitions API is supported
       if (!document.startViewTransition) {
-        navigate(to, {state});
+        void navigate(to, {state});
         window.scrollTo(0, 0);
         return;
       }
@@ -35,11 +35,11 @@ export function useViewTransitionNavigate() {
       document.documentElement.dataset.transition = transitionType;
 
       const transition = document.startViewTransition(() => {
-        navigate(to, {state});
+        void navigate(to, {state});
       });
 
       // Scroll to top after the transition starts
-      transition.ready.then(() => {
+      void transition.ready.then(() => {
         window.scrollTo(0, 0);
       });
     },

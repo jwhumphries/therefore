@@ -30,7 +30,7 @@ interface SearchModalProps {
 interface SeriesGroup {
   series: string;
   count: number;
-  posts: FuseResult<PostListItem>[];
+  posts: Array<FuseResult<PostListItem>>;
 }
 
 function SearchResultSkeleton() {
@@ -47,7 +47,7 @@ function HighlightedText({
   indices,
 }: {
   text: string;
-  indices?: readonly [number, number][];
+  indices?: ReadonlyArray<[number, number]>;
 }) {
   if (!indices || indices.length === 0) {
     return <>{text}</>;
@@ -363,7 +363,7 @@ export function SearchModal({isOpen, onOpenChange}: SearchModalProps) {
  */
 function getMatchSnippet(
   text: string,
-  indices: readonly [number, number][] | undefined,
+  indices: ReadonlyArray<[number, number]> | undefined,
   contextChars: number = 60,
 ): string {
   if (!indices || indices.length === 0) {

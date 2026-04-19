@@ -53,7 +53,7 @@ function Pagination({currentPage, totalPages, onPageChange}: PaginationProps) {
 
   // Generate page numbers to show
   const getPageNumbers = () => {
-    const pages: (number | 'ellipsis')[] = [];
+    const pages: Array<number | 'ellipsis'> = [];
     const showEllipsisThreshold = 7;
 
     if (totalPages <= showEllipsisThreshold) {

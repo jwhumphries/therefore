@@ -90,7 +90,7 @@ export function useSSGData() {
  * Builds the query key for posts list based on filters.
  * Must match the key structure used in api.ts hooks.
  */
-function buildPostsQueryKey(tag?: string): (string | number | undefined)[] {
+function buildPostsQueryKey(tag?: string): Array<string | number | undefined> {
   // Match the key structure from usePaginatedPosts in api.ts:
   // ["posts", "paginated", tag ?? "all", limit, offset, sortBy, sortOrder]
   // Home page uses limit=10, tag pages use limit=6

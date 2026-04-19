@@ -5,7 +5,7 @@
  */
 export function initTagLinks(container: HTMLElement): () => void {
   const tagLinks = container.querySelectorAll<HTMLAnchorElement>('a.tag-link');
-  const cleanupFns: (() => void)[] = [];
+  const cleanupFns: Array<() => void> = [];
 
   tagLinks.forEach(link => {
     if (link.dataset.hydrated) return;

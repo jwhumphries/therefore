@@ -12,7 +12,7 @@ let fontsLoadedCache =
 const fontsListeners = new Set<() => void>();
 
 if (typeof document !== 'undefined' && !fontsLoadedCache) {
-  document.fonts.ready.then(() => {
+  void document.fonts.ready.then(() => {
     fontsLoadedCache = true;
     fontsListeners.forEach(listener => listener());
   });
