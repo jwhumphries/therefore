@@ -26,12 +26,18 @@ type ShortcodeParser struct {
 	attrPattern *regexp.Regexp
 }
 
+var (
+	defaultOpenPattern  = regexp.MustCompile(`\{\{([\w-]+)([^}]*)\}\}`)
+	defaultClosePattern = regexp.MustCompile(`\{\{/([\w-]+)\}\}`)
+	defaultAttrPattern  = regexp.MustCompile(`(\w+)=["']([^"']*)["']`)
+)
+
 // NewShortcodeParser creates a new shortcode parser.
 func NewShortcodeParser() *ShortcodeParser {
 	return &ShortcodeParser{
-		openPattern:  regexp.MustCompile(`\{\{([\w-]+)([^}]*)\}\}`),
-		closePattern: regexp.MustCompile(`\{\{/([\w-]+)\}\}`),
-		attrPattern:  regexp.MustCompile(`(\w+)=["']([^"']*)["']`),
+		openPattern:  defaultOpenPattern,
+		closePattern: defaultClosePattern,
+		attrPattern:  defaultAttrPattern,
 	}
 }
 
