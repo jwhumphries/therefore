@@ -6,6 +6,12 @@ import (
 	"strings"
 )
 
+var (
+	escapedRegex  = regexp.MustCompile(`\\(\d+)`)
+	verseNumRegex = regexp.MustCompile(`(^|\n|\s)(\d{1,3})\s`)
+	dropCapRegex  = regexp.MustCompile(`^((?:<sup[^>]*>[^<]*</sup>|\s)*)(\pL)`)
+)
+
 // formatCitationNumber formats a citation number as [1], [2], etc.
 func formatCitationNumber(n int) string {
 	return "[" + strconv.Itoa(n) + "]"
@@ -216,10 +222,9 @@ templ ScriptureCompare(ref, pinnedVersion string, altVersions []string, pinnedCo
 // Escape with backslash: \7 renders as literal "7".
 func formatVerseNumbers(content string) string {
 	// First, protect escaped numbers: \123 -> placeholder
-	escaped := regexp.MustCompile(`\\(\d+)`)
 	placeholders := map[string]string{}
 	i := 0
-	result := escaped.ReplaceAllStringFunc(content, func(match string) string {
+	result := escapedRegex.ReplaceAllStringFunc(content, func(match string) string {
 		num := match[1:] // strip leading backslash
 		placeholder := "%%ESCAPED_NUM_" + strconv.Itoa(i) + "%%"
 		placeholders[placeholder] = num
@@ -229,8 +234,7 @@ func formatVerseNumbers(content string) string {
 
 	// Convert verse numbers: standalone numbers followed by a space
 	// Match at start of string, after newline, or after whitespace
-	verseNum := regexp.MustCompile(`(^|\n|\s)(\d{1,3})\s`)
-	result = verseNum.ReplaceAllString(result, `$1<sup class="verse-num">$2</sup>`)
+	result = verseNumRegex.ReplaceAllString(result, `$1<sup class="verse-num">$2</sup>`)
 
 	// Restore escaped numbers
 	for placeholder, num := range placeholders {
@@ -244,8 +248,7 @@ func formatVerseNumbers(content string) string {
 // <sup> verse number tags) in a drop cap span.
 func applyScriptureDropCap(content string) string {
 	// Skip past any leading <sup ...>...</sup> tags and whitespace
-	dropCap := regexp.MustCompile(`^((?:<sup[^>]*>[^<]*</sup>|\s)*)(\pL)`)
-	return dropCap.ReplaceAllString(content, `$1<span class="scripture-drop-cap">$2</span>`)
+	return dropCapRegex.ReplaceAllString(content, `$1<span class="scripture-drop-cap">$2</span>`)
 }
 
 // Parallel renders a side-by-side comparison of two viewpoints or texts.
