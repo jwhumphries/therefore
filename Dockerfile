@@ -4,7 +4,7 @@ RUN apk add --no-cache git
 RUN go install github.com/air-verse/air@latest
 RUN go install github.com/a-h/templ/cmd/templ@latest
 
-FROM ghcr.io/jwhumphries/frontend:latest@sha256:10e1e026cd8d6780997f921eff88d2338d5f521cd67f3158a84a4b45337bc34d AS dev
+FROM ghcr.io/jwhumphries/frontend:latest@sha256:6b5be63918e393d69ff13af49fec955d383ca378f7512db739e2a3c593feb991 AS dev
 
 WORKDIR /app
 
