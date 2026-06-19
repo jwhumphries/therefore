@@ -1,7 +1,7 @@
 name: renovate
 on:
   schedule:
-    - cron: "30 10 * * 2,5"
+    - cron: "30 9 * * 2,5"
   workflow_dispatch:
 
 jobs:
