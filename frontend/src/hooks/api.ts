@@ -1,4 +1,4 @@
-import {useQuery} from '@tanstack/react-query';
+import {useQuery, keepPreviousData} from '@tanstack/react-query';
 
 // API response types
 export interface Author {
@@ -128,7 +128,7 @@ export function usePaginatedPosts(options: PostsQueryOptions = {}) {
       sortOrder,
     ],
     queryFn: () => fetchPosts({tag, limit, offset, sortBy, sortOrder}),
-    placeholderData: previousData => previousData, // Keep previous data while loading new page
+    placeholderData: keepPreviousData, // Keep previous data while loading new page
   });
 }
 

@@ -1,4 +1,4 @@
-import {useState, useMemo, useCallback} from 'react';
+import {useState, useMemo, useCallback, useRef} from 'react';
 import {Modal, Input, Skeleton} from '@heroui/react';
 import Fuse, {type IFuseOptions, type FuseResult} from 'fuse.js';
 import {usePosts, type PostListItem} from '../hooks/api';
@@ -116,11 +116,17 @@ export function SearchModal({isOpen, onOpenChange}: SearchModalProps) {
   const navigate = useViewTransitionNavigate();
 
   // Reset query when closing modal
+  const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
   const handleOpenChange = useCallback(
     (open: boolean) => {
       if (!open) {
         // Delay reset to after close animation
-        setTimeout(() => setQuery(''), 200);
+        resetTimeoutRef.current = setTimeout(() => setQuery(''), 200);
+      } else {
+        // Cancel a pending reset so it can't clear a freshly reopened modal
+        clearTimeout(resetTimeoutRef.current);
       }
       onOpenChange(open);
     },

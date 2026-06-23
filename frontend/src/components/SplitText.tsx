@@ -8,10 +8,16 @@ gsap.registerPlugin(ScrollTrigger, GSAPSplitText, useGSAP);
 
 // Track font loading status
 let fontsLoadedCache =
-  typeof document !== 'undefined' && document.fonts.status === 'loaded';
+  typeof document !== 'undefined' &&
+  'fonts' in document &&
+  document.fonts.status === 'loaded';
 const fontsListeners = new Set<() => void>();
 
-if (typeof document !== 'undefined' && !fontsLoadedCache) {
+if (
+  typeof document !== 'undefined' &&
+  'fonts' in document &&
+  !fontsLoadedCache
+) {
   void document.fonts.ready.then(() => {
     fontsLoadedCache = true;
     fontsListeners.forEach(listener => listener());

@@ -33,6 +33,7 @@ export default tseslint.config(
         'error',
         {object: 'describe', property: 'only'},
         {object: 'it', property: 'only'},
+        {object: 'test', property: 'only'},
       ],
     },
   },

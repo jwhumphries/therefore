@@ -57,7 +57,7 @@ func (m *Therefore) frontendContainer(source *dagger.Directory) *dagger.Containe
 		WithMountedCache("/bun-cache", dag.CacheVolume("therefore-bun-cache")).
 		WithDirectory("/app", source).
 		WithWorkdir("/app/frontend").
-		WithExec([]string{"bun", "install"})
+		WithExec([]string{"bun", "install", "--frozen-lockfile"})
 }
 
 // templContainer returns a container with templ installed
