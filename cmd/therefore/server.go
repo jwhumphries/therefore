@@ -20,7 +20,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func runServer(cmd *cobra.Command, args []string) error {
+func runServer(_ *cobra.Command, _ []string) error {
 	port := viper.GetString("port")
 	devMode := viper.GetBool("dev")
 

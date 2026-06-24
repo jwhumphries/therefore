@@ -1,3 +1,4 @@
+// Package handlers provides HTTP request handlers for the API and SPA.
 package handlers
 
 import (
@@ -239,14 +240,15 @@ func extractSearchContent(htmlContent string, maxLen int) string {
 	text = wsRegex.ReplaceAllString(text, " ")
 	text = strings.TrimSpace(text)
 
-	// Truncate to maxLen, trying to break at word boundary
-	if len(text) > maxLen {
-		text = text[:maxLen]
+	// Truncate to maxLen runes (not bytes) to avoid splitting multi-byte
+	// UTF-8 characters (e.g. Greek, Hebrew, Aramaic content).
+	if runes := []rune(text); len(runes) > maxLen {
+		truncated := string(runes[:maxLen])
 		// Find last space to break at word boundary
-		if lastSpace := strings.LastIndex(text, " "); lastSpace > maxLen-50 {
-			text = text[:lastSpace]
+		if lastSpace := strings.LastIndex(truncated, " "); lastSpace > maxLen-50 {
+			truncated = truncated[:lastSpace]
 		}
-		text += "..."
+		text = truncated + "..."
 	}
 
 	return text

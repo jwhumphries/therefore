@@ -1,11 +1,11 @@
-import { Chip, Skeleton } from "@heroui/react";
-import { useSeries } from "../hooks/api";
-import { useViewTransitionNavigate } from "../hooks/useViewTransition";
+import {Chip, Skeleton} from '@heroui/react';
+import {useSeries} from '../hooks/api';
+import {useViewTransitionNavigate} from '../hooks/useViewTransition';
 
 function RailSkeleton() {
   return (
     <div className="space-y-6">
-      {[1, 2, 3].map((i) => (
+      {[1, 2, 3].map(i => (
         <div key={i} className="flex gap-3">
           <div className="flex flex-col items-center">
             <Skeleton className="w-3 h-3 rounded-full" />
@@ -22,21 +22,22 @@ function RailSkeleton() {
 }
 
 export function ReadingRail() {
-  const { data, isLoading } = useSeries();
+  const {data, isLoading} = useSeries();
   const navigate = useViewTransitionNavigate();
 
   // Filter to only active series (those with recent posts - within 30 days)
   // The API already sorts active series first, so we just take those
-  const activeSeries = data?.filter((s) => s.hasRecentPosts) ?? [];
+  const activeSeries = data?.filter(s => s.hasRecentPosts) ?? [];
 
   // If no active series, show up to 3 most popular series
-  const displaySeries = activeSeries.length > 0
-    ? activeSeries.slice(0, 5)
-    : data?.slice(0, 3) ?? [];
+  const displaySeries =
+    activeSeries.length > 0
+      ? activeSeries.slice(0, 5)
+      : (data?.slice(0, 3) ?? []);
 
   const handleSeriesClick = (series: string) => {
     // Navigate to series page with state to auto-open the accordion
-    navigate("/series", { openSeries: series });
+    navigate('/series', {openSeries: series});
   };
 
   if (isLoading) {
@@ -57,7 +58,7 @@ export function ReadingRail() {
   return (
     <nav aria-label="Timeline of Thought">
       <h2 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">
-        {activeSeries.length > 0 ? "Active Series" : "Popular Series"}
+        {activeSeries.length > 0 ? 'Active Series' : 'Popular Series'}
       </h2>
 
       <div className="relative">
@@ -79,14 +80,17 @@ export function ReadingRail() {
                   <div
                     className={`w-3 h-3 rounded-full border-2 transition-colors ${
                       series.hasRecentPosts
-                        ? "bg-accent border-accent"
-                        : "bg-background border-muted group-hover:border-accent"
+                        ? 'bg-accent border-accent'
+                        : 'bg-background border-muted group-hover:border-accent'
                     }`}
                     aria-hidden="true"
                   />
                   {/* Connector line to next node */}
                   {index < displaySeries.length - 1 && (
-                    <div className="w-0.5 flex-1 bg-transparent" aria-hidden="true" />
+                    <div
+                      className="w-0.5 flex-1 bg-transparent"
+                      aria-hidden="true"
+                    />
                   )}
                 </div>
 
@@ -97,10 +101,14 @@ export function ReadingRail() {
                   </span>
                   <div className="flex items-center gap-2 mt-0.5">
                     <span className="text-xs text-muted">
-                      {series.count} {series.count === 1 ? "part" : "parts"}
+                      {series.count} {series.count === 1 ? 'part' : 'parts'}
                     </span>
                     {series.hasRecentPosts && (
-                      <Chip size="sm" color="accent" className="scale-75 origin-left">
+                      <Chip
+                        size="sm"
+                        color="accent"
+                        className="scale-75 origin-left"
+                      >
                         New
                       </Chip>
                     )}
@@ -115,7 +123,7 @@ export function ReadingRail() {
       {/* Link to all series */}
       {data && data.length > displaySeries.length && (
         <button
-          onClick={() => navigate("/series")}
+          onClick={() => navigate('/series')}
           className="mt-4 text-xs text-muted hover:text-accent transition-colors"
         >
           View all {data.length} series &rarr;
@@ -128,18 +136,18 @@ export function ReadingRail() {
 /**
  * Mobile version - collapsible section for the bottom of pages
  */
-export function ReadingRailMobile({ className = "" }: { className?: string }) {
-  const { data, isLoading } = useSeries();
+export function ReadingRailMobile({className = ''}: {className?: string}) {
+  const {data, isLoading} = useSeries();
   const navigate = useViewTransitionNavigate();
 
-  const activeSeries = data?.filter((s) => s.hasRecentPosts) ?? [];
+  const activeSeries = data?.filter(s => s.hasRecentPosts) ?? [];
 
   if (isLoading || activeSeries.length === 0) {
     return null;
   }
 
   const handleSeriesClick = (series: string) => {
-    navigate("/series", { openSeries: series });
+    navigate('/series', {openSeries: series});
   };
 
   return (
@@ -148,13 +156,16 @@ export function ReadingRailMobile({ className = "" }: { className?: string }) {
         Recently Updated Series
       </h2>
       <div className="flex flex-wrap gap-2">
-        {activeSeries.slice(0, 4).map((series) => (
+        {activeSeries.slice(0, 4).map(series => (
           <button
             key={series.series}
             onClick={() => handleSeriesClick(series.series)}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-surface hover:bg-surface-hover border border-border rounded-full text-sm transition-colors"
           >
-            <span className="w-2 h-2 rounded-full bg-accent" aria-hidden="true" />
+            <span
+              className="w-2 h-2 rounded-full bg-accent"
+              aria-hidden="true"
+            />
             {series.series}
           </button>
         ))}

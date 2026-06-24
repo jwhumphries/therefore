@@ -28,7 +28,7 @@ func (m *Therefore) gitVersion(ctx context.Context, git *dagger.Directory) (stri
 		return "dev", nil
 	}
 	out, err := dag.Container().
-		From("alpine/git:latest").
+		From("alpine/git:v2.52.0@sha256:d453f54c83320412aa89c391b076930bd8569bc1012285e8c68ce2d4435826a3").
 		WithMountedDirectory("/src/.git", git).
 		WithWorkdir("/src").
 		WithExec([]string{"git", "describe", "--tags", "--always"}).
@@ -49,10 +49,21 @@ func (m *Therefore) Version(
 	return m.gitVersion(ctx, git)
 }
 
+// frontendContainer returns a container with frontend dependencies installed and cached.
+func (m *Therefore) frontendContainer(source *dagger.Directory) *dagger.Container {
+	return dag.Container().
+		From("ghcr.io/jwhumphries/frontend:latest@sha256:2c0150dd4e95164a253f338703edeba2bc007fb8fc1862da7806ae2c6733f626").
+		WithEnvVariable("BUN_INSTALL_CACHE_DIR", "/bun-cache").
+		WithMountedCache("/bun-cache", dag.CacheVolume("therefore-bun-cache")).
+		WithDirectory("/app", source).
+		WithWorkdir("/app/frontend").
+		WithExec([]string{"bun", "install", "--frozen-lockfile"})
+}
+
 // templContainer returns a container with templ installed
 func (m *Therefore) templContainer() *dagger.Container {
 	return dag.Container().
-		From("golang:1.26-alpine").
+		From("golang:1.26-alpine@sha256:c2a1f7b2095d046ae14b286b18413a05bb82c9bca9b25fe7ff5efef0f0826166").
 		WithExec([]string{"go", "install", "github.com/a-h/templ/cmd/templ@latest"})
 }
 
@@ -103,7 +114,7 @@ func (m *Therefore) Test(ctx context.Context, source *dagger.Directory) (string,
 func (m *Therefore) testSource(ctx context.Context, source *dagger.Directory) (string, error) {
 	templSource := m.TemplGenerate(source)
 	return dag.Container().
-		From("golang:1.26-alpine").
+		From("golang:1.26-alpine@sha256:c2a1f7b2095d046ae14b286b18413a05bb82c9bca9b25fe7ff5efef0f0826166").
 		WithEnvVariable("GOCACHE", "/go-build-cache").
 		WithEnvVariable("GOMODCACHE", "/go-mod-cache").
 		WithMountedCache("/go-build-cache", dag.CacheVolume("go-build-cache")).
@@ -117,7 +128,7 @@ func (m *Therefore) testSource(ctx context.Context, source *dagger.Directory) (s
 // Fmt formats Go code and returns the modified directory
 func (m *Therefore) Fmt(source *dagger.Directory) *dagger.Directory {
 	return dag.Container().
-		From("golang:1.26-alpine").
+		From("golang:1.26-alpine@sha256:c2a1f7b2095d046ae14b286b18413a05bb82c9bca9b25fe7ff5efef0f0826166").
 		WithDirectory("/app", source).
 		WithWorkdir("/app").
 		WithExec([]string{"go", "fmt", "./..."}).
@@ -126,55 +137,35 @@ func (m *Therefore) Fmt(source *dagger.Directory) *dagger.Directory {
 
 // Typecheck runs TypeScript type checking
 func (m *Therefore) Typecheck(ctx context.Context, source *dagger.Directory) (string, error) {
-	return dag.Container().
-		From("ghcr.io/jwhumphries/frontend:latest").
-		WithDirectory("/app", source).
-		WithWorkdir("/app/frontend").
-		WithExec([]string{"bun", "install"}).
+	return m.frontendContainer(source).
 		WithExec([]string{"bun", "run", "typecheck"}).
 		Stdout(ctx)
 }
 
 // LintFrontend runs ESLint on the frontend
 func (m *Therefore) LintFrontend(ctx context.Context, source *dagger.Directory) (string, error) {
-	return dag.Container().
-		From("ghcr.io/jwhumphries/frontend:latest").
-		WithDirectory("/app", source).
-		WithWorkdir("/app/frontend").
-		WithExec([]string{"bun", "install"}).
+	return m.frontendContainer(source).
 		WithExec([]string{"bun", "run", "lint"}).
 		Stdout(ctx)
 }
 
 // TestFrontend runs Vitest frontend tests
 func (m *Therefore) TestFrontend(ctx context.Context, source *dagger.Directory) (string, error) {
-	return dag.Container().
-		From("ghcr.io/jwhumphries/frontend:latest").
-		WithDirectory("/app", source).
-		WithWorkdir("/app/frontend").
-		WithExec([]string{"bun", "install"}).
+	return m.frontendContainer(source).
 		WithExec([]string{"bun", "run", "test"}).
 		Stdout(ctx)
 }
 
 // FmtFrontend formats frontend code and returns the modified directory
 func (m *Therefore) FmtFrontend(source *dagger.Directory) *dagger.Directory {
-	return dag.Container().
-		From("ghcr.io/jwhumphries/frontend:latest").
-		WithDirectory("/app", source).
-		WithWorkdir("/app/frontend").
-		WithExec([]string{"bun", "install"}).
+	return m.frontendContainer(source).
 		WithExec([]string{"bun", "run", "lint", "--fix"}).
 		Directory("/app")
 }
 
 // BuildFrontend compiles the React/TypeScript frontend with Vite
 func (m *Therefore) BuildFrontend(source *dagger.Directory) *dagger.Directory {
-	return dag.Container().
-		From("ghcr.io/jwhumphries/frontend:latest").
-		WithDirectory("/app", source).
-		WithWorkdir("/app/frontend").
-		WithExec([]string{"bun", "install"}).
+	return m.frontendContainer(source).
 		WithExec([]string{"bun", "run", "build"}).
 		Directory("/app/internal/static/dist")
 }
@@ -196,7 +187,7 @@ func (m *Therefore) SSG(
 
 	// Run SSG command with base URL for correct meta tags and links
 	return dag.Container().
-		From("golang:1.26-alpine").
+		From("golang:1.26-alpine@sha256:c2a1f7b2095d046ae14b286b18413a05bb82c9bca9b25fe7ff5efef0f0826166").
 		WithEnvVariable("GOCACHE", "/go-build-cache").
 		WithEnvVariable("GOMODCACHE", "/go-mod-cache").
 		WithMountedCache("/go-build-cache", dag.CacheVolume("go-build-cache")).
@@ -210,7 +201,7 @@ func (m *Therefore) SSG(
 // BuildBinary builds the Go binary
 func (m *Therefore) BuildBinary(source *dagger.Directory, version string) *dagger.Container {
 	return dag.Container().
-		From("golang:1.26-alpine").
+		From("golang:1.26-alpine@sha256:c2a1f7b2095d046ae14b286b18413a05bb82c9bca9b25fe7ff5efef0f0826166").
 		WithEnvVariable("GOCACHE", "/go-build-cache").
 		WithEnvVariable("GOMODCACHE", "/go-mod-cache").
 		WithMountedCache("/go-build-cache", dag.CacheVolume("go-build-cache")).
@@ -287,7 +278,7 @@ func (m *Therefore) Release(
 	binary := binaryContainer.File("/therefore")
 
 	return dag.Container().
-		From("alpine:3.23").
+		From("alpine:3.23@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659").
 		WithExec([]string{"apk", "add", "--no-cache", "tzdata", "ca-certificates"}).
 		WithFile("/usr/local/bin/therefore", binary).
 		WithExec([]string{"sh", "-c", "echo 'nonroot:x:10001:10001:NonRoot User:/:/sbin/nologin' >> /etc/passwd"}).

@@ -1,7 +1,7 @@
-import { useSeriesPosts } from "../hooks/api";
-import { TransitionLink } from "./TransitionLink";
-import { Card, Chip } from "@heroui/react";
-import { motion } from "motion/react";
+import {useSeriesPosts} from '../hooks/api';
+import {TransitionLink} from './TransitionLink';
+import {Card, Chip} from '@heroui/react';
+import {motion} from 'motion/react';
 
 interface SeriesTimelineProps {
   series: string;
@@ -12,11 +12,12 @@ function isNewPost(publishDate: string): boolean {
   return new Date(publishDate).getTime() > sevenDaysAgo;
 }
 
-export function SeriesTimeline({ series }: SeriesTimelineProps) {
-  const { data, isLoading } = useSeriesPosts(series);
+export function SeriesTimeline({series}: SeriesTimelineProps) {
+  const {data, isLoading} = useSeriesPosts(series);
 
   if (isLoading) return <div className="p-6 text-muted">Loading...</div>;
-  if (!data?.posts.length) return <div className="p-6 text-muted">No posts found.</div>;
+  if (!data?.posts.length)
+    return <div className="p-6 text-muted">No posts found.</div>;
 
   // Sort posts by date ascending (oldest first) for sequential reading
   const sortedPosts = [...data.posts].reverse();
@@ -26,9 +27,9 @@ export function SeriesTimeline({ series }: SeriesTimelineProps) {
       {sortedPosts.map((post, index) => (
         <motion.div
           key={post.slug}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: index * 0.1, duration: 0.4 }}
+          initial={{opacity: 0, x: -20}}
+          animate={{opacity: 1, x: 0}}
+          transition={{delay: index * 0.1, duration: 0.4}}
           className="relative"
         >
           {/* Timeline dot */}
@@ -41,16 +42,18 @@ export function SeriesTimeline({ series }: SeriesTimelineProps) {
                   {post.title}
                 </Card.Title>
                 {isNewPost(post.publishDate) && (
-                  <Chip size="sm" color="accent" className="flex-shrink-0">New</Chip>
+                  <Chip size="sm" color="accent" className="flex-shrink-0">
+                    New
+                  </Chip>
                 )}
               </Card.Header>
               <Card.Content className="p-0">
                 <div className="text-sm text-muted flex items-center gap-2">
                   <time dateTime={post.publishDate}>
-                    {new Date(post.publishDate).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
+                    {new Date(post.publishDate).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
                     })}
                   </time>
                   <span>&middot;</span>

@@ -18,6 +18,8 @@ type Renderer interface {
 }
 
 // ContentStore provides access to blog posts.
+//
+//nolint:revive // name is intentional for clarity
 type ContentStore interface {
 	// GetPost retrieves a single post by slug.
 	GetPost(ctx context.Context, slug string) (*Post, error)

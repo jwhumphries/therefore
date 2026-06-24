@@ -51,8 +51,11 @@ type Post struct {
 type SortField string
 
 const (
-	SortByDate        SortField = "date"
-	SortByTitle       SortField = "title"
+	// SortByDate sorts posts by publish date.
+	SortByDate SortField = "date"
+	// SortByTitle sorts posts alphabetically by title.
+	SortByTitle SortField = "title"
+	// SortByReadingTime sorts posts by estimated reading time.
 	SortByReadingTime SortField = "readingTime"
 )
 
@@ -60,7 +63,9 @@ const (
 type SortOrder string
 
 const (
-	SortAsc  SortOrder = "asc"
+	// SortAsc sorts in ascending order.
+	SortAsc SortOrder = "asc"
+	// SortDesc sorts in descending order.
 	SortDesc SortOrder = "desc"
 )
 

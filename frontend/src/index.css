@@ -1,18 +1,18 @@
 /* Local fonts - Must be first (before any @layer rules) */
-@import "@fontsource-variable/fraunces";
-@import "@fontsource-variable/lora";
+@import '@fontsource-variable/fraunces';
+@import '@fontsource-variable/lora';
 
 /* Define CSS layers */
 @layer theme, base, components, utilities;
 
 /* Tailwind CSS v4 */
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* HeroUI styles */
-@import "@heroui/styles";
+@import '@heroui/styles';
 
 /* Brodie theme */
-@import "./themes/brodie.css" layer(theme);
+@import './themes/brodie.css' layer(theme);
 
 /* Typography plugin */
 @plugin "@tailwindcss/typography";
@@ -29,9 +29,14 @@ body {
 }
 
 /* Display font for headings, titles, buttons */
-h1, h2, h3, h4, h5, h6,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
 button,
-[role="button"],
+[role='button'],
 .btn,
 .font-display {
   font-family: var(--font-display);
@@ -365,7 +370,9 @@ article.prose .content > p:first-of-type::first-line {
   border-radius: var(--radius-sm);
   padding: 0.15rem 0.5rem;
   cursor: pointer;
-  transition: color 0.2s, border-color 0.2s;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
 }
 
 .scripture-compare__cycle-btn:hover {
@@ -641,11 +648,13 @@ article.prose .content > p:first-of-type::first-line {
 }
 
 /* Lightbox placeholder styles */
-[data-component="lightbox"] img {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+[data-component='lightbox'] img {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-[data-component="lightbox"] img:hover {
+[data-component='lightbox'] img:hover {
   transform: scale(1.02);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
 }
@@ -690,7 +699,8 @@ article.prose .content > p:first-of-type::first-line {
 }
 
 @keyframes gradient-shift {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 0% center;
   }
   50% {
@@ -703,10 +713,7 @@ a.tag-link {
   color: var(--foreground);
   text-decoration: none;
   font-weight: 500;
-  background-image: linear-gradient(
-    var(--accent) 0%,
-    var(--accent) 100%
-  );
+  background-image: linear-gradient(var(--accent) 0%, var(--accent) 100%);
   background-repeat: no-repeat;
   background-position: 0 100%;
   background-size: 100% 2px;
@@ -719,7 +726,9 @@ a.tag-link:hover {
 }
 
 .tag-hash {
-  transition: color 0.2s ease, font-weight 0.2s ease;
+  transition:
+    color 0.2s ease,
+    font-weight 0.2s ease;
 }
 
 a.tag-link:hover .tag-hash {
@@ -773,7 +782,7 @@ a.tag-link:hover .tag-hash {
   background-color: oklch(from var(--accent) l c h / 0.4);
 }
 
-[data-theme="brodie-dark"] .scroll-progress-bar {
+[data-theme='brodie-dark'] .scroll-progress-bar {
   background-color: oklch(from var(--secondary) l c h / 0.85);
 }
 
@@ -884,7 +893,9 @@ a.tag-link:hover .tag-hash {
    ============================================================================ */
 
 .reading-rail-node {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .reading-rail-node:hover {
@@ -893,7 +904,8 @@ a.tag-link:hover .tag-hash {
 
 /* Pulse animation for active series nodes */
 @keyframes rail-node-pulse {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 0 0 oklch(from var(--accent) l c h / 0.4);
   }
   50% {
@@ -920,31 +932,39 @@ a.tag-link:hover .tag-hash {
   }
 
   /* Fade transition (for posts) */
-  [data-transition="fade"]::view-transition-old(root) {
+  [data-transition='fade']::view-transition-old(root) {
     animation-name: fade-out;
   }
 
-  [data-transition="fade"]::view-transition-new(root) {
+  [data-transition='fade']::view-transition-new(root) {
     animation-name: fade-in;
   }
 
   /* Slide transition (for navigation pages) */
-  [data-transition="slide"]::view-transition-old(root) {
+  [data-transition='slide']::view-transition-old(root) {
     animation-name: slide-fade-out;
   }
 
-  [data-transition="slide"]::view-transition-new(root) {
+  [data-transition='slide']::view-transition-new(root) {
     animation-name: slide-fade-in;
   }
 
   @keyframes fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   @keyframes fade-out {
-    from { opacity: 1; }
-    to { opacity: 0; }
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
   }
 
   @keyframes slide-fade-in {

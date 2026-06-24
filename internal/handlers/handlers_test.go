@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"slices"
 	"testing"
 	"time"
 
@@ -40,14 +41,7 @@ func (m *mockStore) ListPosts(_ context.Context, opts content.ListOptions) ([]*c
 	for _, post := range m.posts {
 		// Filter by Tag
 		if opts.Tag != "" {
-			hasTag := false
-			for _, t := range post.Meta.Tags {
-				if t == opts.Tag {
-					hasTag = true
-					break
-				}
-			}
-			if !hasTag {
+			if !slices.Contains(post.Meta.Tags, opts.Tag) {
 				continue
 			}
 		}
@@ -70,7 +64,7 @@ func (m *mockStore) GetSeries(_ context.Context) ([]content.SeriesCount, error) 
 	return m.series, nil
 }
 
-func (m *mockStore) GetPostAsset(_ context.Context, slug, filename string) ([]byte, error) {
+func (m *mockStore) GetPostAsset(_ context.Context, _, _ string) ([]byte, error) {
 	return nil, errors.New("not implemented")
 }
 

@@ -14,7 +14,7 @@ let accordionElement: HTMLElement | null = null;
  * Returns a cleanup function to remove event listeners.
  */
 export function initCitation(el: HTMLElement): () => void {
-  const trigger = el.querySelector<HTMLButtonElement>(".citation-trigger");
+  const trigger = el.querySelector<HTMLButtonElement>('.citation-trigger');
   const text = el.dataset.citationText;
   const url = el.dataset.citationUrl;
 
@@ -22,37 +22,38 @@ export function initCitation(el: HTMLElement): () => void {
 
   // Assign citation number based on order (matches CSS counter)
   const citationNumber = citationRegistry.length + 1;
-  citationRegistry.push({ number: citationNumber, text, url: url || "" });
+  citationRegistry.push({number: citationNumber, text, url: url || ''});
 
   // Store the citation number on the element for reference
   el.dataset.citationNumber = String(citationNumber);
 
   // Create popover element
   const popoverId = `citation-popover-${citationNumber}`;
-  const popover = document.createElement("div");
+  const popover = document.createElement('div');
   popover.id = popoverId;
-  popover.setAttribute("role", "tooltip");
+  popover.setAttribute('role', 'tooltip');
   popover.className =
-    "citation-popover absolute z-50 p-3 text-sm bg-overlay text-overlay-foreground border border-border rounded shadow-lg w-[min(20rem,calc(100vw-2rem))]";
-  popover.style.display = "none";
+    'citation-popover absolute z-50 p-3 text-sm bg-overlay text-overlay-foreground border border-border rounded shadow-lg w-[min(20rem,calc(100vw-2rem))]';
+  popover.style.display = 'none';
 
   // Build popover content with citation text and link
-  const contentWrapper = document.createElement("div");
-  contentWrapper.className = "flex flex-col gap-2";
+  const contentWrapper = document.createElement('div');
+  contentWrapper.className = 'flex flex-col gap-2';
 
-  const textEl = document.createElement("span");
-  textEl.className = "text-foreground";
+  const textEl = document.createElement('span');
+  textEl.className = 'text-foreground';
   textEl.textContent = text;
   contentWrapper.appendChild(textEl);
 
   if (url) {
-    const linkEl = document.createElement("a");
+    const linkEl = document.createElement('a');
     linkEl.href = url;
-    linkEl.target = "_blank";
-    linkEl.rel = "noopener noreferrer";
+    linkEl.target = '_blank';
+    linkEl.rel = 'noopener noreferrer';
     linkEl.className =
-      "text-accent hover:underline text-xs flex items-center gap-1";
-    linkEl.innerHTML = `View source <svg aria-hidden="true" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>`;
+      'text-accent hover:underline text-xs flex items-center gap-1';
+    linkEl.innerHTML =
+      'View source <svg aria-hidden="true" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>';
     contentWrapper.appendChild(linkEl);
   }
 
@@ -73,34 +74,34 @@ export function initCitation(el: HTMLElement): () => void {
 
     if (spaceBelow >= popoverRect.height + 8 || spaceBelow >= spaceAbove) {
       // Position below
-      popover.style.top = "100%";
-      popover.style.bottom = "auto";
-      popover.style.marginTop = "4px";
+      popover.style.top = '100%';
+      popover.style.bottom = 'auto';
+      popover.style.marginTop = '4px';
     } else {
       // Position above
-      popover.style.bottom = "100%";
-      popover.style.top = "auto";
-      popover.style.marginBottom = "4px";
+      popover.style.bottom = '100%';
+      popover.style.top = 'auto';
+      popover.style.marginBottom = '4px';
     }
 
     // Center horizontally, but keep within viewport
-    popover.style.left = "50%";
-    popover.style.transform = "translateX(-50%)";
+    popover.style.left = '50%';
+    popover.style.transform = 'translateX(-50%)';
   };
 
   const openPopover = () => {
-    popover.style.display = "block";
+    popover.style.display = 'block';
     isOpen = true;
-    trigger.setAttribute("aria-expanded", "true");
-    trigger.setAttribute("aria-label", "Hide citation");
+    trigger.setAttribute('aria-expanded', 'true');
+    trigger.setAttribute('aria-label', 'Hide citation');
     requestAnimationFrame(positionPopover);
   };
 
   const closePopover = () => {
-    popover.style.display = "none";
+    popover.style.display = 'none';
     isOpen = false;
-    trigger.setAttribute("aria-expanded", "false");
-    trigger.setAttribute("aria-label", "Show citation");
+    trigger.setAttribute('aria-expanded', 'false');
+    trigger.setAttribute('aria-label', 'Show citation');
   };
 
   const togglePopover = () => {
@@ -112,10 +113,10 @@ export function initCitation(el: HTMLElement): () => void {
   };
 
   // Set up ARIA attributes
-  trigger.setAttribute("aria-expanded", "false");
-  trigger.setAttribute("aria-haspopup", "true");
-  trigger.setAttribute("aria-controls", popoverId);
-  trigger.setAttribute("aria-label", `Show citation ${citationNumber}`);
+  trigger.setAttribute('aria-expanded', 'false');
+  trigger.setAttribute('aria-haspopup', 'true');
+  trigger.setAttribute('aria-controls', popoverId);
+  trigger.setAttribute('aria-label', `Show citation ${citationNumber}`);
 
   // Event handlers (stored for cleanup)
   const handleTriggerClick = (e: Event) => {
@@ -125,10 +126,10 @@ export function initCitation(el: HTMLElement): () => void {
   };
 
   const handleTriggerKeydown = (e: KeyboardEvent) => {
-    if (e.key === "Enter" || e.key === " ") {
+    if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       togglePopover();
-    } else if (e.key === "Escape" && isOpen) {
+    } else if (e.key === 'Escape' && isOpen) {
       closePopover();
     }
   };
@@ -140,15 +141,15 @@ export function initCitation(el: HTMLElement): () => void {
   };
 
   // Attach listeners
-  trigger.addEventListener("click", handleTriggerClick);
-  trigger.addEventListener("keydown", handleTriggerKeydown);
-  document.addEventListener("click", handleDocumentClick);
+  trigger.addEventListener('click', handleTriggerClick);
+  trigger.addEventListener('keydown', handleTriggerKeydown);
+  document.addEventListener('click', handleDocumentClick);
 
   // Return cleanup function
   return () => {
-    trigger.removeEventListener("click", handleTriggerClick);
-    trigger.removeEventListener("keydown", handleTriggerKeydown);
-    document.removeEventListener("click", handleDocumentClick);
+    trigger.removeEventListener('click', handleTriggerClick);
+    trigger.removeEventListener('keydown', handleTriggerKeydown);
+    document.removeEventListener('click', handleDocumentClick);
     popover.remove();
   };
 }
@@ -161,15 +162,16 @@ export function buildCitationsAccordion(container: HTMLElement): () => void {
   if (citationRegistry.length === 0) return () => {};
 
   // Find the article content area
-  const contentArea = container.querySelector(".content") || container;
+  const contentArea = container.querySelector('.content') || container;
 
   // Create the accordion
-  accordionElement = document.createElement("details");
-  accordionElement.className = "citations-accordion mt-12 border-t border-border py-6";
+  accordionElement = document.createElement('details');
+  accordionElement.className =
+    'citations-accordion mt-12 border-t border-border py-6';
 
-  const summary = document.createElement("summary");
+  const summary = document.createElement('summary');
   summary.className =
-    "cursor-pointer text-sm font-medium text-muted hover:text-foreground transition-colors flex items-center gap-2";
+    'cursor-pointer text-sm font-medium text-muted hover:text-foreground transition-colors flex items-center gap-2';
   summary.innerHTML = `
     <svg aria-hidden="true" class="citations-chevron w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -178,29 +180,32 @@ export function buildCitationsAccordion(container: HTMLElement): () => void {
   `;
   accordionElement.appendChild(summary);
 
-  const list = document.createElement("ol");
-  list.className = "citations-list mt-4 space-y-2 text-sm";
+  const list = document.createElement('ol');
+  list.className = 'citations-list mt-4 space-y-2 text-sm';
 
   for (const citation of citationRegistry) {
-    const li = document.createElement("li");
-    li.className = "flex gap-2";
+    const li = document.createElement('li');
+    li.className = 'flex gap-2';
 
-    const numSpan = document.createElement("span");
-    numSpan.className = "text-muted flex-shrink-0";
+    const numSpan = document.createElement('span');
+    numSpan.className = 'text-muted flex-shrink-0';
     numSpan.textContent = `[${citation.number}]`;
     li.appendChild(numSpan);
 
     if (citation.url) {
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = citation.url;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      link.className = "text-accent hover:underline";
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.className = 'text-accent hover:underline';
       link.textContent = citation.text;
-      link.insertAdjacentHTML("beforeend", ' <svg aria-hidden="true" class="inline-block w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>');
+      link.insertAdjacentHTML(
+        'beforeend',
+        ' <svg aria-hidden="true" class="inline-block w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>',
+      );
       li.appendChild(link);
     } else {
-      const textSpan = document.createElement("span");
+      const textSpan = document.createElement('span');
       textSpan.textContent = citation.text;
       li.appendChild(textSpan);
     }

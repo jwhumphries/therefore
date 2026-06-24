@@ -1,10 +1,10 @@
-import { useState, useCallback, useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { Button, Skeleton } from "@heroui/react";
-import { useSeries } from "../hooks/api";
-import { SeriesAccordion } from "../components/SeriesAccordion";
-import type { NavigationState } from "../hooks/useViewTransition";
-import { usePageMeta } from "../hooks/usePageMeta";
+import {useState, useCallback, useEffect} from 'react';
+import {useLocation} from 'react-router-dom';
+import {Button, Skeleton} from '@heroui/react';
+import {useSeries} from '../hooks/api';
+import {SeriesAccordion} from '../components/SeriesAccordion';
+import type {NavigationState} from '../hooks/useViewTransition';
+import {usePageMeta} from '../hooks/usePageMeta';
 
 const SERIES_PER_PAGE = 15;
 
@@ -14,17 +14,17 @@ const ANIMATION_TIMING = {
   pageEnter: 300,
 };
 
-type AnimationState = "idle" | "exiting" | "entering";
-type AnimationType = "page-forward" | "page-backward";
+type AnimationState = 'idle' | 'exiting' | 'entering';
+type AnimationType = 'page-forward' | 'page-backward';
 
 function getAnimationClass(state: AnimationState, type: AnimationType): string {
-  if (state === "exiting") {
-    return type === "page-forward" ? "posts-exit-left" : "posts-exit-right";
+  if (state === 'exiting') {
+    return type === 'page-forward' ? 'posts-exit-left' : 'posts-exit-right';
   }
-  if (state === "entering") {
-    return type === "page-forward" ? "posts-enter-right" : "posts-enter-left";
+  if (state === 'entering') {
+    return type === 'page-forward' ? 'posts-enter-right' : 'posts-enter-left';
   }
-  return "";
+  return '';
 }
 
 function SeriesSkeleton() {
@@ -45,15 +45,15 @@ function SeriesSkeleton() {
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
-  onPageChange: (page: number, direction: "next" | "prev" | "jump") => void;
+  onPageChange: (page: number, direction: 'next' | 'prev' | 'jump') => void;
 }
 
-function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
+function Pagination({currentPage, totalPages, onPageChange}: PaginationProps) {
   if (totalPages <= 1) return null;
 
   // Generate page numbers to show
   const getPageNumbers = () => {
-    const pages: (number | "ellipsis")[] = [];
+    const pages: Array<number | 'ellipsis'> = [];
     const showEllipsisThreshold = 7;
 
     if (totalPages <= showEllipsisThreshold) {
@@ -66,7 +66,7 @@ function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) 
       pages.push(1);
 
       if (currentPage > 3) {
-        pages.push("ellipsis");
+        pages.push('ellipsis');
       }
 
       // Show pages around current
@@ -78,7 +78,7 @@ function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) 
       }
 
       if (currentPage < totalPages - 2) {
-        pages.push("ellipsis");
+        pages.push('ellipsis');
       }
 
       // Always show last page
@@ -89,11 +89,14 @@ function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) 
   };
 
   return (
-    <nav aria-label="Pagination" className="flex items-center justify-center gap-2 mt-10">
+    <nav
+      aria-label="Pagination"
+      className="flex items-center justify-center gap-2 mt-10"
+    >
       <Button
         variant="outline"
         size="sm"
-        onPress={() => onPageChange(currentPage - 1, "prev")}
+        onPress={() => onPageChange(currentPage - 1, 'prev')}
         isDisabled={currentPage === 1}
         aria-label="Previous page"
       >
@@ -103,30 +106,30 @@ function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) 
 
       <div className="flex items-center gap-1">
         {getPageNumbers().map((page, index) =>
-          page === "ellipsis" ? (
+          page === 'ellipsis' ? (
             <span key={`ellipsis-${index}`} className="px-2 text-muted">
               ...
             </span>
           ) : (
             <Button
               key={page}
-              variant={page === currentPage ? "primary" : "ghost"}
+              variant={page === currentPage ? 'primary' : 'ghost'}
               size="sm"
-              onPress={() => onPageChange(page, "jump")}
+              onPress={() => onPageChange(page, 'jump')}
               aria-label={`Page ${page}`}
-              aria-current={page === currentPage ? "page" : undefined}
+              aria-current={page === currentPage ? 'page' : undefined}
               className="min-w-9"
             >
               {page}
             </Button>
-          )
+          ),
         )}
       </div>
 
       <Button
         variant="outline"
         size="sm"
-        onPress={() => onPageChange(currentPage + 1, "next")}
+        onPress={() => onPageChange(currentPage + 1, 'next')}
         isDisabled={currentPage === totalPages}
         aria-label="Next page"
       >
@@ -138,13 +141,17 @@ function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) 
 }
 
 export function SeriesPage() {
-  usePageMeta({ title: "Series", description: "Browse all series on Therefore." });
+  usePageMeta({
+    title: 'Series',
+    description: 'Browse all series on Therefore.',
+  });
   const location = useLocation();
   const navState = location.state as NavigationState | null;
-  const { data, isLoading, error } = useSeries();
+  const {data, isLoading, error} = useSeries();
   const [currentPage, setCurrentPage] = useState(1);
-  const [animationState, setAnimationState] = useState<AnimationState>("idle");
-  const [animationType, setAnimationType] = useState<AnimationType>("page-forward");
+  const [animationState, setAnimationState] = useState<AnimationState>('idle');
+  const [animationType, setAnimationType] =
+    useState<AnimationType>('page-forward');
   const [openSeries, setOpenSeries] = useState<string | null>(null);
 
   const totalPages = data ? Math.ceil(data.length / SERIES_PER_PAGE) : 0;
@@ -154,7 +161,7 @@ export function SeriesPage() {
     if (navState?.openSeries && data) {
       const targetSeries = navState.openSeries;
       // Find which page this series is on
-      const seriesIndex = data.findIndex((s) => s.series === targetSeries);
+      const seriesIndex = data.findIndex(s => s.series === targetSeries);
       if (seriesIndex !== -1) {
         const targetPage = Math.floor(seriesIndex / SERIES_PER_PAGE) + 1;
         // Use setTimeout to defer state updates (avoids lint rule)
@@ -176,37 +183,43 @@ export function SeriesPage() {
   const currentSeries = data?.slice(startIndex, endIndex) ?? [];
 
   // Generic animation sequence: exit -> state change -> enter -> idle
-  const startTransition = useCallback((
-    type: AnimationType,
-    onStateChange: () => void
-  ) => {
-    setAnimationType(type);
-    setAnimationState("exiting");
+  const startTransition = useCallback(
+    (type: AnimationType, onStateChange: () => void) => {
+      setAnimationType(type);
+      setAnimationState('exiting');
 
-    // After exit animation, apply state change and start enter
-    setTimeout(() => {
-      onStateChange();
-      setAnimationState("entering");
-
-      // After enter animation, return to idle
+      // After exit animation, apply state change and start enter
       setTimeout(() => {
-        setAnimationState("idle");
-      }, ANIMATION_TIMING.pageEnter);
-    }, ANIMATION_TIMING.pageExit);
-  }, []);
+        onStateChange();
+        setAnimationState('entering');
 
-  const handlePageChange = useCallback((page: number, direction: "next" | "prev" | "jump") => {
-    if (page === currentPage || animationState !== "idle") return;
+        // After enter animation, return to idle
+        setTimeout(() => {
+          setAnimationState('idle');
+        }, ANIMATION_TIMING.pageEnter);
+      }, ANIMATION_TIMING.pageExit);
+    },
+    [],
+  );
 
-    // Determine animation type based on page navigation
-    const goingForward = direction === "next" || (direction === "jump" && page > currentPage);
-    const type: AnimationType = goingForward ? "page-forward" : "page-backward";
+  const handlePageChange = useCallback(
+    (page: number, direction: 'next' | 'prev' | 'jump') => {
+      if (page === currentPage || animationState !== 'idle') return;
 
-    startTransition(type, () => setCurrentPage(page));
+      // Determine animation type based on page navigation
+      const goingForward =
+        direction === 'next' || (direction === 'jump' && page > currentPage);
+      const type: AnimationType = goingForward
+        ? 'page-forward'
+        : 'page-backward';
 
-    // Scroll to top smoothly
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [currentPage, animationState, startTransition]);
+      startTransition(type, () => setCurrentPage(page));
+
+      // Scroll to top smoothly
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    },
+    [currentPage, animationState, startTransition],
+  );
 
   if (isLoading) {
     return (
@@ -244,13 +257,13 @@ export function SeriesPage() {
     <div className="max-w-3xl mx-auto">
       <h1 className="text-4xl font-display font-bold mb-2">Series</h1>
       <p className="text-default-500 mb-8">
-        {data.length} {data.length === 1 ? "series" : "series"}
+        {data.length} {data.length === 1 ? 'series' : 'series'}
       </p>
 
       <div
         className={`series-container space-y-6 ${getAnimationClass(animationState, animationType)}`}
       >
-        {currentSeries.map((s) => (
+        {currentSeries.map(s => (
           <SeriesAccordion
             key={s.series}
             series={s.series}
@@ -258,7 +271,7 @@ export function SeriesPage() {
             topTags={s.topTags}
             hasRecentPosts={s.hasRecentPosts}
             defaultOpen={s.series === openSeries}
-            onOpenChange={(isOpen) => {
+            onOpenChange={isOpen => {
               if (!isOpen && s.series === openSeries) {
                 setOpenSeries(null);
               }

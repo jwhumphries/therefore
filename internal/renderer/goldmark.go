@@ -1,3 +1,4 @@
+// Package renderer provides the Goldmark-based markdown rendering pipeline.
 package renderer
 
 import (

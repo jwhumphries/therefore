@@ -4,36 +4,36 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Build & Development Commands
 
-All commands run through Dagger containers for consistency. Use `task` for common workflows:
+All commands run through Dagger containers for consistency. Use `just` for common workflows:
 
 ```bash
-task dev            # Start dev environment (Go:8080 + Vite:3000) via docker-compose
-task dev-stop       # Stop dev environment
-task check          # Run all checks (lint, lint-frontend, typecheck, test, test-frontend)
-task build          # Build production container, load into Docker
+just dev            # Start dev environment (Go:8080 + Vite:3000) via docker-compose
+just dev-stop       # Stop dev environment
+just check          # Run all checks (lint, lint-frontend, typecheck, test, test-frontend)
+just build          # Build production container, load into Docker
 ```
 
 Individual checks:
 ```bash
-task lint           # Go linting (golangci-lint)
-task lint-frontend  # ESLint
-task typecheck      # TypeScript type-check
-task test           # Go tests
-task test-frontend  # Vitest frontend tests
-task templ          # Generate templ code (required after .templ changes)
+just lint           # Go linting (golangci-lint)
+just lint-frontend  # ESLint
+just typecheck      # TypeScript type-check
+just test           # Go tests
+just test-frontend  # Vitest frontend tests
+just templ          # Generate templ code (required after .templ changes)
 ```
 
 Other commands:
 ```bash
-task fmt            # Format Go code
-task fmt-frontend   # Format frontend code (ESLint --fix)
-task templ-fmt      # Format .templ files
-task build-frontend # Build frontend assets only
-task ssg            # Generate SSG pages (depends on build-frontend)
-task dev-logs       # View dev container logs
-task dev-shell      # Shell into dev container
-task clean          # Remove build artifacts (tmp, bin, node_modules, dist)
-task clean-docker   # Remove Docker volumes and images
+just fmt            # Format Go code
+just fmt-frontend   # Format frontend code (ESLint --fix)
+just templ-fmt      # Format .templ files
+just build-frontend # Build frontend assets only
+just ssg            # Generate SSG pages (depends on build-frontend)
+just dev-logs       # View dev container logs
+just dev-shell      # Shell into dev container
+just clean          # Remove build artifacts (tmp, bin, node_modules, dist)
+just clean-docker   # Remove Docker volumes and images
 ```
 
 Direct Dagger commands:
@@ -203,7 +203,7 @@ The splash page (`frontend/src/pages/SplashPage.tsx`) features a canvas-based an
 
 ## Code Patterns
 
-**Templ templates**: After modifying `.templ` files, run `task templ` to regenerate Go code. Generated files are `*_templ.go`.
+**Templ templates**: After modifying `.templ` files, run `just templ` to regenerate Go code. Generated files are `*_templ.go`.
 
 **API responses**: Handlers in `internal/handlers/api.go` return JSON. Single post responses include full rendered HTML via `views.RenderToString(views.Article(...))`. List responses include `searchContent` (800-char stripped excerpt for client-side search).
 
@@ -238,9 +238,9 @@ The splash page (`frontend/src/pages/SplashPage.tsx`) features a canvas-based an
 
 ## Testing
 
-**Go tests**: `task test` runs `go test -v ./...` via Dagger. Test files alongside source (`*_test.go`).
+**Go tests**: `just test` runs `go test -v ./...` via Dagger. Test files alongside source (`*_test.go`).
 
-**Frontend tests**: `task test-frontend` runs Vitest via Dagger.
+**Frontend tests**: `just test-frontend` runs Vitest via Dagger.
 - Config: `frontend/vitest.config.ts` (jsdom environment, `@/` path alias)
 - Tests: `frontend/src/components/hydration/*.test.ts`
 - Covers: hydration orchestrator, sidenote, citation, lightbox, scripture-compare

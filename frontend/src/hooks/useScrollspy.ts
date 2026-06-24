@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import {useState, useEffect, useCallback, useRef} from 'react';
 
 export interface Heading {
   id: string;
@@ -21,15 +21,14 @@ interface UseScrollspyOptions {
 function extractHeadings(container: HTMLElement | null): Heading[] {
   if (!container) return [];
 
-  const headingElements = container.querySelectorAll<HTMLElement>(
-    "h2[id], h3[id]"
-  );
+  const headingElements =
+    container.querySelectorAll<HTMLElement>('h2[id], h3[id]');
   const extracted: Heading[] = [];
 
-  headingElements.forEach((el) => {
+  headingElements.forEach(el => {
     extracted.push({
       id: el.id,
-      text: el.textContent ?? "",
+      text: el.textContent ?? '',
       level: parseInt(el.tagName.charAt(1), 10),
     });
   });
@@ -42,7 +41,7 @@ function extractHeadings(container: HTMLElement | null): Heading[] {
  */
 function getHeaderHeight(): number {
   const root = document.documentElement;
-  const value = getComputedStyle(root).getPropertyValue("--header-height");
+  const value = getComputedStyle(root).getPropertyValue('--header-height');
   if (value) {
     // Parse rem value (e.g., "4rem" -> 64)
     const match = value.match(/^([\d.]+)rem$/);
@@ -94,9 +93,8 @@ export function useScrollspy({
     setHeadings(extracted);
 
     // Store elements in reverse order for efficient lookup
-    const headingElements = container.querySelectorAll<HTMLElement>(
-      "h2[id], h3[id]"
-    );
+    const headingElements =
+      container.querySelectorAll<HTMLElement>('h2[id], h3[id]');
     sectionsRef.current = [...headingElements].reverse();
 
     // Set initial active heading (only once)
@@ -115,8 +113,8 @@ export function useScrollspy({
   // Update horizon on mount and resize
   useEffect(() => {
     updateHorizon();
-    window.addEventListener("resize", updateHorizon, { passive: true });
-    return () => window.removeEventListener("resize", updateHorizon);
+    window.addEventListener('resize', updateHorizon, {passive: true});
+    return () => window.removeEventListener('resize', updateHorizon);
   }, [updateHorizon]);
 
   // Get the currently active section using reverse iteration
@@ -136,7 +134,7 @@ export function useScrollspy({
     }
 
     // Find the first section (from bottom) that is above the horizon
-    const current = sections.find((section) => {
+    const current = sections.find(section => {
       const rect = section.getBoundingClientRect();
       // Skip invisible sections
       if (!rect.height) return false;
@@ -166,8 +164,8 @@ export function useScrollspy({
     // Initial check
     handleScroll();
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll, {passive: true});
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [headings, getCurrentSection, throttleMs]);
 
   // Smooth scroll to a heading with easing
@@ -196,7 +194,7 @@ export function useScrollspy({
         requestAnimationFrame(step);
       } else {
         // Update URL hash without triggering scroll
-        history.pushState(null, "", `#${id}`);
+        history.pushState(null, '', `#${id}`);
       }
     }
 

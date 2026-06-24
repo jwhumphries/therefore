@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 
 	"therefore/internal/content"
@@ -105,7 +106,7 @@ func (g *Generator) parseViteAssets() error {
 	// Also try the reverse order: href before rel
 	cssMatches2 := cssRegexReverse.FindAllStringSubmatch(html, -1)
 	for _, match := range cssMatches2 {
-		if len(match) > 1 && !contains(g.cssLinks, match[1]) {
+		if len(match) > 1 && !slices.Contains(g.cssLinks, match[1]) {
 			g.cssLinks = append(g.cssLinks, match[1])
 		}
 	}
@@ -128,7 +129,7 @@ func (g *Generator) parseViteAssets() error {
 	return nil
 }
 
-func (g *Generator) generateSplashPage(ctx context.Context) error {
+func (g *Generator) generateSplashPage(_ context.Context) error {
 	pageData := views.SSGPageData{
 		Title:       "Therefore",
 		Description: "A blog exploring ideas at the intersection of philosophy and theology.",
@@ -184,7 +185,7 @@ func (g *Generator) generatePostPages(ctx context.Context) error {
 	return nil
 }
 
-func (g *Generator) generatePostPage(ctx context.Context, post *content.Post) error {
+func (g *Generator) generatePostPage(_ context.Context, post *content.Post) error {
 	// Render article HTML
 	articleHTML := views.RenderToString(views.Article(post, post.HTMLContent))
 
@@ -289,7 +290,7 @@ func (g *Generator) generateSeriesPage(ctx context.Context) error {
 	return nil
 }
 
-func (g *Generator) generateAboutPage(ctx context.Context) error {
+func (g *Generator) generateAboutPage(_ context.Context) error {
 	pageData := views.SSGPageData{
 		Title:       "About — Therefore",
 		Description: "About Therefore — a blog exploring philosophy and theology.",
@@ -326,15 +327,6 @@ func (g *Generator) writePage(relPath string, data views.SSGPageData) error {
 }
 
 // Helper functions
-
-func contains(slice []string, s string) bool {
-	for _, v := range slice {
-		if v == s {
-			return true
-		}
-	}
-	return false
-}
 
 // postToJSON converts a Post to a JSON-serializable map matching the API response.
 func postToJSON(p *content.Post) map[string]any {

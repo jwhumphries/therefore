@@ -1,5 +1,10 @@
-import { useState, useCallback, useEffect, useRef, ReactNode } from 'react';
-import { motion, useMotionValue, useAnimationFrame, useTransform } from 'motion/react';
+import {useState, useCallback, useEffect, useRef, ReactNode} from 'react';
+import {
+  motion,
+  useMotionValue,
+  useAnimationFrame,
+  useTransform,
+} from 'motion/react';
 
 interface GradientTextProps {
   children: ReactNode;
@@ -20,7 +25,7 @@ export function GradientText({
   showBorder = false,
   direction = 'horizontal',
   pauseOnHover = false,
-  yoyo = true
+  yoyo = true,
 }: GradientTextProps) {
   const [isPaused, setIsPaused] = useState(false);
   const progress = useMotionValue(0);
@@ -51,7 +56,9 @@ export function GradientText({
       if (cycleTime < animationDuration) {
         progress.set((cycleTime / animationDuration) * 100);
       } else {
-        progress.set(100 - ((cycleTime - animationDuration) / animationDuration) * 100);
+        progress.set(
+          100 - ((cycleTime - animationDuration) / animationDuration) * 100,
+        );
       }
     } else {
       // Continuously increase position for seamless looping
@@ -84,14 +91,23 @@ export function GradientText({
   }, [pauseOnHover]);
 
   const gradientAngle =
-    direction === 'horizontal' ? 'to right' : direction === 'vertical' ? 'to bottom' : 'to bottom right';
+    direction === 'horizontal'
+      ? 'to right'
+      : direction === 'vertical'
+        ? 'to bottom'
+        : 'to bottom right';
   // Duplicate first color at the end for seamless looping
   const gradientColors = [...colors, colors[0]].join(', ');
 
   const gradientStyle = {
     backgroundImage: `linear-gradient(${gradientAngle}, ${gradientColors})`,
-    backgroundSize: direction === 'horizontal' ? '300% 100%' : direction === 'vertical' ? '100% 300%' : '300% 300%',
-    backgroundRepeat: 'repeat'
+    backgroundSize:
+      direction === 'horizontal'
+        ? '300% 100%'
+        : direction === 'vertical'
+          ? '100% 300%'
+          : '300% 300%',
+    backgroundRepeat: 'repeat',
   };
 
   return (
@@ -103,7 +119,7 @@ export function GradientText({
       {showBorder && (
         <motion.div
           className="absolute inset-0 z-0 pointer-events-none rounded-[1.25rem]"
-          style={{ ...gradientStyle, backgroundPosition }}
+          style={{...gradientStyle, backgroundPosition}}
         >
           <div
             className="absolute bg-black rounded-[1.25rem] z-[-1]"
@@ -112,14 +128,18 @@ export function GradientText({
               height: 'calc(100% - 2px)',
               left: '50%',
               top: '50%',
-              transform: 'translate(-50%, -50%)'
+              transform: 'translate(-50%, -50%)',
             }}
           />
         </motion.div>
       )}
       <motion.div
         className="inline-block relative z-2 text-transparent bg-clip-text"
-        style={{ ...gradientStyle, backgroundPosition, WebkitBackgroundClip: 'text' }}
+        style={{
+          ...gradientStyle,
+          backgroundPosition,
+          WebkitBackgroundClip: 'text',
+        }}
       >
         {children}
       </motion.div>

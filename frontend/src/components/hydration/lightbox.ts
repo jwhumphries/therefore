@@ -4,10 +4,10 @@
  * Returns a cleanup function to remove event listeners.
  */
 export function initLightbox(el: HTMLElement): () => void {
-  const img = el.querySelector("img");
+  const img = el.querySelector('img');
   if (!img) return () => {};
 
-  img.style.cursor = "pointer";
+  img.style.cursor = 'pointer';
 
   // Track active lightbox state for cleanup
   let activeCleanup: (() => void) | null = null;
@@ -16,11 +16,11 @@ export function initLightbox(el: HTMLElement): () => void {
     activeCleanup = openLightbox(img.src, img.alt);
   };
 
-  img.addEventListener("click", handleImageClick);
+  img.addEventListener('click', handleImageClick);
 
   // Return cleanup function
   return () => {
-    img.removeEventListener("click", handleImageClick);
+    img.removeEventListener('click', handleImageClick);
     // Close any open lightbox
     if (activeCleanup) {
       activeCleanup();
@@ -34,44 +34,44 @@ function openLightbox(src: string, alt: string): () => void {
   const previousFocus = document.activeElement as HTMLElement | null;
 
   // Create overlay
-  const overlay = document.createElement("div");
+  const overlay = document.createElement('div');
   overlay.className =
-    "fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4";
-  overlay.setAttribute("role", "dialog");
-  overlay.setAttribute("aria-modal", "true");
-  overlay.setAttribute("aria-label", alt || "Image lightbox");
+    'fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4';
+  overlay.setAttribute('role', 'dialog');
+  overlay.setAttribute('aria-modal', 'true');
+  overlay.setAttribute('aria-label', alt || 'Image lightbox');
 
   // Create image container
-  const container = document.createElement("div");
-  container.className = "relative max-w-full max-h-full";
+  const container = document.createElement('div');
+  container.className = 'relative max-w-full max-h-full';
 
   // Create image
-  const img = document.createElement("img");
+  const img = document.createElement('img');
   img.src = src;
   img.alt = alt;
-  img.className = "max-w-full max-h-[90vh] object-contain rounded-lg";
+  img.className = 'max-w-full max-h-[90vh] object-contain rounded-lg';
 
   // Create close button
-  const closeBtn = document.createElement("button");
+  const closeBtn = document.createElement('button');
   closeBtn.className =
-    "absolute -top-12 right-0 text-white text-4xl hover:text-gray-300 transition-colors";
-  closeBtn.innerHTML = "&times;";
-  closeBtn.setAttribute("aria-label", "Close lightbox");
+    'absolute -top-12 right-0 text-white text-4xl hover:text-gray-300 transition-colors';
+  closeBtn.innerHTML = '&times;';
+  closeBtn.setAttribute('aria-label', 'Close lightbox');
 
   // Close handler - removes all listeners and restores focus
   const close = () => {
-    document.removeEventListener("keydown", handleKeydown);
+    document.removeEventListener('keydown', handleKeydown);
     overlay.remove();
-    document.body.style.overflow = "";
+    document.body.style.overflow = '';
     previousFocus?.focus();
   };
 
   const handleKeydown = (e: KeyboardEvent) => {
-    if (e.key === "Escape") {
+    if (e.key === 'Escape') {
       close();
     }
     // Trap focus within the lightbox (only the close button is focusable)
-    if (e.key === "Tab") {
+    if (e.key === 'Tab') {
       e.preventDefault();
       closeBtn.focus();
     }
@@ -82,12 +82,12 @@ function openLightbox(src: string, alt: string): () => void {
   };
 
   // Attach listeners
-  overlay.addEventListener("click", handleOverlayClick);
-  closeBtn.addEventListener("click", close);
-  document.addEventListener("keydown", handleKeydown);
+  overlay.addEventListener('click', handleOverlayClick);
+  closeBtn.addEventListener('click', close);
+  document.addEventListener('keydown', handleKeydown);
 
   // Prevent body scroll
-  document.body.style.overflow = "hidden";
+  document.body.style.overflow = 'hidden';
 
   // Assemble and mount
   container.appendChild(closeBtn);

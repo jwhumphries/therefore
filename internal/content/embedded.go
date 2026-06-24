@@ -40,6 +40,9 @@ type SiteConfig struct {
 	Author Author `yaml:"author"`
 }
 
+// Compile-time interface compliance check.
+var _ ContentStore = (*EmbeddedStore)(nil)
+
 // EmbeddedStore implements ContentStore using an afero filesystem.
 // All posts are loaded and rendered at initialization time.
 type EmbeddedStore struct {

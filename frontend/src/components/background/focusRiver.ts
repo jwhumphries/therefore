@@ -23,7 +23,7 @@ class SimplexNoise {
     // Fisher-Yates shuffle with seed
     let n = seed;
     for (let i = 255; i > 0; i--) {
-      n = ((n * 16807) % 2147483647 + 2147483647) % 2147483647;
+      n = (((n * 16807) % 2147483647) + 2147483647) % 2147483647;
       const j = n % (i + 1);
       [p[i], p[j]] = [p[j], p[i]];
     }
@@ -35,9 +35,18 @@ class SimplexNoise {
   }
 
   private grad3 = [
-    [1, 1, 0], [-1, 1, 0], [1, -1, 0], [-1, -1, 0],
-    [1, 0, 1], [-1, 0, 1], [1, 0, -1], [-1, 0, -1],
-    [0, 1, 1], [0, -1, 1], [0, 1, -1], [0, -1, -1],
+    [1, 1, 0],
+    [-1, 1, 0],
+    [1, -1, 0],
+    [-1, -1, 0],
+    [1, 0, 1],
+    [-1, 0, 1],
+    [1, 0, -1],
+    [-1, 0, -1],
+    [0, 1, 1],
+    [0, -1, 1],
+    [0, 1, -1],
+    [0, -1, -1],
   ];
 
   private dot2(g: number[], x: number, y: number): number {
@@ -69,7 +78,9 @@ class SimplexNoise {
     const ii = i & 255;
     const jj = j & 255;
 
-    let n0 = 0, n1 = 0, n2 = 0;
+    let n0 = 0,
+      n1 = 0,
+      n2 = 0;
 
     let t0 = 0.5 - x0 * x0 - y0 * y0;
     if (t0 >= 0) {
@@ -137,7 +148,7 @@ export const DEFAULT_RIVER_CONFIG: RiverConfig = {
 export function getRiverCenter(
   time: number,
   baseCenter: number,
-  viewportWidth: number
+  viewportWidth: number,
 ): number {
   const noise = getNoise();
 
@@ -159,8 +170,8 @@ export function getRiverEdges(
   time: number,
   centerX: number,
   config: RiverConfig = DEFAULT_RIVER_CONFIG,
-  viewportWidth: number = 0
-): { left: number; right: number } {
+  viewportWidth: number = 0,
+): {left: number; right: number} {
   const noise = getNoise();
 
   // Add a wave/curve effect - the river snakes as it goes down the screen
@@ -171,15 +182,23 @@ export function getRiverEdges(
   const curvedCenter = centerX + waveCurve;
 
   // Left edge noise - scales between 0 and 1
-  const leftNoise = (noise.noise2D(y * config.yScale, time * config.timeScale) + 1) / 2;
-  const leftEdge = curvedCenter - config.baseHalfWidth - leftNoise * config.variance;
+  const leftNoise =
+    (noise.noise2D(y * config.yScale, time * config.timeScale) + 1) / 2;
+  const leftEdge =
+    curvedCenter - config.baseHalfWidth - leftNoise * config.variance;
 
   // Right edge noise - offset to animate independently
   const rightNoise =
-    (noise.noise2D((y + config.edgeOffset) * config.yScale, time * config.timeScale) + 1) / 2;
-  const rightEdge = curvedCenter + config.baseHalfWidth + rightNoise * config.variance;
+    (noise.noise2D(
+      (y + config.edgeOffset) * config.yScale,
+      time * config.timeScale,
+    ) +
+      1) /
+    2;
+  const rightEdge =
+    curvedCenter + config.baseHalfWidth + rightNoise * config.variance;
 
-  return { left: leftEdge, right: rightEdge };
+  return {left: leftEdge, right: rightEdge};
 }
 
 /**
@@ -192,9 +211,9 @@ export function getBlurZone(
   time: number,
   centerX: number,
   config: RiverConfig = DEFAULT_RIVER_CONFIG,
-  viewportWidth: number = 0
+  viewportWidth: number = 0,
 ): 0 | 1 | 2 {
-  const { left, right } = getRiverEdges(y, time, centerX, config, viewportWidth);
+  const {left, right} = getRiverEdges(y, time, centerX, config, viewportWidth);
   const transitionWidth = 40; // Pixels for blur transition zone
 
   // In the sharp river center
@@ -221,9 +240,9 @@ export function getBlurAmount(
   time: number,
   centerX: number,
   maxBlur: number = 3,
-  config: RiverConfig = DEFAULT_RIVER_CONFIG
+  config: RiverConfig = DEFAULT_RIVER_CONFIG,
 ): number {
-  const { left, right } = getRiverEdges(y, time, centerX, config);
+  const {left, right} = getRiverEdges(y, time, centerX, config);
   const transitionWidth = 60;
   const outerTransition = 80;
 

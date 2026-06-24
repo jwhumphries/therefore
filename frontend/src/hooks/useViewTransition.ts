@@ -1,7 +1,7 @@
-import { useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import {useCallback} from 'react';
+import {useNavigate} from 'react-router-dom';
 
-type TransitionType = "fade" | "slide";
+type TransitionType = 'fade' | 'slide';
 
 // Navigation state that can be passed between pages
 export interface NavigationState {
@@ -10,11 +10,11 @@ export interface NavigationState {
 
 function getTransitionType(path: string): TransitionType {
   // Posts use fade transition
-  if (path.startsWith("/posts/")) {
-    return "fade";
+  if (path.startsWith('/posts/')) {
+    return 'fade';
   }
   // Navigation pages (home, tags, about) use slide transition
-  return "slide";
+  return 'slide';
 }
 
 export function useViewTransitionNavigate() {
@@ -26,7 +26,7 @@ export function useViewTransitionNavigate() {
 
       // Check if View Transitions API is supported
       if (!document.startViewTransition) {
-        navigate(to, { state });
+        void navigate(to, {state});
         window.scrollTo(0, 0);
         return;
       }
@@ -35,15 +35,15 @@ export function useViewTransitionNavigate() {
       document.documentElement.dataset.transition = transitionType;
 
       const transition = document.startViewTransition(() => {
-        navigate(to, { state });
+        void navigate(to, {state});
       });
 
       // Scroll to top after the transition starts
-      transition.ready.then(() => {
+      void transition.ready.then(() => {
         window.scrollTo(0, 0);
       });
     },
-    [navigate]
+    [navigate],
   );
 
   return navigateWithTransition;

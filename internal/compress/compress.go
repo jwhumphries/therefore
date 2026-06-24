@@ -1,7 +1,9 @@
+// Package compress provides Brotli compression utilities with caching.
 package compress
 
 import (
 	"bytes"
+	"slices"
 	"sync"
 
 	"github.com/andybalholm/brotli"
@@ -98,12 +100,7 @@ func ShouldCompress(contentType string) bool {
 		"application/xml",
 	}
 
-	for _, ct := range compressible {
-		if contentType == ct {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(compressible, contentType)
 }
 
 // AcceptsBrotli checks if the client accepts Brotli encoding.

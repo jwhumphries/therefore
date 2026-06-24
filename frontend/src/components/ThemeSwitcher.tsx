@@ -1,35 +1,35 @@
-import { useEffect, useSyncExternalStore } from "react";
-import { Button } from "@heroui/react";
+import {useEffect, useSyncExternalStore} from 'react';
+import {Button} from '@heroui/react';
 
-type Theme = "brodie" | "brodie-dark";
+type Theme = 'brodie' | 'brodie-dark';
 
-const THEME_STORAGE_KEY = "therefore-theme";
+const THEME_STORAGE_KEY = 'therefore-theme';
 
 function getStoredTheme(): Theme {
   const stored = localStorage.getItem(THEME_STORAGE_KEY);
-  if (stored === "brodie" || stored === "brodie-dark") {
+  if (stored === 'brodie' || stored === 'brodie-dark') {
     return stored;
   }
   // Check system preference
-  if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-    return "brodie-dark";
+  if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    return 'brodie-dark';
   }
-  return "brodie";
+  return 'brodie';
 }
 
 function getServerTheme(): Theme {
-  return "brodie";
+  return 'brodie';
 }
 
 function applyTheme(theme: Theme) {
-  document.documentElement.setAttribute("data-theme", theme);
+  document.documentElement.setAttribute('data-theme', theme);
   localStorage.setItem(THEME_STORAGE_KEY, theme);
 }
 
 // Subscribe to storage changes for cross-tab sync
 function subscribeToTheme(callback: () => void) {
-  window.addEventListener("storage", callback);
-  return () => window.removeEventListener("storage", callback);
+  window.addEventListener('storage', callback);
+  return () => window.removeEventListener('storage', callback);
 }
 
 function useTheme() {
@@ -89,18 +89,18 @@ export function ThemeSwitcher() {
   }, [theme]);
 
   const toggleTheme = () => {
-    const newTheme = theme === "brodie" ? "brodie-dark" : "brodie";
+    const newTheme = theme === 'brodie' ? 'brodie-dark' : 'brodie';
     applyTheme(newTheme);
     // Dispatch storage event to trigger useSyncExternalStore update
-    window.dispatchEvent(new StorageEvent("storage", { key: THEME_STORAGE_KEY }));
+    window.dispatchEvent(new StorageEvent('storage', {key: THEME_STORAGE_KEY}));
   };
 
-  const isDark = theme === "brodie-dark";
+  const isDark = theme === 'brodie-dark';
 
   return (
     <Button
       isIconOnly
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       variant="ghost"
       size="sm"
       className="rounded-full"

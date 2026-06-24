@@ -1,12 +1,17 @@
-import { useRef, useCallback, useEffect } from "react";
+import {useRef, useCallback, useEffect} from 'react';
 import {
   useAnimationLoop,
   useReducedMotion,
   useCanvasDimensions,
-} from "./useAnimationLoop";
-import { getRandomChar, getRandomScriptType } from "./characterSets";
-import { getBlurZone, getRiverCenter, DEFAULT_RIVER_CONFIG, type RiverConfig } from "./focusRiver";
-import type { Character, Row, AnimationConfig } from "./types";
+} from './useAnimationLoop';
+import {getRandomChar, getRandomScriptType} from './characterSets';
+import {
+  getBlurZone,
+  getRiverCenter,
+  DEFAULT_RIVER_CONFIG,
+  type RiverConfig,
+} from './focusRiver';
+import type {Character, Row, AnimationConfig} from './types';
 
 interface AncientScriptBackgroundProps {
   className?: string;
@@ -28,11 +33,11 @@ const CONFIG: AnimationConfig = {
 
 // Color palette - purples from gradient + gold from secondary
 const CHARACTER_COLORS = [
-  "rgba(109, 40, 217, 0.9)", // #6d28d9 - deep purple
-  "rgba(168, 85, 247, 0.9)", // #a855f7 - medium purple
-  "rgba(192, 132, 252, 0.85)", // #c084fc - light purple
-  "rgba(180, 130, 80, 0.85)", // warm gold
-  "rgba(160, 120, 90, 0.8)", // muted gold
+  'rgba(109, 40, 217, 0.9)', // #6d28d9 - deep purple
+  'rgba(168, 85, 247, 0.9)', // #a855f7 - medium purple
+  'rgba(192, 132, 252, 0.85)', // #c084fc - light purple
+  'rgba(180, 130, 80, 0.85)', // warm gold
+  'rgba(160, 120, 90, 0.8)', // muted gold
 ];
 
 // River configuration for focus effect
@@ -53,10 +58,11 @@ function createCharacter(x: number, y: number): Character {
     char: getRandomChar(scriptType),
     x,
     y,
-    color: CHARACTER_COLORS[Math.floor(Math.random() * CHARACTER_COLORS.length)],
+    color:
+      CHARACTER_COLORS[Math.floor(Math.random() * CHARACTER_COLORS.length)],
     opacity: CONFIG.baseOpacity,
     weight: 400,
-    morphPhase: "normal",
+    morphPhase: 'normal',
     morphStartTime: 0,
     scriptType,
   };
@@ -68,7 +74,7 @@ function createCharacter(x: number, y: number): Character {
 function initializeRows(
   width: number,
   height: number,
-  config: AnimationConfig
+  config: AnimationConfig,
 ): Row[] {
   const rows: Row[] = [];
   const charsPerRow = Math.ceil(width / config.charWidth) + 4; // Extra for seamless scroll
@@ -101,59 +107,64 @@ function updateCharacterMorph(
   char: Character,
   time: number,
   deltaTime: number,
-  config: AnimationConfig
+  config: AnimationConfig,
 ): void {
   const elapsed = time - char.morphStartTime;
 
   switch (char.morphPhase) {
-    case "normal": {
+    case 'normal': {
       // Random chance to start morphing
       const probability = config.morphProbability * (deltaTime / 1000);
       if (Math.random() < probability) {
-        char.morphPhase = "bolding";
+        char.morphPhase = 'bolding';
         char.morphStartTime = time;
       }
       break;
     }
 
-    case "bolding": {
+    case 'bolding': {
       const progress = Math.min(elapsed / config.boldingDuration, 1);
       char.weight = 400 + 300 * progress;
       char.opacity = CONFIG.baseOpacity;
 
       if (progress >= 1) {
-        char.morphPhase = "fading";
+        char.morphPhase = 'fading';
         char.morphStartTime = time;
       }
       break;
     }
 
-    case "fading": {
+    case 'fading': {
       const progress = Math.min(elapsed / config.fadingDuration, 1);
       // Opacity dips then recovers, weight stays at 700
       const fadeProgress = Math.sin(progress * Math.PI);
-      char.opacity = CONFIG.baseOpacity - fadeProgress * (CONFIG.baseOpacity - config.minFadeOpacity);
+      char.opacity =
+        CONFIG.baseOpacity -
+        fadeProgress * (CONFIG.baseOpacity - config.minFadeOpacity);
       char.weight = 700;
 
       // Swap character at peak of fade
-      if (progress >= 0.5 && elapsed - deltaTime < config.fadingDuration * 0.5) {
+      if (
+        progress >= 0.5 &&
+        elapsed - deltaTime < config.fadingDuration * 0.5
+      ) {
         char.char = getRandomChar(char.scriptType);
       }
 
       if (progress >= 1) {
-        char.morphPhase = "unbolding";
+        char.morphPhase = 'unbolding';
         char.morphStartTime = time;
       }
       break;
     }
 
-    case "unbolding": {
+    case 'unbolding': {
       const progress = Math.min(elapsed / config.unboldingDuration, 1);
       char.weight = 700 - 300 * progress;
       char.opacity = CONFIG.baseOpacity;
 
       if (progress >= 1) {
-        char.morphPhase = "normal";
+        char.morphPhase = 'normal';
         char.weight = 400;
       }
       break;
@@ -173,7 +184,7 @@ function renderCharacterBatch(
   blur: number,
   dpr: number,
   fontSize: number,
-  opacityMultiplier: number = 1
+  opacityMultiplier: number = 1,
 ): void {
   if (count === 0) return;
 
@@ -197,18 +208,32 @@ function renderCharacterBatch(
   ctx.restore();
 }
 
-export function AncientScriptBackground({ className = "" }: AncientScriptBackgroundProps) {
+export function AncientScriptBackground({
+  className = '',
+}: AncientScriptBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rowsRef = useRef<Row[]>([]);
   // Use reusable buffers for zones to avoid allocation in render loop
-  const zone0Ref = useRef<{ chars: Character[]; xs: number[]; ys: number[] }>({ chars: [], xs: [], ys: [] });
-  const zone1Ref = useRef<{ chars: Character[]; xs: number[]; ys: number[] }>({ chars: [], xs: [], ys: [] });
-  const zone2Ref = useRef<{ chars: Character[]; xs: number[]; ys: number[] }>({ chars: [], xs: [], ys: [] });
+  const zone0Ref = useRef<{chars: Character[]; xs: number[]; ys: number[]}>({
+    chars: [],
+    xs: [],
+    ys: [],
+  });
+  const zone1Ref = useRef<{chars: Character[]; xs: number[]; ys: number[]}>({
+    chars: [],
+    xs: [],
+    ys: [],
+  });
+  const zone2Ref = useRef<{chars: Character[]; xs: number[]; ys: number[]}>({
+    chars: [],
+    xs: [],
+    ys: [],
+  });
 
   const vignetteCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const prefersReducedMotion = useReducedMotion();
-  const { width, height, dpr } = useCanvasDimensions(canvasRef);
-  const lastDimensionsRef = useRef({ width: 0, height: 0, dpr: 1 });
+  const {width, height, dpr} = useCanvasDimensions(canvasRef);
+  const lastDimensionsRef = useRef({width: 0, height: 0, dpr: 1});
 
   // Initialize rows only when dimensions actually change significantly
   useEffect(() => {
@@ -217,18 +242,25 @@ export function AncientScriptBackground({ className = "" }: AncientScriptBackgro
     const heightChanged = Math.abs(height - last.height) > 10;
     const dprChanged = dpr !== last.dpr;
 
-    if (width > 0 && height > 0 && (widthChanged || heightChanged || dprChanged || rowsRef.current.length === 0)) {
-      lastDimensionsRef.current = { width, height, dpr };
+    if (
+      width > 0 &&
+      height > 0 &&
+      (widthChanged ||
+        heightChanged ||
+        dprChanged ||
+        rowsRef.current.length === 0)
+    ) {
+      lastDimensionsRef.current = {width, height, dpr};
       rowsRef.current = initializeRows(width, height, CONFIG);
-      zone0Ref.current = { chars: [], xs: [], ys: [] };
-      zone1Ref.current = { chars: [], xs: [], ys: [] };
-      zone2Ref.current = { chars: [], xs: [], ys: [] };
+      zone0Ref.current = {chars: [], xs: [], ys: []};
+      zone1Ref.current = {chars: [], xs: [], ys: []};
+      zone2Ref.current = {chars: [], xs: [], ys: []};
 
       // Create vignette overlay
-      const vignetteCanvas = document.createElement("canvas");
+      const vignetteCanvas = document.createElement('canvas');
       vignetteCanvas.width = width * dpr;
       vignetteCanvas.height = height * dpr;
-      const vCtx = vignetteCanvas.getContext("2d");
+      const vCtx = vignetteCanvas.getContext('2d');
 
       if (vCtx) {
         // Create radial gradient for vignette
@@ -242,12 +274,12 @@ export function AncientScriptBackground({ className = "" }: AncientScriptBackgro
           maxRadius * 0.4,
           centerX,
           centerY,
-          maxRadius
+          maxRadius,
         );
 
-        gradient.addColorStop(0, "rgba(0, 0, 0, 0)");
-        gradient.addColorStop(0.6, "rgba(0, 0, 0, 0.15)");
-        gradient.addColorStop(1, "rgba(0, 0, 0, 0.4)");
+        gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
+        gradient.addColorStop(0.6, 'rgba(0, 0, 0, 0.15)');
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0.4)');
 
         vCtx.fillStyle = gradient;
         vCtx.fillRect(0, 0, vignetteCanvas.width, vignetteCanvas.height);
@@ -259,11 +291,11 @@ export function AncientScriptBackground({ className = "" }: AncientScriptBackgro
 
   // Animation frame callback
   const onFrame = useCallback(
-    ({ time, deltaTime }: { time: number; deltaTime: number }) => {
+    ({time, deltaTime}: {time: number; deltaTime: number}) => {
       const canvas = canvasRef.current;
       if (!canvas || rowsRef.current.length === 0) return;
 
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
       const rows = rowsRef.current;
@@ -299,14 +331,14 @@ export function AncientScriptBackground({ className = "" }: AncientScriptBackgro
               // Scrolling right - characters move right, wrap from right to left
               if (checkX > width + CONFIG.charWidth) {
                 // Find leftmost position and place this char before it
-                const minX = Math.min(...row.chars.map((c) => c.x));
+                const minX = Math.min(...row.chars.map(c => c.x));
                 char.x = minX - CONFIG.charWidth;
                 // Reset character with new random values
                 const newChar = createCharacter(char.x, row.y);
                 char.char = newChar.char;
                 char.color = newChar.color;
                 char.scriptType = newChar.scriptType;
-                char.morphPhase = "normal";
+                char.morphPhase = 'normal';
                 char.weight = 400;
                 char.opacity = CONFIG.baseOpacity;
               }
@@ -314,14 +346,14 @@ export function AncientScriptBackground({ className = "" }: AncientScriptBackgro
               // Scrolling left - characters move left, wrap from left to right
               if (checkX < -CONFIG.charWidth * 2) {
                 // Find rightmost position and place this char after it
-                const maxX = Math.max(...row.chars.map((c) => c.x));
+                const maxX = Math.max(...row.chars.map(c => c.x));
                 char.x = maxX + CONFIG.charWidth;
                 // Reset character with new random values
                 const newChar = createCharacter(char.x, row.y);
                 char.char = newChar.char;
                 char.color = newChar.color;
                 char.scriptType = newChar.scriptType;
-                char.morphPhase = "normal";
+                char.morphPhase = 'normal';
                 char.weight = 400;
                 char.opacity = CONFIG.baseOpacity;
               }
@@ -335,7 +367,10 @@ export function AncientScriptBackground({ className = "" }: AncientScriptBackgro
           const renderY = (char.y + CONFIG.charHeight * 0.8) * dpr;
 
           // Skip if off-screen
-          if (renderX < -CONFIG.charWidth * dpr || renderX > canvas.width + CONFIG.charWidth * dpr) {
+          if (
+            renderX < -CONFIG.charWidth * dpr ||
+            renderX > canvas.width + CONFIG.charWidth * dpr
+          ) {
             continue;
           }
 
@@ -346,7 +381,7 @@ export function AncientScriptBackground({ className = "" }: AncientScriptBackgro
             time,
             driftingCenter,
             RIVER_CONFIG,
-            width
+            width,
           );
 
           if (zone === 0) {
@@ -369,23 +404,53 @@ export function AncientScriptBackground({ className = "" }: AncientScriptBackgro
       }
 
       // Render batches with appropriate blur
-      ctx.textBaseline = "middle";
+      ctx.textBaseline = 'middle';
 
       // Heavy blur first (background) - also reduce opacity
-      renderCharacterBatch(ctx, z2.chars, z2.xs, z2.ys, c2, 6, dpr, CONFIG.fontSize, 0.4);
+      renderCharacterBatch(
+        ctx,
+        z2.chars,
+        z2.xs,
+        z2.ys,
+        c2,
+        6,
+        dpr,
+        CONFIG.fontSize,
+        0.4,
+      );
 
       // Light blur (transition) - slightly reduce opacity
-      renderCharacterBatch(ctx, z1.chars, z1.xs, z1.ys, c1, 3, dpr, CONFIG.fontSize, 0.65);
+      renderCharacterBatch(
+        ctx,
+        z1.chars,
+        z1.xs,
+        z1.ys,
+        c1,
+        3,
+        dpr,
+        CONFIG.fontSize,
+        0.65,
+      );
 
       // Sharp (river center) - full opacity
-      renderCharacterBatch(ctx, z0.chars, z0.xs, z0.ys, c0, 0, dpr, CONFIG.fontSize, 1.0);
+      renderCharacterBatch(
+        ctx,
+        z0.chars,
+        z0.xs,
+        z0.ys,
+        c0,
+        0,
+        dpr,
+        CONFIG.fontSize,
+        1.0,
+      );
 
       // Overlay vignette
       if (vignetteCanvasRef.current) {
         ctx.drawImage(vignetteCanvasRef.current, 0, 0);
       }
     },
-    [width, dpr, prefersReducedMotion]
+    [width, dpr, prefersReducedMotion],
   );
 
   // Start animation loop
@@ -400,12 +465,12 @@ export function AncientScriptBackground({ className = "" }: AncientScriptBackgro
       className={className}
       aria-hidden="true"
       style={{
-        position: "absolute",
+        position: 'absolute',
         top: 0,
         left: 0,
-        width: "100%",
-        height: "100%",
-        pointerEvents: "none",
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
       }}
     />
   );
