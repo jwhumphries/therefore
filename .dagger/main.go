@@ -52,7 +52,7 @@ func (m *Therefore) Version(
 // frontendContainer returns a container with frontend dependencies installed and cached.
 func (m *Therefore) frontendContainer(source *dagger.Directory) *dagger.Container {
 	return dag.Container().
-		From("ghcr.io/jwhumphries/frontend:latest@sha256:2c0150dd4e95164a253f338703edeba2bc007fb8fc1862da7806ae2c6733f626").
+		From("ghcr.io/jwhumphries/frontend:latest@sha256:6b5be63918e393d69ff13af49fec955d383ca378f7512db739e2a3c593feb991").
 		WithEnvVariable("BUN_INSTALL_CACHE_DIR", "/bun-cache").
 		WithMountedCache("/bun-cache", dag.CacheVolume("therefore-bun-cache")).
 		WithDirectory("/app", source).
