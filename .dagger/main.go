@@ -28,7 +28,7 @@ func (m *Therefore) gitVersion(ctx context.Context, git *dagger.Directory) (stri
 		return "dev", nil
 	}
 	out, err := dag.Container().
-		From("alpine/git:v2.54.0@sha256:729da2347ce652f30476b064198577fe12e1147e58499be9f343039343ef2cee").
+		From("alpine/git:v2.54.0@sha256:3b44767883ac77bddae0160cc27b6b039345e23fa3504f4159efaa32264ab57f").
 		WithMountedDirectory("/src/.git", git).
 		WithWorkdir("/src").
 		WithExec([]string{"git", "describe", "--tags", "--always"}).
