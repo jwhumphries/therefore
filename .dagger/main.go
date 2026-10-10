@@ -93,7 +93,7 @@ func (m *Therefore) Lint(ctx context.Context, source *dagger.Directory) (string,
 func (m *Therefore) lintSource(ctx context.Context, source *dagger.Directory) (string, error) {
 	templSource := m.TemplGenerate(source)
 	return dag.Container().
-		From("golangci/golangci-lint:v2.13.2-alpine@sha256:da1f79b184ff1d98781648407d05a99b9cba7b282aa3416b0a0eac102a3b0557").
+		From("golangci/golangci-lint:v2.14.0-alpine@sha256:25925c95ebdc7aee39ecc0e6f4f33ac27b9a91718bc65fdf18a1a5c4c9325ee4").
 		WithEnvVariable("GOCACHE", "/go-build-cache").
 		WithEnvVariable("GOMODCACHE", "/go-mod-cache").
 		WithEnvVariable("GOLANGCI_LINT_CACHE", "/golangci-lint-cache").
