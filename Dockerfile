@@ -1,4 +1,4 @@
-FROM golang:1.27-alpine@sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d AS gobase
+FROM golang:1.27-alpine@sha256:fa3d596898d9f126af7c01d14ee7597bab3f39cccf392ef36b69fe77cd681f18 AS gobase
 
 RUN apk add --no-cache git
 RUN go install github.com/air-verse/air@latest
