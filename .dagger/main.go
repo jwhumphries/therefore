@@ -28,7 +28,7 @@ func (m *Therefore) gitVersion(ctx context.Context, git *dagger.Directory) (stri
 		return "dev", nil
 	}
 	out, err := dag.Container().
-		From("alpine/git:v2.54.0@sha256:ce84fd6a057b4dc5cf5009da2dd832f1c6d096c1984bf50496cf3c256402264d").
+		From("alpine/git:v2.54.0@sha256:ac6c828f15d82775d204d3d75112e1d34af8945da80ccf922713c9891ba68e7a").
 		WithMountedDirectory("/src/.git", git).
 		WithWorkdir("/src").
 		WithExec([]string{"git", "describe", "--tags", "--always"}).
@@ -63,7 +63,7 @@ func (m *Therefore) frontendContainer(source *dagger.Directory) *dagger.Containe
 // templContainer returns a container with templ installed
 func (m *Therefore) templContainer() *dagger.Container {
 	return dag.Container().
-		From("golang:1.27-alpine@sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d").
+		From("golang:1.27-alpine@sha256:fa3d596898d9f126af7c01d14ee7597bab3f39cccf392ef36b69fe77cd681f18").
 		WithExec([]string{"go", "install", "github.com/a-h/templ/cmd/templ@latest"})
 }
 
@@ -114,7 +114,7 @@ func (m *Therefore) Test(ctx context.Context, source *dagger.Directory) (string,
 func (m *Therefore) testSource(ctx context.Context, source *dagger.Directory) (string, error) {
 	templSource := m.TemplGenerate(source)
 	return dag.Container().
-		From("golang:1.27-alpine@sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d").
+		From("golang:1.27-alpine@sha256:fa3d596898d9f126af7c01d14ee7597bab3f39cccf392ef36b69fe77cd681f18").
 		WithEnvVariable("GOCACHE", "/go-build-cache").
 		WithEnvVariable("GOMODCACHE", "/go-mod-cache").
 		WithMountedCache("/go-build-cache", dag.CacheVolume("go-build-cache")).
@@ -128,7 +128,7 @@ func (m *Therefore) testSource(ctx context.Context, source *dagger.Directory) (s
 // Fmt formats Go code and returns the modified directory
 func (m *Therefore) Fmt(source *dagger.Directory) *dagger.Directory {
 	return dag.Container().
-		From("golang:1.27-alpine@sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d").
+		From("golang:1.27-alpine@sha256:fa3d596898d9f126af7c01d14ee7597bab3f39cccf392ef36b69fe77cd681f18").
 		WithDirectory("/app", source).
 		WithWorkdir("/app").
 		WithExec([]string{"go", "fmt", "./..."}).
@@ -187,7 +187,7 @@ func (m *Therefore) SSG(
 
 	// Run SSG command with base URL for correct meta tags and links
 	return dag.Container().
-		From("golang:1.27-alpine@sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d").
+		From("golang:1.27-alpine@sha256:fa3d596898d9f126af7c01d14ee7597bab3f39cccf392ef36b69fe77cd681f18").
 		WithEnvVariable("GOCACHE", "/go-build-cache").
 		WithEnvVariable("GOMODCACHE", "/go-mod-cache").
 		WithMountedCache("/go-build-cache", dag.CacheVolume("go-build-cache")).
@@ -201,7 +201,7 @@ func (m *Therefore) SSG(
 // BuildBinary builds the Go binary
 func (m *Therefore) BuildBinary(source *dagger.Directory, version string) *dagger.Container {
 	return dag.Container().
-		From("golang:1.27-alpine@sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d").
+		From("golang:1.27-alpine@sha256:fa3d596898d9f126af7c01d14ee7597bab3f39cccf392ef36b69fe77cd681f18").
 		WithEnvVariable("GOCACHE", "/go-build-cache").
 		WithEnvVariable("GOMODCACHE", "/go-mod-cache").
 		WithMountedCache("/go-build-cache", dag.CacheVolume("go-build-cache")).
