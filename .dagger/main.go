@@ -52,7 +52,7 @@ func (m *Therefore) Version(
 // frontendContainer returns a container with frontend dependencies installed and cached.
 func (m *Therefore) frontendContainer(source *dagger.Directory) *dagger.Container {
 	return dag.Container().
-		From("ghcr.io/jwhumphries/frontend:latest@sha256:d8923d9071c21dd38e76b297f3afe50f400d2d177413500747374bafb3c89548").
+		From("ghcr.io/jwhumphries/frontend:latest@sha256:7270e8fbe7f4629906764604b12b77182e3714474ccee5b14aa01ccc6b8a5b53").
 		WithEnvVariable("BUN_INSTALL_CACHE_DIR", "/bun-cache").
 		WithMountedCache("/bun-cache", dag.CacheVolume("therefore-bun-cache")).
 		WithDirectory("/app", source).
@@ -60,28 +60,31 @@ func (m *Therefore) frontendContainer(source *dagger.Directory) *dagger.Containe
 		WithExec([]string{"bun", "install", "--frozen-lockfile"})
 }
 
-// templContainer returns a container with templ installed
-func (m *Therefore) templContainer() *dagger.Container {
+// templContainer returns a Go container with the source mounted. The templ CLI
+// is run via `go tool templ`, so its version always matches the templ library
+// pinned in go.mod (declared with a `tool` directive) and the two can't drift.
+func (m *Therefore) templContainer(source *dagger.Directory) *dagger.Container {
 	return dag.Container().
 		From("golang:1.27-alpine@sha256:fa3d596898d9f126af7c01d14ee7597bab3f39cccf392ef36b69fe77cd681f18").
-		WithExec([]string{"go", "install", "github.com/a-h/templ/cmd/templ@latest"})
+		WithEnvVariable("GOCACHE", "/go-build-cache").
+		WithEnvVariable("GOMODCACHE", "/go-mod-cache").
+		WithMountedCache("/go-build-cache", dag.CacheVolume("go-build-cache")).
+		WithMountedCache("/go-mod-cache", dag.CacheVolume("go-mod-cache")).
+		WithDirectory("/app", source).
+		WithWorkdir("/app")
 }
 
 // TemplGenerate runs templ generate on the source
 func (m *Therefore) TemplGenerate(source *dagger.Directory) *dagger.Directory {
-	return m.templContainer().
-		WithDirectory("/app", source).
-		WithWorkdir("/app").
-		WithExec([]string{"templ", "generate"}).
+	return m.templContainer(source).
+		WithExec([]string{"go", "tool", "templ", "generate"}).
 		Directory("/app")
 }
 
 // TemplFmt formats templ files and returns the modified directory
 func (m *Therefore) TemplFmt(source *dagger.Directory) *dagger.Directory {
-	return m.templContainer().
-		WithDirectory("/app", source).
-		WithWorkdir("/app").
-		WithExec([]string{"templ", "fmt", "."}).
+	return m.templContainer(source).
+		WithExec([]string{"go", "tool", "templ", "fmt", "."}).
 		Directory("/app")
 }
 

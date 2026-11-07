@@ -2,15 +2,13 @@ FROM golang:1.27-alpine@sha256:fa3d596898d9f126af7c01d14ee7597bab3f39cccf392ef36
 
 RUN apk add --no-cache git
 RUN go install github.com/air-verse/air@latest
-RUN go install github.com/a-h/templ/cmd/templ@v0.3.1020
 
-FROM ghcr.io/jwhumphries/frontend:latest@sha256:d8923d9071c21dd38e76b297f3afe50f400d2d177413500747374bafb3c89548 AS dev
+FROM ghcr.io/jwhumphries/frontend:latest@sha256:7270e8fbe7f4629906764604b12b77182e3714474ccee5b14aa01ccc6b8a5b53 AS dev
 
 WORKDIR /app
 
 COPY --from=gobase /usr/local/go /usr/local/go
 COPY --from=gobase /go/bin/air /usr/local/bin/air
-COPY --from=gobase /go/bin/templ /usr/local/bin/templ
 
 ENV PATH="/usr/local/go/bin:${PATH}"
 ENV GOPATH="/go"

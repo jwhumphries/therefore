@@ -4,7 +4,7 @@ set -e
 cd /app
 
 echo "==> Generating templ files..."
-templ generate
+go tool templ generate
 
 echo "==> Installing frontend dependencies..."
 cd frontend
