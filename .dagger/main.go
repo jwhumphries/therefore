@@ -281,7 +281,7 @@ func (m *Therefore) Release(
 	binary := binaryContainer.File("/therefore")
 
 	return dag.Container().
-		From("alpine:3.24@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6").
+		From("alpine:3.24@sha256:f59abe656b692d901e184be3445e084786602108599d2a51d229c0f5a48c71bf").
 		WithExec([]string{"apk", "add", "--no-cache", "tzdata", "ca-certificates"}).
 		WithFile("/usr/local/bin/therefore", binary).
 		WithExec([]string{"sh", "-c", "echo 'nonroot:x:10001:10001:NonRoot User:/:/sbin/nologin' >> /etc/passwd"}).
